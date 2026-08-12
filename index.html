@@ -188,8 +188,21 @@
 <header class="bri-header" style="position:fixed;top:0;left:0;right:0;z-index:60">
   <div style="position:absolute;inset:0;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border-bottom:1px solid #E3E2DC;transition:opacity .5s cubic-bezier(.22,1,.36,1);opacity:{{ barOpacity }}"></div>
   <div style="position:relative;max-width:1320px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:24px">
-    <a href="#" onClick="{{ goInicio }}" aria-label="BRIMMO — La Cordillera, Paraguay" style="display:block;flex-shrink:0;background:#fff;padding:8px 14px;border-radius:3px;box-shadow:0 2px 10px rgba(23,45,30,.14);transition:box-shadow .4s cubic-bezier(.22,1,.36,1)">
-      <img src="assets/brimmo-logo.png" alt="BRIMMO — La Cordillera, Paraguay" style="height:40px;width:auto;display:block">
+    <a href="#" onClick="{{ goInicio }}" aria-label="BRIMMO — La Cordillera, Paraguay" style="display:flex;align-items:center;gap:14px;flex-shrink:0">
+      <svg width="46" height="46" viewBox="0 0 24 24" aria-hidden="true" style="display:block;flex-shrink:0">
+        <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#A7C900"/>
+        <rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#8FA83C"/>
+        <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#1F5A36"/>
+        <rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848"/>
+        <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#1F5A36" transform="rotate(45 12 12)"/>
+        <rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#A7C900" transform="rotate(45 12 12)"/>
+        <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848" transform="rotate(45 12 12)"/>
+        <rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#1F5A36" transform="rotate(45 12 12)"/>
+      </svg>
+      <span style="display:block;line-height:1">
+        <span style="display:block;font-family:Montserrat,sans-serif;font-weight:800;font-size:27px;letter-spacing:0.01em;color:{{ logoColor }};transition:color .4s cubic-bezier(.22,1,.36,1)">BRIMMO</span>
+        <span style="display:block;margin-top:5px;font-size:9px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:{{ logoSubColor }};transition:color .4s cubic-bezier(.22,1,.36,1)">La Cordillera — Paraguay</span>
+      </span>
     </a>
     <nav aria-label="Principal" style="display:flex;align-items:center;gap:30px">
       <a href="#" onClick="{{ goInicio }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actInicio }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Inicio</a>
@@ -586,9 +599,22 @@
 <footer style="background:#1F5A36;color:#fff;padding:76px 20px 34px">
   <div style="max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:48px">
     <div>
-      <span style="display:inline-block;background:#fff;padding:10px 16px;border-radius:3px">
-        <img src="assets/brimmo-logo.png" alt="BRIMMO — La Cordillera, Paraguay" style="height:44px;width:auto;display:block">
-      </span>
+      <div aria-label="BRIMMO — La Cordillera, Paraguay" style="display:flex;align-items:center;gap:14px">
+        <svg width="48" height="48" viewBox="0 0 24 24" aria-hidden="true" style="display:block;flex-shrink:0">
+          <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#A7C900"/>
+          <rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#8FA83C"/>
+          <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#ffffff"/>
+          <rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848"/>
+          <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#ffffff" transform="rotate(45 12 12)"/>
+          <rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#A7C900" transform="rotate(45 12 12)"/>
+          <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848" transform="rotate(45 12 12)"/>
+          <rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#ffffff" transform="rotate(45 12 12)"/>
+        </svg>
+        <span style="display:block;line-height:1">
+          <span style="display:block;font-family:Montserrat,sans-serif;font-weight:800;font-size:28px;letter-spacing:0.01em;color:#fff">BRIMMO</span>
+          <span style="display:block;margin-top:5px;font-size:9px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#A7C900">La Cordillera — Paraguay</span>
+        </span>
+      </div>
       <p style="margin:22px 0 0;font-size:14px;line-height:1.7;color:rgba(255,255,255,.72);max-width:34ch">Servicios inmobiliarios y consultoría en La Cordillera y otras zonas de Paraguay.</p>
     </div>
     <div>
@@ -792,6 +818,8 @@ class Component extends DCLogic {
       isHome: home, isProps: s.screen === "properties", isDetail: s.screen === "detail",
       barOpacity: solid ? 1 : 0,
       navColor: solid ? CHARCOAL : "#ffffff",
+      logoColor: solid ? FOREST : "#ffffff",
+      logoSubColor: solid ? OLIVE : "rgba(255,255,255,.72)",
       actInicio: home ? LIME : "transparent",
       actProps: s.screen !== "home" ? LIME : "transparent",
       goInicio: (e) => this.go("home", e),
