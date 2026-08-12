@@ -363,13 +363,8 @@
       <sc-for list="{{ featured }}" as="p" hint-placeholder-count="3">
         <article data-reveal style="scroll-snap-align:start;flex:0 0 auto;width:min(400px,84vw);background:#fff;border:1px solid #E3E2DC">
           <a href="#" onClick="{{ p.open }}" style="display:block">
-            <div class="bri-img-zoom" style="position:relative;aspect-ratio:4/3;overflow:hidden;background:linear-gradient(150deg,#22633C 0%,#1F5A36 55%,#17452A 100%);display:flex;align-items:center;justify-content:center">
-              <svg width="66" height="66" viewBox="0 0 24 24" aria-hidden="true" style="opacity:.30">
-                <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#A7C900"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#8FA83C"/>
-                <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#fff"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848"/>
-                <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#fff" transform="rotate(45 12 12)"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#A7C900" transform="rotate(45 12 12)"/>
-                <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848" transform="rotate(45 12 12)"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#fff" transform="rotate(45 12 12)"/>
-              </svg>
+            <div style="position:relative;aspect-ratio:4/3;overflow:hidden;background:#1F5A36">
+              <img src="{{ p.image }}" alt="{{ p.alt }}" class="bri-img-zoom" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
               <span style="position:absolute;top:14px;left:14px;padding:6px 12px;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#fff;background:{{ p.tagBg }};z-index:2">{{ p.operation }}</span>
             </div>
             <div style="padding:24px 22px 26px">
@@ -620,13 +615,8 @@
       <sc-for list="{{ visible }}" as="p" hint-placeholder-count="4">
         <article data-reveal onMouseEnter="{{ p.hover }}" onMouseLeave="{{ p.unhover }}" style="border:1px solid #E3E2DC;background:#fff">
           <a href="#" onClick="{{ p.open }}" style="display:block">
-            <div class="bri-img-zoom" style="position:relative;aspect-ratio:4/3;overflow:hidden;background:linear-gradient(150deg,#22633C 0%,#1F5A36 55%,#17452A 100%);display:flex;align-items:center;justify-content:center">
-              <svg width="56" height="56" viewBox="0 0 24 24" aria-hidden="true" style="opacity:.30">
-                <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#A7C900"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#8FA83C"/>
-                <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#fff"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848"/>
-                <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#fff" transform="rotate(45 12 12)"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#A7C900" transform="rotate(45 12 12)"/>
-                <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848" transform="rotate(45 12 12)"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#fff" transform="rotate(45 12 12)"/>
-              </svg>
+            <div style="position:relative;aspect-ratio:4/3;overflow:hidden;background:#1F5A36">
+              <img src="{{ p.image }}" alt="{{ p.alt }}" class="bri-img-zoom" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
               <span style="position:absolute;top:12px;left:12px;padding:5px 11px;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#fff;background:{{ p.tagBg }};z-index:2">{{ p.operation }}</span>
             </div>
             <div style="padding:20px 18px 22px">
@@ -662,14 +652,8 @@
     <a href="#" onClick="{{ goProps }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:600;color:#7E9848">← Volver al catálogo</a>
   </div>
   <div data-stagger style="max-width:1320px;margin:0 auto;padding:22px 20px 0;display:grid;grid-template-columns:2.2fr 1fr;gap:12px">
-    <div data-reveal style="aspect-ratio:16/10;overflow:hidden;background:linear-gradient(150deg,#22633C 0%,#1F5A36 55%,#17452A 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:24px">
-      <svg width="88" height="88" viewBox="0 0 24 24" aria-hidden="true" style="opacity:.34">
-        <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#A7C900"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#8FA83C"/>
-        <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#fff"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848"/>
-        <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#fff" transform="rotate(45 12 12)"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#A7C900" transform="rotate(45 12 12)"/>
-        <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848" transform="rotate(45 12 12)"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#fff" transform="rotate(45 12 12)"/>
-      </svg>
-      <div style="font-size:13px;line-height:1.6;color:rgba(255,255,255,.8);max-width:38ch">Fotografías en preparación. Escribinos y te las enviamos junto con la disponibilidad actualizada.</div>
+    <div data-reveal style="aspect-ratio:16/10;overflow:hidden;background:#1F5A36">
+      <img src="{{ detailImage }}" alt="{{ detailAlt }}" style="width:100%;height:100%;object-fit:cover;display:block">
     </div>
     <div style="display:grid;grid-template-rows:repeat(2,1fr);gap:12px">
       <sc-if value="{{ hasVideo }}" hint-placeholder-val="{{ true }}">
@@ -829,6 +813,7 @@ const CIUDAD = {
 // Sin fotografías asignadas: ver uploads/propiedades-origen/MANIFIESTO.json
 const DATA = [
   { id: 1, published: true, pendiente: null,
+    image: "uploads/img/04-propiedad-atyra-casa.png",
     title: "Villa en Caacupé, zona urbana", type: "Villa", operation: "VENTA",
     price: 515000000, currency: "GS", city: "Caacupé", zone: "Zona urbana",
     land: 830, built: null, beds: 2, baths: null,
@@ -853,6 +838,7 @@ const DATA = [
     video: "2pG6a87NuPk" },
 
   { id: 4, published: true, pendiente: null,
+    image: "uploads/img/09-propiedad-emboscada-loteamiento.png",
     title: "Terreno de 4.300 m² dividido en cinco lotes", type: "Terreno", operation: "VENTA",
     price: 380000000, currency: "GS", city: "Tobatí", zone: "Entre Tobatí y Caacupé",
     land: 4300, built: null, beds: null, baths: null,
@@ -869,6 +855,7 @@ const DATA = [
     video: null },
 
   { id: 6, published: true, pendiente: null,
+    image: "uploads/img/05-propiedad-tobati-terreno.png",
     title: "Terreno de 7,8 hectáreas sobre ruta Tobatí–Aguaity", type: "Terreno", operation: "VENTA",
     price: 150000, currency: "USD", city: "Tobatí", zone: "Aguaity",
     land: 78000, built: null, beds: null, baths: null,
@@ -877,6 +864,7 @@ const DATA = [
     video: null },
 
   { id: 7, published: true, pendiente: null,
+    image: "uploads/img/08-propiedad-piribebuy-quinta.png",
     title: "Quinta de 2 hectáreas sobre la ruta de Atyrá", type: "Quinta", operation: "VENTA",
     price: 180000, currency: "USD", city: "Caacupé", zone: "Ruta de Atyrá",
     land: 20000, built: null, beds: null, baths: null,
@@ -901,6 +889,7 @@ const DATA = [
     video: null },
 
   { id: 10, published: true, pendiente: null,
+    image: "uploads/img/05-propiedad-tobati-terreno.png",
     title: "Terreno de 2 hectáreas en Eusebio Ayala", type: "Terreno", operation: "VENTA",
     price: 210000000, currency: "GS", city: "Eusebio Ayala", zone: null,
     land: 20000, built: null, beds: null, baths: null,
@@ -933,6 +922,7 @@ const DATA = [
     video: null },
 
   { id: 14, published: true, pendiente: null,
+    image: "uploads/img/09-propiedad-emboscada-loteamiento.png",
     title: "Terreno de 4.400 m² en Cabañas", type: "Terreno", operation: "VENTA",
     price: 357000000, currency: "GS", city: "Caacupé", zone: "Cabañas",
     land: 4400, built: null, beds: null, baths: null,
@@ -979,6 +969,10 @@ const STEPS = [
   { n: "03", title: "Seleccionamos oportunidades", desc: "Te presentamos solo lo que encaja con tu objetivo." },
   { n: "04", title: "Cerramos con seguridad", desc: "Documentación, negociación y acompañamiento hasta el final." }
 ];
+
+// Degradado de marca para cualquier propiedad sin fotografía asignada.
+const SIN_FOTO = "data:image/svg+xml;utf8," + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22633C"/><stop offset=".55" stop-color="#1F5A36"/><stop offset="1" stop-color="#17452A"/></linearGradient></defs><rect width="400" height="300" fill="url(#g)"/></svg>');
 
 const money = (p) => {
   if (p.price == null) return "Precio a consultar";
@@ -1135,6 +1129,8 @@ class Component extends DCLogic {
   card(p) {
     return {
       ...p,
+      image: p.image || SIN_FOTO,
+      alt: p.image ? p.title + " — " + (p.zone ? p.zone + ", " : "") + p.city : "",
       price: money(p),
       location: p.zone ? p.zone + ", " + p.city : p.city,
       specs: this.specs(p),
@@ -1244,6 +1240,8 @@ class Component extends DCLogic {
 
       tKey: s.t,
       detailTitle: d.title,
+      detailImage: d.image || SIN_FOTO,
+      detailAlt: d.image ? d.title + " — " + (d.zone ? d.zone + ", " : "") + d.city : "",
       detailLocation: d.zone ? d.zone + ", " + d.city : d.city,
       detailOperation: d.operation,
       detailTagBg: d.operation === "VENTA" ? FOREST : OLIVE,
