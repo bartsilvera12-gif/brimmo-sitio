@@ -267,10 +267,10 @@
     <nav aria-label="Principal" style="display:flex;align-items:center;gap:30px">
       <a href="#" onClick="{{ goInicio }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actInicio }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Inicio</a>
       <a href="#" onClick="{{ goProps }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actProps }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Propiedades</a>
-      <a href="#servicios" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid transparent;color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Servicios</a>
-      <a href="#nosotros" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid transparent;color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Nosotros</a>
-      <a href="#cordillera" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid transparent;color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">La zona</a>
-      <a href="#contacto" style="display:inline-flex;align-items:center;height:42px;padding:0 20px;background:#A7C900;color:#1F5A36;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;border-radius:2px;transition:background .3s" style-hover="background:#1F5A36;color:#fff">Contacto</a>
+      <a href="#" onClick="{{ goServicios }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actServicios }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Servicios</a>
+      <a href="#" onClick="{{ goNosotros }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actNosotros }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Nosotros</a>
+      <a href="#" onClick="{{ goZona }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid transparent;color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">La zona</a>
+      <a href="#" onClick="{{ goContacto }}" style="display:inline-flex;align-items:center;height:42px;padding:0 20px;background:#A7C900;color:#1F5A36;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;border-radius:2px;transition:background .3s" style-hover="background:#1F5A36;color:#fff">Contacto</a>
     </nav>
   </div>
 </header>
@@ -299,43 +299,6 @@
     <div class="bri-hero-cue" style="position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:2">
       <span style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,.6)">Seguí bajando</span>
       <span style="width:1px;height:26px;background:linear-gradient(to bottom,#A7C900,rgba(167,201,0,0));animation:bri-scroll 2.2s cubic-bezier(.22,1,.36,1) infinite"></span>
-    </div>
-  </section>
-
-  <section id="nosotros" style="background:#fff;padding:112px 20px">
-    <div style="max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1.05fr 1fr;gap:76px;align-items:center">
-      <div data-reveal>
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
-          <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
-          <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">BRIMMO</span>
-        </div>
-        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(28px,3.4vw,46px);line-height:1.1;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:18ch;text-wrap:balance">Decisiones inmobiliarias con claridad, confianza y conocimiento local.</h2>
-        <p style="margin:26px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:54ch">En BRIMMO te acompañamos en cada etapa de tu proyecto inmobiliario. Nuestra experiencia y conocimiento del mercado local nos permiten ofrecer una atención personalizada, cercana y enfocada en tus necesidades.</p>
-        <div data-stagger style="display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:#E3E2DC;margin-top:44px;border:1px solid #E3E2DC">
-          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Confianza</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Decisiones claras y relaciones duraderas.</div></div>
-          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Crecimiento</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Oportunidades que generan valor sostenible.</div></div>
-          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Cercanía</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Conocimiento local y atención humana.</div></div>
-          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Estructura</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Método, criterio y profesionalismo.</div></div>
-        </div>
-        <a href="#" onClick="{{ goProps }}" style="display:inline-flex;align-items:center;gap:12px;margin-top:38px;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;color:#1F5A36;border-bottom:2px solid #A7C900;padding-bottom:6px">Conocé BRIMMO</a>
-      </div>
-      <div data-reveal style="position:relative">
-        <div style="aspect-ratio:4/5;border:1px solid #E3E2DC;overflow:hidden;background:#F2F1ED">
-          <img src="uploads/img/02-nosotros-asesoria-brimmo.png" alt="Asesoría BRIMMO — equipo y territorio" style="width:100%;height:100%;object-fit:cover;display:block">
-        </div>
-        <div style="position:absolute;left:-26px;bottom:-26px;width:120px;height:120px;background:#1F5A36;display:flex;align-items:center;justify-content:center">
-          <svg width="62" height="62" viewBox="0 0 24 24" aria-hidden="true" style="display:block">
-            <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#A7C900"/>
-            <rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#8FA83C"/>
-            <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#ffffff"/>
-            <rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848"/>
-            <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#ffffff" transform="rotate(45 12 12)"/>
-            <rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#A7C900" transform="rotate(45 12 12)"/>
-            <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848" transform="rotate(45 12 12)"/>
-            <rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#ffffff" transform="rotate(45 12 12)"/>
-          </svg>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -425,45 +388,6 @@
     <div data-reveal style="position:relative;max-width:1000px;margin:0 auto;text-align:center">
       <p style="font-family:Montserrat,sans-serif;font-weight:700;font-size:clamp(24px,3.2vw,40px);line-height:1.25;color:#fff;margin:0;text-wrap:balance">“Cada propiedad representa una oportunidad. Nuestro trabajo es ayudarte a verla con claridad.”</p>
       <div style="margin-top:32px;font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#A7C900;font-weight:600">BRIMMO — La Cordillera, Paraguay</div>
-    </div>
-  </section>
-
-  <section id="servicios" style="background:#fff;padding:104px 20px">
-    <div style="max-width:1320px;margin:0 auto">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-        <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
-        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Servicios</span>
-      </div>
-      <h2 data-reveal style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0 0 44px">Acompañamiento en cada etapa</h2>
-      <div data-stagger style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
-        <sc-for list="{{ services }}" as="s" hint-placeholder-count="6">
-          <a href="#contacto" data-reveal style="background:#fff;padding:36px 28px 34px;display:block;transition:background .4s cubic-bezier(.22,1,.36,1)" style-hover="background:#F2F1ED">
-            <span style="display:block;width:22px;height:2px;background:#A7C900"></span>
-            <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36;margin:20px 0 0">{{ s.name }}</h3>
-            <p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:#6B6B65">{{ s.desc }}</p>
-          </a>
-        </sc-for>
-      </div>
-    </div>
-  </section>
-
-  <section id="inversiones" style="background:#F2F1ED;padding:104px 20px">
-    <div style="max-width:1320px;margin:0 auto">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-        <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
-        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Proceso</span>
-      </div>
-      <h2 data-reveal style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0 0 56px">Cómo trabajamos</h2>
-      <div data-stagger style="display:grid;grid-template-columns:repeat(4,1fr);gap:28px">
-        <sc-for list="{{ steps }}" as="st" hint-placeholder-count="4">
-          <div data-reveal style="position:relative;padding-top:30px;border-top:2px solid #CFCEC6">
-            <span style="position:absolute;top:-9px;left:0;width:16px;height:16px;border-radius:50%;background:#A7C900;border:4px solid #F2F1ED"></span>
-            <div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.2em;color:#7E9848">{{ st.n }}</div>
-            <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;line-height:1.25;color:#1F5A36;margin:14px 0 0">{{ st.title }}</h3>
-            <p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:#6B6B65">{{ st.desc }}</p>
-          </div>
-        </sc-for>
-      </div>
     </div>
   </section>
 
@@ -716,6 +640,117 @@
 </main>
 </sc-if>
 
+<sc-if value="{{ isNosotros }}" hint-placeholder-val="{{ false }}">
+<main style="padding-top:92px;background:#fff;min-height:100vh">
+
+  <section style="background:#F2F1ED;border-bottom:1px solid #E3E2DC;padding:64px 20px 56px">
+    <div data-reveal style="max-width:1320px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+        <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">BRIMMO</span>
+      </div>
+      <h1 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(28px,3.6vw,48px);line-height:1.1;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">Decisiones inmobiliarias con claridad, confianza y conocimiento local.</h1>
+      <p style="margin:24px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:60ch">En BRIMMO te acompañamos en cada etapa de tu proyecto inmobiliario. Nuestra experiencia y conocimiento del mercado local nos permiten ofrecer una atención personalizada, cercana y enfocada en tus necesidades.</p>
+    </div>
+  </section>
+
+  <section style="background:#fff;padding:96px 20px">
+    <div style="max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1.05fr 1fr;gap:76px;align-items:center">
+      <div data-reveal>
+        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(24px,2.6vw,34px);line-height:1.15;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">Trabajamos donde vivimos</h2>
+        <p style="margin:22px 0 0;font-size:16.5px;line-height:1.75;color:#5A5A55;max-width:56ch">Operamos en Caacupé y el departamento de Cordillera. Conocemos los caminos, las zonas y el estado real de cada propiedad, y eso nos permite decirte con franqueza si algo conviene o no.</p>
+        <p style="margin:18px 0 0;font-size:16.5px;line-height:1.75;color:#5A5A55;max-width:56ch">Acompañamos tanto a quien busca un terreno para construir como a quien evalúa una inversión mayor, y seguimos el proceso hasta la transferencia.</p>
+        <div data-stagger style="display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:#E3E2DC;margin-top:44px;border:1px solid #E3E2DC">
+          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Confianza</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Decisiones claras y relaciones duraderas.</div></div>
+          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Crecimiento</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Oportunidades que generan valor sostenible.</div></div>
+          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Cercanía</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Conocimiento local y atención humana.</div></div>
+          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Estructura</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Método, criterio y profesionalismo.</div></div>
+        </div>
+      </div>
+      <div data-reveal style="position:relative">
+        <div style="aspect-ratio:4/5;border:1px solid #E3E2DC;overflow:hidden;background:#F2F1ED">
+          <img src="uploads/img/02-nosotros-asesoria-brimmo.png" alt="Asesoría BRIMMO — equipo y territorio" style="width:100%;height:100%;object-fit:cover;display:block">
+        </div>
+        <div style="position:absolute;left:-26px;bottom:-26px;width:120px;height:120px;background:#1F5A36;display:flex;align-items:center;justify-content:center">
+          <svg width="62" height="62" viewBox="0 0 24 24" aria-hidden="true" style="display:block">
+            <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#A7C900"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#8FA83C"/>
+            <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#ffffff"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848"/>
+            <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#ffffff" transform="rotate(45 12 12)"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#A7C900" transform="rotate(45 12 12)"/>
+            <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848" transform="rotate(45 12 12)"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#ffffff" transform="rotate(45 12 12)"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:#1F5A36;padding:82px 20px">
+    <div data-reveal style="max-width:1000px;margin:0 auto;text-align:center">
+      <p style="font-family:Montserrat,sans-serif;font-weight:700;font-size:clamp(21px,2.6vw,32px);line-height:1.3;color:#fff;margin:0;text-wrap:balance">“Cada propiedad representa una oportunidad. Nuestro trabajo es ayudarte a verla con claridad.”</p>
+      <div style="margin-top:34px;display:flex;flex-wrap:wrap;gap:14px;justify-content:center">
+        <a href="#" onClick="{{ goProps }}" style="display:inline-flex;align-items:center;height:52px;padding:0 28px;background:#A7C900;color:#1F5A36;font-weight:600;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:transform .4s cubic-bezier(.22,1,.36,1),background .3s" style-hover="background:#fff;transform:translateY(-2px)">Ver propiedades</a>
+        <a href="#" onClick="{{ goServicios }}" style="display:inline-flex;align-items:center;height:52px;padding:0 28px;border:1px solid rgba(255,255,255,.55);color:#fff;font-weight:600;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:background .3s,border-color .3s" style-hover="background:rgba(255,255,255,.12);border-color:#A7C900">Ver servicios</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+</sc-if>
+
+<sc-if value="{{ isServicios }}" hint-placeholder-val="{{ false }}">
+<main style="padding-top:92px;background:#fff;min-height:100vh">
+
+  <section style="background:#F2F1ED;border-bottom:1px solid #E3E2DC;padding:64px 20px 56px">
+    <div data-reveal style="max-width:1320px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
+        <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Servicios</span>
+      </div>
+      <h1 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(28px,3.6vw,48px);line-height:1.1;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">Acompañamiento en cada etapa</h1>
+      <p style="margin:24px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:60ch">Desde la búsqueda hasta la transferencia, trabajamos sobre propiedades que conocemos y con documentación verificada.</p>
+    </div>
+  </section>
+
+  <section style="background:#fff;padding:88px 20px">
+    <div style="max-width:1320px;margin:0 auto">
+      <div data-stagger style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
+        <sc-for list="{{ services }}" as="s" hint-placeholder-count="6">
+          <a href="#" onClick="{{ goContacto }}" data-reveal style="background:#fff;padding:36px 28px 34px;display:block;transition:background .4s cubic-bezier(.22,1,.36,1)" style-hover="background:#F2F1ED">
+            <span style="display:block;width:22px;height:2px;background:#A7C900"></span>
+            <h2 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36;margin:20px 0 0">{{ s.name }}</h2>
+            <p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:#6B6B65">{{ s.desc }}</p>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:#F2F1ED;padding:96px 20px">
+    <div style="max-width:1320px;margin:0 auto">
+      <div data-reveal style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Proceso</span>
+      </div>
+      <h2 data-reveal style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0 0 56px">Cómo trabajamos</h2>
+      <div data-stagger style="display:grid;grid-template-columns:repeat(4,1fr);gap:28px">
+        <sc-for list="{{ steps }}" as="st" hint-placeholder-count="4">
+          <div data-reveal style="position:relative;padding-top:30px;border-top:2px solid #CFCEC6">
+            <span style="position:absolute;top:-9px;left:0;width:16px;height:16px;border-radius:50%;background:#A7C900;border:4px solid #F2F1ED"></span>
+            <div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.2em;color:#7E9848">{{ st.n }}</div>
+            <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;line-height:1.25;color:#1F5A36;margin:14px 0 0">{{ st.title }}</h3>
+            <p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:#6B6B65">{{ st.desc }}</p>
+          </div>
+        </sc-for>
+      </div>
+      <div data-reveal style="margin-top:64px;display:flex;flex-wrap:wrap;gap:14px">
+        <a href="{{ waHref }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;height:52px;padding:0 28px;background:#1F5A36;color:#fff;font-weight:600;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:background .3s" style-hover="background:#A7C900;color:#1F5A36">Consultar por WhatsApp</a>
+        <a href="#" onClick="{{ goProps }}" style="display:inline-flex;align-items:center;height:52px;padding:0 28px;border:1px solid #1F5A36;color:#1F5A36;font-weight:600;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:background .3s" style-hover="background:#1F5A36;color:#fff">Ver propiedades</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+</sc-if>
+
 <a href="{{ waHref }}" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp"
    style="position:fixed;right:22px;bottom:22px;z-index:70;width:58px;height:58px;border-radius:50%;background:#1F5A36;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(23,45,30,.32);transition:transform .4s cubic-bezier(.22,1,.36,1),background .3s"
    style-hover="background:#A7C900;color:#1F5A36;transform:translateY(-3px)">
@@ -750,9 +785,9 @@
       <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px;font-size:14px">
         <a href="#" onClick="{{ goInicio }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Inicio</a>
         <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Propiedades</a>
-        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Servicios</a>
-        <a href="#nosotros" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Nosotros</a>
-        <a href="#cordillera" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">La zona</a>
+        <a href="#" onClick="{{ goServicios }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Servicios</a>
+        <a href="#" onClick="{{ goNosotros }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Nosotros</a>
+        <a href="#" onClick="{{ goZona }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">La zona</a>
       </div>
     </div>
     <div>
@@ -762,7 +797,7 @@
         <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Quintas</a>
         <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Villas y casas</a>
         <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Ranchos</a>
-        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Acompañamiento</a>
+        <a href="#" onClick="{{ goServicios }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Acompañamiento</a>
       </div>
     </div>
     <div>
@@ -1117,6 +1152,18 @@ class Component extends DCLogic {
 
   go(screen, e) { if (e) e.preventDefault(); this.setState({ screen }); window.scrollTo(0, 0); }
 
+  // Secciones que viven en la portada: si estamos en otra pantalla, primero
+  // volvemos al inicio y recién ahí desplazamos hasta el ancla.
+  goSeccion(id, e) {
+    if (e) e.preventDefault();
+    const ir = () => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    if (this.state.screen !== "home") { this.setState({ screen: "home" }); setTimeout(ir, 80); }
+    else ir();
+  }
+
   specs(p) {
     const bits = [];
     if (p.beds) bits.push(p.beds + (p.beds === 1 ? " dorm" : " dorm"));
@@ -1170,6 +1217,13 @@ class Component extends DCLogic {
     return {
       year: new Date().getFullYear(),
       isHome: home, isProps: s.screen === "properties", isDetail: s.screen === "detail",
+      isNosotros: s.screen === "nosotros", isServicios: s.screen === "servicios",
+      goNosotros: (e) => this.go("nosotros", e),
+      goServicios: (e) => this.go("servicios", e),
+      goContacto: (e) => this.goSeccion("contacto", e),
+      goZona: (e) => this.goSeccion("cordillera", e),
+      actNosotros: s.screen === "nosotros" ? LIME : "transparent",
+      actServicios: s.screen === "servicios" ? LIME : "transparent",
       barOpacity: solid ? 1 : 0,
       navColor: solid ? CHARCOAL : "#ffffff",
       logoColor: solid ? FOREST : "#ffffff",

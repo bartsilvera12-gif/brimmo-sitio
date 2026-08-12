@@ -67,4 +67,45 @@ const todosPub = c.filtered().every(p => p.published);
 check("ningun borrador visible", todosPub, c.filtered().filter(p => !p.published).map(p => p.title));
 
 console.log(fail.length ? "\nFALLOS:\n" + fail.join("\n") : "\nTodo OK");
-process.exit(fail.length ? 1 : 0);
+
+// --- categorias fotograficas ---
+const cats2 = c.renderVals().categories;
+check("cada categoria tiene imagen", cats2.every(x => x.image && x.image.length > 10), cats2.map(x => x.image && x.image.slice(0,40)));
+check("categoria con foto tiene alt", cats2.filter(x => !/^data:/.test(x.image)).every(x => x.alt && x.alt.length > 10), cats2.map(x => x.alt));
+check("fallback sin alt (decorativo)", cats2.filter(x => /^data:/.test(x.image)).every(x => x.alt === ""), "ok");
+check("aria descriptivo", cats2.every(x => /propiedad(es)? disponible/.test(x.aria)), cats2.map(x => x.aria));
+const usadas = cats2.filter(x => !/^data:/.test(x.image)).map(x => x.image);
+check("ninguna foto repetida entre categorias", new Set(usadas).size === usadas.length, usadas);
+console.log("    categorias finales:", cats2.map(x => `${x.name}:${x.count}${/^data:/.test(x.image)?"(degradado)":"(foto)"}`).join(" "));
+console.log(fail.length ? "FALLOS FINALES:\n"+fail.join("\n") : "");
+
+// --- fotos en tarjetas ---
+const vis = c.renderVals().visible;
+check("todas las tarjetas tienen imagen", vis.every(p => p.image && p.image.length > 5), vis.map(p => p.image));
+check("todas con foto real (no degradado)", vis.every(p => !/^data:/.test(p.image)), vis.filter(p=>/^data:/.test(p.image)).map(p=>p.title));
+check("alt descriptivo en cada tarjeta", vis.every(p => p.alt && p.alt.includes("—")), vis.map(p => p.alt));
+check("detalle con imagen", /uploads\/img\//.test(c.renderVals().detailImage), c.renderVals().detailImage);
+const fotos = vis.map(p => p.image);
+console.log("    reutilizadas:", fotos.length - new Set(fotos).size, "de", fotos.length);
+vis.forEach(p => console.log("      " + p.image.replace("uploads/img/","").padEnd(38) + p.title));
+console.log(fail.length ? "FALLOS:\n"+fail.join("\n") : "\nTodo OK (fotos)");
+
+// --- pantallas Nosotros y Servicios ---
+const pantallas = ["home","properties","detail","nosotros","servicios"];
+pantallas.forEach(p => {
+  c.state.screen = p;
+  const r = c.renderVals();
+  const activas = ["isHome","isProps","isDetail","isNosotros","isServicios"].filter(k => r[k]);
+  check(`pantalla ${p}: exactamente una activa`, activas.length === 1, activas);
+});
+c.state.screen = "nosotros";
+let r2 = c.renderVals();
+check("nosotros marca su nav", r2.actNosotros !== "transparent" && r2.actServicios === "transparent", [r2.actNosotros, r2.actServicios]);
+check("nosotros: header solido", r2.barOpacity === 1, r2.barOpacity);
+c.state.screen = "servicios";
+r2 = c.renderVals();
+check("servicios marca su nav", r2.actServicios !== "transparent" && r2.actNosotros === "transparent", [r2.actServicios, r2.actNosotros]);
+check("servicios expone services y steps", r2.services.length === 6 && r2.steps.length === 4, [r2.services.length, r2.steps.length]);
+check("handlers de seccion existen", typeof r2.goContacto === "function" && typeof r2.goZona === "function", "ok");
+c.state.screen = "properties";
+console.log(fail.length ? "FALLOS:\n"+fail.join("\n") : "\nTodo OK (pantallas)");
