@@ -1,0 +1,338 @@
+<title>BRIMMO — Reporte de migración desde BR IMMO</title>
+<style>
+:root{
+  --paper:#FBFBF8; --surface:#FFFFFF; --sunk:#F3F4EF;
+  --ink:#22261F; --ink-2:#54594C; --ink-3:#83887A;
+  --line:#E0E2D8; --line-2:#CBCEC0;
+  --forest:#1F5A36; --forest-2:#2E7248; --lime:#A7C900; --olive:#7E9848;
+  --stop:#A32E22; --stop-bg:#FBEDEA;
+  --warn:#8A5A0B; --warn-bg:#FCF3E2;
+  --ok:#1F5A36; --ok-bg:#EAF3E9;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#14170F; --surface:#1B1F17; --sunk:#222719;
+    --ink:#EDEFE6; --ink-2:#B3B8A8; --ink-3:#848A78;
+    --line:#2F3527; --line-2:#414835;
+    --forest:#8FBF9E; --forest-2:#A7D2B4; --lime:#C4E82A; --olive:#A9C471;
+    --stop:#F0907F; --stop-bg:#3A1E19;
+    --warn:#E5B458; --warn-bg:#38290F;
+    --ok:#8FBF9E; --ok-bg:#1C2C1F;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14170F; --surface:#1B1F17; --sunk:#222719;
+  --ink:#EDEFE6; --ink-2:#B3B8A8; --ink-3:#848A78;
+  --line:#2F3527; --line-2:#414835;
+  --forest:#8FBF9E; --forest-2:#A7D2B4; --lime:#C4E82A; --olive:#A9C471;
+  --stop:#F0907F; --stop-bg:#3A1E19;
+  --warn:#E5B458; --warn-bg:#38290F;
+  --ok:#8FBF9E; --ok-bg:#1C2C1F;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px 90px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--olive);font-weight:600}
+
+/* header */
+.masthead{border-bottom:2px solid var(--forest);padding:44px 0 24px;margin-bottom:34px}
+.masthead h1{font-size:clamp(28px,4.2vw,44px);line-height:1.08;letter-spacing:-.022em;
+  font-weight:800;margin:12px 0 0;text-wrap:balance}
+.masthead .sub{margin:14px 0 0;color:var(--ink-2);max-width:62ch;font-size:17px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 26px;margin-top:20px;font-family:var(--mono);
+  font-size:11.5px;color:var(--ink-3);letter-spacing:.03em}
+
+/* scoreboard */
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);margin:0 0 40px}
+.score div{background:var(--surface);padding:18px 18px 16px}
+.score .n{font-size:32px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.score .l{margin-top:7px;font-size:12.5px;color:var(--ink-2);line-height:1.4}
+.n.bad{color:var(--stop)} .n.warn{color:var(--warn)} .n.good{color:var(--ok)}
+
+h2{font-size:22px;font-weight:800;letter-spacing:-.015em;margin:52px 0 4px;
+  padding-top:22px;border-top:1px solid var(--line-2);text-wrap:balance}
+h2 .num{font-family:var(--mono);font-size:12px;color:var(--olive);
+  display:block;margin-bottom:9px;letter-spacing:.16em;font-weight:600}
+h3{font-size:16px;font-weight:700;margin:30px 0 8px;letter-spacing:-.005em}
+p{margin:12px 0}
+.lead{color:var(--ink-2);max-width:70ch}
+
+/* callout */
+.stop{border-left:3px solid var(--stop);background:var(--stop-bg);padding:18px 20px;margin:22px 0}
+.stop h3{margin:0 0 6px;color:var(--stop);font-size:15px}
+.stop p{margin:8px 0 0;font-size:15px}
+.stop p:first-of-type{margin-top:0}
+.note{border-left:3px solid var(--warn);background:var(--warn-bg);padding:16px 20px;margin:22px 0;font-size:15px}
+.note strong{color:var(--warn)}
+
+/* tables */
+.scroll{overflow-x:auto;margin:20px 0;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:660px;background:var(--surface)}
+th{background:var(--sunk);text-align:left;padding:11px 13px;font-family:var(--mono);
+  font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-2);
+  font-weight:600;border-bottom:1px solid var(--line-2);white-space:nowrap;vertical-align:bottom}
+td{padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+tr:last-child td{border-bottom:none}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;font-size:12.5px}
+td.t{font-weight:600}
+code{font-family:var(--mono);font-size:.88em;background:var(--sunk);padding:1.5px 5px;border:1px solid var(--line)}
+
+.chip{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.09em;
+  text-transform:uppercase;padding:3px 7px;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.c-ok{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+.c-warn{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+.c-stop{background:var(--stop-bg);color:var(--stop);border-color:var(--stop)}
+
+ul{padding-left:20px;margin:12px 0}
+li{margin:7px 0}
+ul.tight li{margin:4px 0}
+.quote{border-left:2px solid var(--lime);padding:2px 0 2px 18px;margin:18px 0;color:var(--ink-2)}
+.quote .who{display:block;margin-top:8px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.fr{color:var(--ink-3);font-style:italic}
+footer{margin-top:60px;padding-top:22px;border-top:2px solid var(--forest);
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-3);letter-spacing:.03em}
+@media (max-width:640px){ .masthead{padding-top:30px} }
+</style>
+
+<div class="wrap">
+
+<div class="masthead">
+  <div class="eyebrow">Auditoría previa a la migración · Neura</div>
+  <h1>Migración de contenido real de BR IMMO hacia BRIMMO</h1>
+  <p class="sub">Inventario de las publicaciones, fotografías y datos institucionales de <code>immobilier-paraguay.com</code>, con los conflictos detectados y qué puede migrarse sin riesgo.</p>
+  <div class="meta">
+    <span>12 ago 2026</span>
+    <span>Fuente: immobilier-paraguay.com (Wix)</span>
+    <span>Páginas leídas: 5</span>
+    <span>Estado: inventario — sin cambios aplicados</span>
+  </div>
+</div>
+
+<div class="score">
+  <div><div class="n">16</div><div class="l">Publicaciones reales encontradas</div></div>
+  <div><div class="n bad">7</div><div class="l">Del listado del brief que <em>no existen</em> en la web</div></div>
+  <div><div class="n warn">9</div><div class="l">Con conflictos de datos</div></div>
+  <div><div class="n good">6</div><div class="l">Migrables sin dudas</div></div>
+  <div><div class="n">49</div><div class="l">Fotografías únicas</div></div>
+  <div><div class="n warn">0</div><div class="l">Galerías con asignación verificable</div></div>
+</div>
+
+<div class="stop">
+  <h3>Dos bloqueos antes de implementar</h3>
+  <p><strong>1. El stack descrito en el brief no existe en este repositorio.</strong> El brief asume catálogo en Supabase, panel administrador, <code>store_id</code>, RLS y <code>typecheck</code>/<code>build</code>. Este proyecto es un único <code>index.html</code> estático con un arreglo <code>DATA</code> escrito a mano y el runtime <code>support.js</code>: no hay <code>package.json</code>, <code>tsconfig.json</code>, dependencias ni backend. El propio <code>github.md</code> lo documenta como <em>referencia de diseño</em> del repo Next.js <code>bartsilvera12-gif/santerra</code>, que es donde vive Supabase. Los puntos 10, 12 y 13 no son ejecutables acá, y el punto 10 (“no crear un catálogo paralelo con datos estáticos en el frontend”) pide justo lo contrario de lo único que este repo puede contener.</p>
+  <p><strong>2. El listado de propiedades del brief no coincide con la web.</strong> De las 14 que enumeraste, 7 no existen hoy en el sitio, y hay 8 publicaciones activas que no están en tu lista. Migrar contra el listado del brief crearía propiedades inventadas.</p>
+</div>
+
+<h2><span class="num">01</span>Inventario de publicaciones reales</h2>
+<p class="lead">16 publicaciones activas: 15 en <code>/blank</code> (“À VENDRE”) y 1 exclusiva de la portada. El orden es el de aparición en la web. Los campos vacíos son datos que la web no publica — quedan como <code>null</code>, no se completan por inferencia.</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th>#</th><th>Título (original)</th><th>Ciudad / zona</th><th>Precio publicado</th><th>Superficie</th><th>Dorm.</th><th>Baños</th><th>Video</th><th>Estado</th></tr></thead>
+<tbody>
+<tr><td class="num">1</td><td class="t">Villa Caacupe</td><td>Caacupé — zona urbana</td><td class="num">515.000.000 GS</td><td class="num">830 m² terreno</td><td class="num">2</td><td class="num">—</td><td class="num">jb6os04D16A</td><td><span class="chip c-ok">Migrable</span></td></tr>
+<tr><td class="num">2</td><td class="t">VILLA à 5mn de Caacupé</td><td>A 5 min de Caacupé</td><td class="num">890.000.000 GS</td><td class="num">220 m² const.</td><td class="num">—</td><td class="num">—</td><td class="num">wgp7iHkPP9g</td><td><span class="chip c-warn">Conflicto</span></td></tr>
+<tr><td class="num">3</td><td class="t">QUINTA ATYRA — 1,6 hectáreas</td><td>Atyrá</td><td class="num">292.000.000 GS</td><td class="num">1,6 ha / 80 m² const.</td><td class="num">3</td><td class="num">1</td><td class="num">2pG6a87NuPk</td><td><span class="chip c-stop">Conflicto de precio</span></td></tr>
+<tr><td class="num">4</td><td class="t">TERRAIN 4300 M2</td><td>Entre Tobatí y Caacupé</td><td class="num">380.000.000 GS</td><td class="num">4.300 m² — 5 lotes</td><td class="num">—</td><td class="num">—</td><td class="num">aXHUcTVrz9Y</td><td><span class="chip c-ok">Migrable</span></td></tr>
+<tr><td class="num">5</td><td class="t">Terrain 9,45 hectares — Valenzuela</td><td>Valenzuela — 39 km de Caacupé</td><td class="num">147 000 <em>(sin moneda)</em></td><td class="num">94.500 m²</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="chip c-stop">Moneda ausente</span></td></tr>
+<tr><td class="num">6</td><td class="t">Terrain de 7,8 H — Tobatí/Aguaity</td><td>Tobatí — Aguaity</td><td class="num">150.000 US$</td><td class="num">7,8 ha — 217 m frente</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="chip c-ok">Migrable</span></td></tr>
+<tr><td class="num">7</td><td class="t">QUINTA 2 hectares Caacupe</td><td>Ruta de Atyrá, 5 min de Caacupé</td><td class="num">180.000 US$</td><td class="num">2 ha</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="chip c-ok">Migrable</span></td></tr>
+<tr><td class="num">8</td><td class="t">Propriété sur 5,7 hectares — ITACURUBI</td><td>Itacurubí de la Cordillera</td><td class="num">157 000 <em>(sin moneda)</em></td><td class="num">5,7 ha</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="chip c-stop">Moneda ausente</span></td></tr>
+<tr><td class="num">9</td><td class="t">Terrain 2 hectares — alturas de Atyrá</td><td>Atyrá — zona alta</td><td class="num">370.000.000 GS</td><td class="num">110 × 200 m</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="chip c-warn">Conflicto</span></td></tr>
+<tr><td class="num">10</td><td class="t">Terrain de 2 hectares — Eusebio Ayala</td><td>Eusebio Ayala</td><td class="num">210.000.000 GS</td><td class="num">2 ha</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="chip c-ok">Migrable</span></td></tr>
+<tr><td class="num">11</td><td class="t">Terrain de 5.440 m² — Cabañas</td><td>Cabañas — 2 km de Caacupé</td><td class="num">170.000.000 GS</td><td class="num">5.440 m² / 144 × 37 m</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="chip c-warn">Conflicto</span></td></tr>
+<tr><td class="num">12</td><td class="t">RANCH 10Hect — Eusebio Ayala</td><td>Eusebio Ayala — 20 km de Caacupé</td><td class="num">840.000.000 GS</td><td class="num">9 ó 10 ha</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="chip c-warn">Conflicto</span></td></tr>
+<tr><td class="num">13</td><td class="t">Terrain de 14 Hectares — ITA YVU GUASU</td><td>Cerca de Caacupé</td><td class="num">1.470.000.000 Gs (~212.000)</td><td class="num">14 ha</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="chip c-warn">Conflicto</span></td></tr>
+<tr><td class="num">14</td><td class="t">TERRAIN 4.400 M² — Cabañas/Caacupé</td><td>Cabañas — Caacupé</td><td class="num">357.000.000 GS</td><td class="num">4.400 m²</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="chip c-ok">Migrable</span></td></tr>
+<tr><td class="num">15</td><td class="t">APPARTEMENT ASUNCION</td><td>Asunción</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="chip c-stop">Sin contenido</span></td></tr>
+<tr><td class="num">16</td><td class="t">Maison à Cabañas Caacupé <em>(solo portada)</em></td><td>Cabañas, Caacupé</td><td class="num">39.500 USD</td><td class="num">448 m² terreno</td><td class="num">2</td><td class="num">1</td><td class="num">—</td><td><span class="chip c-warn">Solo en portada</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Las 7 propiedades del brief que no existen en la web</h3>
+<p class="lead">Busqué por título, superficie y ciudad en las 5 páginas del sitio. Ninguna aparece. No las voy a crear.</p>
+<div class="scroll">
+<table>
+<thead><tr><th>Propiedad indicada en el brief</th><th>Resultado</th><th>Observación</th></tr></thead>
+<tbody>
+<tr><td class="t">Villa en San Bernardino</td><td><span class="chip c-stop">No existe</span></td><td>San Bernardino solo aparece como texto turístico en la página “Paraguay”, no como publicación.</td></tr>
+<tr><td class="t">Terreno de 8 ha en Piribebuy</td><td><span class="chip c-stop">No existe</span></td><td>Piribebuy no figura en ninguna publicación. Sí existe un terreno de 7,8 ha, pero en <strong>Tobatí/Aguaity</strong>, no en Piribebuy.</td></tr>
+<tr><td class="t">Propiedad de 13 ha en Piribebuy</td><td><span class="chip c-stop">No existe</span></td><td>Existe una de <strong>14 ha</strong> en Ita Yvu Guasu, cerca de Caacupé. Distinta superficie y distinta ciudad.</td></tr>
+<tr><td class="t">Casa de 35 m² sobre terreno de 420 m²</td><td><span class="chip c-stop">No existe</span></td><td>La portada publica una casa sobre <strong>448 m²</strong> (no 420) y no indica superficie construida.</td></tr>
+<tr><td class="t">Quinta Sofía sobre 3.860 m²</td><td><span class="chip c-stop">No existe</span></td><td>Sin coincidencias por nombre ni por superficie.</td></tr>
+<tr><td class="t">Motel de 23 habitaciones en Cabañas</td><td><span class="chip c-stop">No existe</span></td><td>Sin coincidencias. En Cabañas solo hay terrenos (5.440 m² y 4.400 m²).</td></tr>
+<tr><td class="t">Terreno de 30 ha en Ybycuí</td><td><span class="chip c-stop">No existe</span></td><td>Ybycuí no aparece en el sitio.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="note"><strong>Hipótesis a confirmar con el cliente:</strong> este desfase sugiere que el listado del brief viene de una versión anterior del sitio, de un catálogo interno, o de propiedades ya vendidas y retiradas. Antes de descartarlas conviene preguntar si siguen vigentes fuera de la web.</div>
+
+<h2><span class="num">02</span>Conflictos de datos detectados</h2>
+<p class="lead">Ninguno se resuelve por criterio propio. Cada fila queda como borrador con el marcador <code>PENDIENTE_DE_CONFIRMAR</code>.</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th>Propiedad</th><th>Conflicto</th><th>Valor A</th><th>Valor B</th><th>Verificación sugerida</th></tr></thead>
+<tbody>
+<tr><td class="t">Quinta Atyrá 1,6 ha</td><td>Precio distinto entre portada y catálogo</td><td class="num">37.600 USD<br><span class="fr">(portada)</span></td><td class="num">292.000.000 GS<br><span class="fr">(catálogo)</span></td><td>292M GS ≈ 39.000 USD al cambio actual. Se parecen pero no coinciden. Confirmar precio y moneda de referencia.</td></tr>
+<tr><td class="t">Terreno 9,45 ha Valenzuela</td><td>Precio sin moneda</td><td class="num">147 000</td><td class="num">—</td><td>Puede ser USD, EUR o Gs. A 147M Gs sería anormalmente barato para 9,45 ha; a 147.000 USD, caro. Confirmar.</td></tr>
+<tr><td class="t">Propiedad 5,7 ha Itacurubí</td><td>Precio sin moneda</td><td class="num">157 000</td><td class="num">—</td><td>Mismo caso. Confirmar moneda.</td></tr>
+<tr><td class="t">Terreno 14 ha Ita Yvu Guasu</td><td>Doble precio y moneda secundaria ilegible</td><td class="num">1.470.000.000 Gs</td><td class="num">~212.000 (¿€?)</td><td>1.470M Gs ≈ 196.000 USD ≈ 180.000 €. El “212.000” no cuadra con ninguna. Confirmar ambos.</td></tr>
+<tr><td class="t">Ranch Eusebio Ayala</td><td>Superficie: título vs. descripción</td><td class="num">10 ha <span class="fr">(título)</span></td><td class="num">9 ha <span class="fr">(descripción)</span></td><td>Confirmar superficie real según título de propiedad.</td></tr>
+<tr><td class="t">Terreno 5.440 m² Cabañas</td><td>Superficie declarada vs. medidas</td><td class="num">5.440 m²</td><td class="num">144 × 37 = 5.328 m²</td><td>Diferencia de 112 m². Confirmar cuál figura en el catastro.</td></tr>
+<tr><td class="t">Terreno 2 ha alturas de Atyrá</td><td>Superficie declarada vs. medidas</td><td class="num">2 ha</td><td class="num">110 × 200 = 2,2 ha</td><td>Confirmar si son 2 ha exactas o 2,2 ha.</td></tr>
+<tr><td class="t">Villa a 5 min de Caacupé</td><td>Descripción contradictoria</td><td>“villa de lujo con <strong>piscina</strong>” <span class="fr">(portada)</span></td><td>“villa de una planta de 220 m²”, sin mención de piscina <span class="fr">(catálogo)</span></td><td>Confirmar si tiene piscina antes de publicarlo como característica.</td></tr>
+<tr><td class="t">Appartement Asunción</td><td>Publicación vacía</td><td>Solo título y “CLIQUEZ ICI”</td><td class="num">—</td><td>Sin precio, superficie ni fotos. Confirmar si sigue vigente o se descarta.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2><span class="num">03</span>Fotografías</h2>
+<p class="lead"><strong>49 imágenes únicas</strong> en alta resolución (hasta 4080 × 3060). Están todas descargables y ninguna requiere hotlink a Wix. El problema no es obtenerlas: es saber a qué propiedad pertenece cada una.</p>
+
+<div class="stop">
+  <h3>Wix no expone la asignación foto → propiedad</h3>
+  <p>Las 51 entradas de medios de la página “À VENDRE” viven en <strong>un único pool plano</strong>, ordenado por fecha de subida, sin ninguna referencia a la publicación que las usa. Los contadores visibles (“1/7” en Itacurubí, “1/10” en Ita Yvu Guasu, “1/8” en la casa de Cabañas) confirman que hay galerías completas, pero su contenido se carga por JavaScript y no está en el HTML.</p>
+  <p>Como pediste explícitamente no asignar fotos por proximidad visual, <strong>no voy a mapear las galerías por inferencia</strong>. Lo que sí es utilizable aparece abajo.</p>
+</div>
+
+<h3>Qué se puede aprovechar con evidencia</h3>
+<ul>
+<li><strong>28 imágenes con adyacencia directa en el DOM</strong> — son las miniaturas que Wix renderiza junto a cada publicación. Es una asociación estructural, no visual, y sirve como propuesta de imagen principal a validar una por una.</li>
+<li><strong>Agrupación por timestamp de archivo</strong> — 21 fotos conservan el nombre original de cámara (<code>20251108_160218.jpg</code>), lo que agrupa sesiones de manera fiable: 9 fotos del 08/11/2025, 5 del 13/06/2026, 4 del 11/07/2025, 2 del 09/09/2025, 2 del 23/10/2025. Cada grupo es casi con seguridad una misma propiedad, pero <em>cuál</em> propiedad requiere confirmación.</li>
+<li><strong>16 fotos con nombre UUID</strong> (<code>45326f84-…jfif</code>) — sin ninguna señal de agrupación. No hay forma de asignarlas sin ver la web renderizada.</li>
+<li><strong>Lotes por prefijo</strong> — <code>FAT/FATECHA</code> (6) y <code>TER</code> (4) parecen corresponder a los terrenos de Eusebio Ayala y Valenzuela, pero es una lectura del nombre de archivo, no un dato.</li>
+</ul>
+
+<div class="note"><strong>Salida recomendada:</strong> abrir la web antigua en un navegador con JavaScript, capturar cada galería completa y confirmar la asignación. Es la única vía que cumple tu regla de no adivinar. Si preferís, puedo migrar primero solo las fotos de adyacencia DOM como imagen principal y dejar las galerías vacías hasta esa confirmación.</div>
+
+<h3>Videos de YouTube</h3>
+<p class="lead">9 videos publicados. Solo 4 tienen asociación verificable a una propiedad; los otros 5 aparecen en la página sin vínculo recuperable.</p>
+<div class="scroll">
+<table>
+<thead><tr><th>ID</th><th>Propiedad</th><th>Evidencia</th></tr></thead>
+<tbody>
+<tr><td class="num">jb6os04D16A</td><td>Villa Caacupe</td><td><span class="chip c-ok">Verificada</span></td></tr>
+<tr><td class="num">wgp7iHkPP9g</td><td>Villa a 5 min de Caacupé</td><td><span class="chip c-ok">Verificada</span></td></tr>
+<tr><td class="num">2pG6a87NuPk</td><td>Quinta Atyrá 1,6 ha</td><td><span class="chip c-ok">Verificada</span></td></tr>
+<tr><td class="num">aXHUcTVrz9Y</td><td>Terreno 4.300 m²</td><td><span class="chip c-ok">Verificada</span></td></tr>
+<tr><td class="num">AtxTGdWW8pc · B5QjWo3Kv80 · DkyILKOCMXE · TavHSoHPXRQ · U1VMP87IvFg</td><td>Sin determinar</td><td><span class="chip c-stop">Sin asociación</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<h2><span class="num">04</span>Datos de contacto</h2>
+<p class="lead">Coinciden exactamente con los del brief y son consistentes en las 5 páginas del sitio. Marcados como <em>recuperados de la web anterior, pendientes de confirmación del cliente</em>.</p>
+<div class="scroll">
+<table>
+<thead><tr><th>Dato</th><th>Valor</th><th>Uso previsto</th></tr></thead>
+<tbody>
+<tr><td class="t">Teléfono / WhatsApp</td><td class="num">+595 992 984 777</td><td>Header, contacto, botón flotante, footer, datos estructurados</td></tr>
+<tr><td class="t">WhatsApp (formato limpio)</td><td class="num">595992984777</td><td>Enlace <code>wa.me</code></td></tr>
+<tr><td class="t">Correo</td><td class="num">loginvest7@gmail.com</td><td>Contacto, formularios, footer</td></tr>
+<tr><td class="t">Ubicación</td><td>Cabañas, Caacupé, Paraguay</td><td>Contacto, footer, metadata</td></tr>
+</tbody>
+</table>
+</div>
+<div class="note"><strong>A decidir:</strong> <code>loginvest7@gmail.com</code> es una casilla personal de Gmail y arrastra el nombre comercial anterior. Para la marca BRIMMO convendría un correo de dominio propio. No lo cambio sin tu confirmación.</div>
+
+<h2><span class="num">05</span>Datos legales encontrados</h2>
+<p class="lead">Verificados en <code>/mentions-légales</code>. Coinciden con tu brief. <strong>No se publican</strong> — quedan acá pendientes de validación, porque la marca nueva se presenta como BRIMMO y puede haber cambios societarios o fiscales.</p>
+<div class="scroll">
+<table>
+<thead><tr><th>Campo</th><th>Valor publicado en la web anterior</th></tr></thead>
+<tbody>
+<tr><td class="t">Razón social</td><td>EIRL RUBIO BRUNO</td></tr>
+<tr><td class="t">Denominación comercial</td><td>BR IMMO</td></tr>
+<tr><td class="t">Responsable</td><td>Bruno Rubio</td></tr>
+<tr><td class="t">Domicilio registrado</td><td>Cabañas Poty, Senavitat 4547, Caacupé</td></tr>
+<tr><td class="t">Registro de comercio</td><td>9303774-0</td></tr>
+<tr><td class="t">Identificación fiscal</td><td>9303774</td></tr>
+<tr><td class="t">Forma jurídica</td><td>EIRL</td></tr>
+</tbody>
+</table>
+</div>
+<p>Las políticas legales antiguas (avisos legales, cookies, privacidad, condiciones) <strong>no se copian</strong>. La política de privacidad nueva se redactará según el formulario y el tratamiento de datos reales de la web BRIMMO.</p>
+
+<h2><span class="num">06</span>Testimonios reales</h2>
+<p class="lead">Tres testimonios, traducidos conservando el sentido, sin agregar resultados, fechas ni afirmaciones inexistentes. Reemplazan a los tres ficticios de la maqueta.</p>
+
+<div class="quote">
+  «Bruno supo responder a todas nuestras necesidades y nos encontró el terreno de nuestros sueños. Un servicio profesional y atento.»
+  <span class="who">Aline y Martin Rieux</span>
+</div>
+<div class="quote">
+  «Nuestra experiencia en Caacupé fue muy positiva, excepcional. Más allá de lo inmobiliario, pudimos compartir nuestros proyectos: los consejos no tienen precio.»
+  <span class="who">Sophie Duchamps</span>
+</div>
+<div class="quote">
+  «Recomiendo a Bruno por su trato personalizado y su conocimiento del mercado local en La Cordillera. Una persona de confianza.»
+  <span class="who">Paul Rossi</span>
+</div>
+<p class="lead">El nombre propio “Bruno” aparece en los tres. Como la marca nueva es BRIMMO, hay que decidir si se mantiene el nombre del asesor o se adapta.</p>
+
+<h3>Texto institucional</h3>
+<p class="lead">El párrafo de la portada traducido, ya alineado con el ejemplo de tu brief:</p>
+<div class="quote">«En BRIMMO te acompañamos en cada etapa de tu proyecto inmobiliario. Nuestra experiencia y conocimiento del mercado local nos permiten ofrecer una atención personalizada, cercana y enfocada en tus necesidades.»</div>
+
+<h2><span class="num">07</span>“Vivir e invertir en La Cordillera”</h2>
+<p class="lead">La página “Paraguay” aporta material territorial reutilizable, pero también afirmaciones que pediste no republicar sin verificar. Separo ambas cosas.</p>
+
+<h3>Reutilizable</h3>
+<ul class="tight">
+<li>La Cordillera: región verde y ondulada, clima agradable, tranquilidad, elegida para vivir o pasar fines de semana.</li>
+<li>Caacupé: capital departamental, corazón espiritual del país por su basílica; comercios, servicios, escuelas, universidades y hospital, a unos 50 km de Asunción.</li>
+<li>San Bernardino: a orillas del lago Ypacaraí, actividades al aire libre, gastronomía y vida cultural; temporada alta en verano, calma el resto del año; a unos 40 km de Asunción.</li>
+<li>Oportunidades residenciales, rurales y turísticas; potencial de terrenos, quintas y proyectos turísticos.</li>
+</ul>
+
+<h3>No republicar sin verificación</h3>
+<ul class="tight">
+<li>«El costo de vida está entre los más bajos de la región.»</li>
+<li>«Impuesto a la renta único del 10%.»</li>
+<li>Afirmaciones comparativas de seguridad frente a otros países.</li>
+<li>Toda la página “Services” (residencia temporaria, cédula, residencia permanente) con su tarifario en guaraníes: es un negocio de trámites migratorios, no inmobiliario. <strong>Queda fuera del alcance</strong> salvo que confirmes lo contrario.</li>
+</ul>
+
+<h2><span class="num">08</span>Limpieza pendiente en la web nueva</h2>
+<div class="scroll">
+<table>
+<thead><tr><th>Elemento a eliminar</th><th>Dónde está hoy</th></tr></thead>
+<tbody>
+<tr><td class="t">6 propiedades ficticias con precios inventados</td><td>Arreglo <code>DATA</code> en <code>index.html</code></td></tr>
+<tr><td class="t">3 testimonios inventados</td><td><code>TESTIMONIALS</code></td></tr>
+<tr><td class="t">Marcadores <code>TODO_BRIMMO</code></td><td>Teléfono, correo, dirección, descripción de detalle, nota de testimonios</td></tr>
+<tr><td class="t">6 imágenes de demostración de propiedades</td><td><code>uploads/img/04</code>–<code>09</code>, más galería <code>10</code>–<code>11</code></td></tr>
+<tr><td class="t">Copyright “2035”</td><td>Solo en la web vieja — la nueva ya usa el año real</td></tr>
+<tr><td class="t">Nombre visual “BR IMMO”</td><td>Solo en la web vieja</td></tr>
+</tbody>
+</table>
+</div>
+<p>Las imágenes institucionales generadas (<code>01</code> hero, <code>02</code> Nosotros, <code>03</code> Experiencia BRIMMO) <strong>se conservan</strong>, tal como pediste. El hero queda exactamente como está.</p>
+
+<h2><span class="num">09</span>Qué se puede migrar ahora</h2>
+<div class="scroll">
+<table>
+<thead><tr><th>Grupo</th><th>Cantidad</th><th>Acción</th></tr></thead>
+<tbody>
+<tr><td class="t">Publicables sin dudas</td><td class="num">6</td><td>Villa Caacupe · Terreno 4.300 m² · Terreno 7,8 ha Tobatí/Aguaity · Quinta 2 ha ruta de Atyrá · Terreno 2 ha Eusebio Ayala · Terreno 4.400 m² Cabañas. Precio, moneda y superficie son inequívocos en los seis.</td></tr>
+<tr><td class="t">Borrador con <code>PENDIENTE_DE_CONFIRMAR</code></td><td class="num">9</td><td>Todas las de la tabla de conflictos. Se cargan completas pero despublicadas.</td></tr>
+<tr><td class="t">Descartadas</td><td class="num">7</td><td>Las del brief que no existen en la web. No se crean.</td></tr>
+<tr><td class="t">Coordenadas para el mapa</td><td class="num">0</td><td>La web anterior no publica ninguna coordenada. Ningún marcador es fiable hoy; el mapa se alimentaría solo con ubicación aproximada por ciudad, claramente identificada como tal.</td></tr>
+</tbody>
+</table>
+</div>
+
+<footer>
+Neura · Auditoría de migración BR IMMO → BRIMMO · 12 de agosto de 2026<br>
+Sin cambios aplicados al sitio. Ninguna propiedad fue creada, publicada ni eliminada.
+</footer>
+
+</div>

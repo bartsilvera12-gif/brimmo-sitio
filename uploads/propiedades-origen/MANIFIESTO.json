@@ -1,0 +1,400 @@
+{
+ "origen": "https://www.immobilier-paraguay.com/blank",
+ "descargado": "2026-08-12",
+ "nota": "Fotografías de la web anterior. NO estan asignadas a ninguna propiedad: Wix las publica en un pool plano sin referencia a la publicacion que las usa. Agrupadas por sesion de captura (timestamp del archivo original), que es la unica senal verificable. Requieren validacion del cliente antes de asignarse.",
+ "total": 49,
+ "imagenes": [
+  {
+   "cluster": "planos",
+   "file": "planos/1-7-500x328-fb7cd124.png",
+   "source": "9e8012_fb7cd1245deb4026b15e01a73a813da2~mv2.png",
+   "original": "1-7-500x328.png",
+   "dim": "500x328",
+   "bytes": 434521
+  },
+  {
+   "cluster": "sesion-2025-07-11",
+   "file": "sesion-2025-07-11/20250711_150616-5c13e6c1.jpg",
+   "source": "9e8012_5c13e6c1372540d798d2b844404d9ce3~mv2.jpg",
+   "original": "20250711_150616.jpg",
+   "dim": "4080x3060",
+   "bytes": 1040846
+  },
+  {
+   "cluster": "sesion-2025-07-11",
+   "file": "sesion-2025-07-11/20250711_150550-fd668408.jpg",
+   "source": "9e8012_fd668408e801483eb7f82ef0bdfbb01d~mv2.jpg",
+   "original": "20250711_150550.jpg",
+   "dim": "4080x3060",
+   "bytes": 1320152
+  },
+  {
+   "cluster": "sesion-2025-07-11",
+   "file": "sesion-2025-07-11/20250711_150708-b513dab2.jpg",
+   "source": "9e8012_b513dab22c0b490c9a5797c4ed2472f2~mv2.jpg",
+   "original": "20250711_150708.jpg",
+   "dim": "4080x3060",
+   "bytes": 1074472
+  },
+  {
+   "cluster": "sesion-2025-07-11",
+   "file": "sesion-2025-07-11/20250711_150711-5562a5b7.jpg",
+   "source": "9e8012_5562a5b7720141ada166be3fa91e4779~mv2.jpg",
+   "original": "20250711_150711.jpg",
+   "dim": "4080x3060",
+   "bytes": 807631
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/6ad95206-f8ed-4612-9ea9-7b83964a0545-3a97e590.jpg",
+   "source": "9e8012_3a97e590bbdb4dbbbfcaa946aafde62c~mv2.jpg",
+   "original": "6ad95206-f8ed-4612-9ea9-7b83964a0545.jfif",
+   "dim": "1280x720",
+   "bytes": 348332
+  },
+  {
+   "cluster": "sesion-2025-09-09",
+   "file": "sesion-2025-09-09/20250909_110752-8b198a9a.jpg",
+   "source": "9e8012_8b198a9ae3b0442d943324f847ace0fc~mv2.jpg",
+   "original": "20250909_110752.jpg",
+   "dim": "4080x1884",
+   "bytes": 854941
+  },
+  {
+   "cluster": "sesion-2025-09-09",
+   "file": "sesion-2025-09-09/20250909_110756-7ebc6df9.jpg",
+   "source": "9e8012_7ebc6df965244a1c9c041e26b6cbb145~mv2.jpg",
+   "original": "20250909_110756.jpg",
+   "dim": "4080x1884",
+   "bytes": 780870
+  },
+  {
+   "cluster": "sesion-2025-11-08",
+   "file": "sesion-2025-11-08/20251108_160220-86c35cd0.jpg",
+   "source": "9e8012_86c35cd09d9747cf9eb703adf1363ca0~mv2.jpg",
+   "original": "20251108_160220.jpg",
+   "dim": "4080x1884",
+   "bytes": 510504
+  },
+  {
+   "cluster": "sesion-2025-11-08",
+   "file": "sesion-2025-11-08/20251108_160222-3c8ec475.jpg",
+   "source": "9e8012_3c8ec4758006462ba003f54de217b98a~mv2.jpg",
+   "original": "20251108_160222.jpg",
+   "dim": "4080x1884",
+   "bytes": 381748
+  },
+  {
+   "cluster": "sesion-2025-11-08",
+   "file": "sesion-2025-11-08/20251108_160218-2299c2ab.jpg",
+   "source": "9e8012_2299c2abbafc4c32b8c7afc2b604a793~mv2.jpg",
+   "original": "20251108_160218.jpg",
+   "dim": "4080x1884",
+   "bytes": 400371
+  },
+  {
+   "cluster": "sesion-2025-11-08",
+   "file": "sesion-2025-11-08/20251108_160200-e398d05e.jpg",
+   "source": "9e8012_e398d05e40ca43b28b4cb0710cf47e99~mv2.jpg",
+   "original": "20251108_160200.jpg",
+   "dim": "4080x1884",
+   "bytes": 432488
+  },
+  {
+   "cluster": "sesion-2025-11-08",
+   "file": "sesion-2025-11-08/20251108_160146-d7760e26.jpg",
+   "source": "9e8012_d7760e260f01419d99a2ceb8a0c04cc5~mv2.jpg",
+   "original": "20251108_160146.jpg",
+   "dim": "4080x1884",
+   "bytes": 682219
+  },
+  {
+   "cluster": "sesion-2025-11-08",
+   "file": "sesion-2025-11-08/20251108_160049-4c701ee4.jpg",
+   "source": "9e8012_4c701ee446704ab78926ff8734cb9190~mv2.jpg",
+   "original": "20251108_160049.jpg",
+   "dim": "4080x1884",
+   "bytes": 689922
+  },
+  {
+   "cluster": "sesion-2025-11-08",
+   "file": "sesion-2025-11-08/20251108_160027-39317556.jpg",
+   "source": "9e8012_3931755635a14e7ca13de7e9b9e70d8e~mv2.jpg",
+   "original": "20251108_160027.jpg",
+   "dim": "4080x1884",
+   "bytes": 735904
+  },
+  {
+   "cluster": "sesion-2025-10-23",
+   "file": "sesion-2025-10-23/20251023_093638-1cdad478.jpg",
+   "source": "9e8012_1cdad478a38a4134827d9454b8aa1eef~mv2.jpg",
+   "original": "20251023_093638.jpg",
+   "dim": "4080x1884",
+   "bytes": 692716
+  },
+  {
+   "cluster": "sesion-2025-11-08",
+   "file": "sesion-2025-11-08/20251108_160024-79fad3ce.jpg",
+   "source": "9e8012_79fad3ce32994ed68ed3bb4fa0cd937e~mv2.jpg",
+   "original": "20251108_160024.jpg",
+   "dim": "4080x1884",
+   "bytes": 722496
+  },
+  {
+   "cluster": "sesion-2025-11-08",
+   "file": "sesion-2025-11-08/20251108_160021-2db00151.jpg",
+   "source": "9e8012_2db0015191b94cd6a5b8ea07331466fb~mv2.jpg",
+   "original": "20251108_160021.jpg",
+   "dim": "4080x1884",
+   "bytes": 389429
+  },
+  {
+   "cluster": "sesion-2025-10-23",
+   "file": "sesion-2025-10-23/20251023_093635-0c7893b4.jpg",
+   "source": "9e8012_0c7893b4fd1747e8874e5f70e7fed1dd~mv2.jpg",
+   "original": "20251023_093635.jpg",
+   "dim": "4080x1884",
+   "bytes": 548953
+  },
+  {
+   "cluster": "planos",
+   "file": "planos/plan-8c1aefa9.jpg",
+   "source": "9e8012_8c1aefa980fa40d5b3f243514f4502a5~mv2.jpg",
+   "original": "plan.jfif",
+   "dim": "1080x1350",
+   "bytes": 466233
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/eeaf333e-7558-4ae4-80cd-f6cb92ee4fb1-6c31a4d7.jpg",
+   "source": "9e8012_6c31a4d7b6fa49a6ae8af59d70790df3~mv2.jpg",
+   "original": "eeaf333e-7558-4ae4-80cd-f6cb92ee4fb1.jfif",
+   "dim": "1600x1200",
+   "bytes": 197055
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/45326f84-55c3-4402-b8b7-33d350214770-258f6f59.jpg",
+   "source": "9e8012_258f6f5969f94a97b5d299748562c356~mv2.jpg",
+   "original": "45326f84-55c3-4402-b8b7-33d350214770.jfif",
+   "dim": "1200x1600",
+   "bytes": 547518
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/ceb641ce-dcfb-4e9b-ac3a-7febe2e40a3c-f5fa92e2.jpg",
+   "source": "9e8012_f5fa92e2f9d844598ae435695385c2ee~mv2.jpg",
+   "original": "ceb641ce-dcfb-4e9b-ac3a-7febe2e40a3c.jfif",
+   "dim": "1200x1600",
+   "bytes": 636821
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/bb621a97-eaf8-4c0e-8767-a70b03a6681e-a311098d.jpg",
+   "source": "9e8012_a311098d127249058093f74bb1e2d50c~mv2.jpg",
+   "original": "bb621a97-eaf8-4c0e-8767-a70b03a6681e.jfif",
+   "dim": "1600x1200",
+   "bytes": 157127
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/1679c119-daaf-4ed1-b2a9-caca162a7e2c-ece45392.jpg",
+   "source": "9e8012_ece453924f694175838efef8798b73de~mv2.jpg",
+   "original": "1679c119-daaf-4ed1-b2a9-caca162a7e2c.jfif",
+   "dim": "1500x1029",
+   "bytes": 524155
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/677e942d-37ae-4e4c-a208-c43a6fb12836-d7f0c60f.jpg",
+   "source": "9e8012_d7f0c60fa69d4e219d076751be971e19~mv2.jpg",
+   "original": "677e942d-37ae-4e4c-a208-c43a6fb12836.jfif",
+   "dim": "1033x1078",
+   "bytes": 151881
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/7ba11977-5749-446e-b1a8-622f9ab4a579-10dca0bb.jpg",
+   "source": "9e8012_10dca0bb5c444c7cbfe199c9b7a2c054~mv2.jpg",
+   "original": "7ba11977-5749-446e-b1a8-622f9ab4a579.jfif",
+   "dim": "1280x720",
+   "bytes": 301186
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/a288e6f9-c508-4d73-8429-624e5d130c0a-3231da7b.jpg",
+   "source": "9e8012_3231da7bdb6a44748afc19d6472e094c~mv2.jpg",
+   "original": "a288e6f9-c508-4d73-8429-624e5d130c0a.jfif",
+   "dim": "3024x4032",
+   "bytes": 329332
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/819769ab-3574-4c36-ac60-65be9aab1507-519710e5.jpg",
+   "source": "9e8012_519710e544344cbeb790fe10184d5007~mv2.jpg",
+   "original": "819769ab-3574-4c36-ac60-65be9aab1507.jfif",
+   "dim": "3024x4032",
+   "bytes": 365135
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/9581f5b7-6f6e-4d55-b03e-83f465f6d98e-ba107a94.jpg",
+   "source": "9e8012_ba107a9465a7425682c9beacf64194e5~mv2.jpg",
+   "original": "9581f5b7-6f6e-4d55-b03e-83f465f6d98e.jfif",
+   "dim": "1600x897",
+   "bytes": 357893
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/7d83ac4c-b025-461e-8122-8787a90d421e-ccfcf19e.jpg",
+   "source": "9e8012_ccfcf19e22674263b976146a87539bdb~mv2.jpg",
+   "original": "7d83ac4c-b025-461e-8122-8787a90d421e.jfif",
+   "dim": "1600x1196",
+   "bytes": 229861
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/3d2c5b5e-469a-40ab-a244-5abbf4e50239-9ee299ec.jpg",
+   "source": "9e8012_9ee299ec17604880bd07a55681e60b5f~mv2.jpg",
+   "original": "3d2c5b5e-469a-40ab-a244-5abbf4e50239.jfif",
+   "dim": "1600x897",
+   "bytes": 279093
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/3ee637ca-970a-4745-8dc1-2675442724cd-2d4fd771.jpg",
+   "source": "9e8012_2d4fd771743b4475b046209ed882d74c~mv2.jpg",
+   "original": "3ee637ca-970a-4745-8dc1-2675442724cd.jfif",
+   "dim": "3024x4032",
+   "bytes": 609765
+  },
+  {
+   "cluster": "sin-agrupar",
+   "file": "sin-agrupar/652f394f-f907-41a3-8c07-a7b47ddb0a43-6ce92d4d.jpg",
+   "source": "9e8012_6ce92d4dad3d4000bf718ddb2cb086f0~mv2.jpg",
+   "original": "652f394f-f907-41a3-8c07-a7b47ddb0a43.jfif",
+   "dim": "3024x4032",
+   "bytes": 576280
+  },
+  {
+   "cluster": "sesion-2026-06-13",
+   "file": "sesion-2026-06-13/20260613_112601-17a25ef2.jpg",
+   "source": "9e8012_17a25ef2a85c47c29d10ccaac70b3d02~mv2.jpg",
+   "original": "20260613_112601.jpg",
+   "dim": "4080x1884",
+   "bytes": 830922
+  },
+  {
+   "cluster": "sesion-2026-06-13",
+   "file": "sesion-2026-06-13/20260613_112659-536b76d2.jpg",
+   "source": "9e8012_536b76d20b394cd183cbbec345d3e777~mv2.jpg",
+   "original": "20260613_112659.jpg",
+   "dim": "4080x1884",
+   "bytes": 497468
+  },
+  {
+   "cluster": "sesion-2026-06-13",
+   "file": "sesion-2026-06-13/20260613_112650-e45da207.jpg",
+   "source": "9e8012_e45da2074cb44e35b8095cdb66874efd~mv2.jpg",
+   "original": "20260613_112650.jpg",
+   "dim": "4080x1884",
+   "bytes": 808095
+  },
+  {
+   "cluster": "sesion-2026-06-13",
+   "file": "sesion-2026-06-13/20260613_112619-76d67489.jpg",
+   "source": "9e8012_76d67489e0b94e94b79b05af02b571fb~mv2.jpg",
+   "original": "20260613_112619.jpg",
+   "dim": "4080x1884",
+   "bytes": 618603
+  },
+  {
+   "cluster": "sesion-2026-06-24",
+   "file": "sesion-2026-06-24/20260624_140318-4db00324.jpg",
+   "source": "9e8012_4db003248f40407791cb4298690cc14c~mv2.jpg",
+   "original": "20260624_140318.jpg",
+   "dim": "4080x1884",
+   "bytes": 812844
+  },
+  {
+   "cluster": "lote-ter",
+   "file": "lote-ter/ter3-a15583ed.jpg",
+   "source": "9e8012_a15583edc9684220be29664ad2236f7a~mv2.jpg",
+   "original": "TER3.jfif",
+   "dim": "1280x960",
+   "bytes": 476336
+  },
+  {
+   "cluster": "lote-ter",
+   "file": "lote-ter/ter-2-fb03d5f7.jpg",
+   "source": "9e8012_fb03d5f716ee4aa1a7beb8b631819046~mv2.jpg",
+   "original": "TER 2.jfif",
+   "dim": "1280x960",
+   "bytes": 366096
+  },
+  {
+   "cluster": "lote-ter",
+   "file": "lote-ter/ter-3-f7c57f1c.jpg",
+   "source": "9e8012_f7c57f1cef2f432abb7691de5cdf0355~mv2.jpg",
+   "original": "TER 3.jfif",
+   "dim": "717x1600",
+   "bytes": 141542
+  },
+  {
+   "cluster": "lote-fat",
+   "file": "lote-fat/fatecha-edb704e7.jpg",
+   "source": "9e8012_edb704e7a9144903b227f43ec4f223d2~mv2.jpg",
+   "original": "FATECHA.jfif",
+   "dim": "1024x917",
+   "bytes": 171370
+  },
+  {
+   "cluster": "lote-fat",
+   "file": "lote-fat/ftecha-2-ad49db6b.jpg",
+   "source": "9e8012_ad49db6b46024d208a6eb0d0b4f4b57f~mv2.jpg",
+   "original": "FTECHA 2.jfif",
+   "dim": "874x1599",
+   "bytes": 62431
+  },
+  {
+   "cluster": "lote-fat",
+   "file": "lote-fat/fat--cd9932dc.jpg",
+   "source": "9e8012_cd9932dca8704672a94db64ef33cf65c~mv2.jpg",
+   "original": "faté.jfif",
+   "dim": "1600x1200",
+   "bytes": 563233
+  },
+  {
+   "cluster": "lote-fat",
+   "file": "lote-fat/fat4-44f9392f.jpg",
+   "source": "9e8012_44f9392ff2eb4480a2e0477211a0cbb5~mv2.jpg",
+   "original": "FAT4.jfif",
+   "dim": "1600x1200",
+   "bytes": 558792
+  },
+  {
+   "cluster": "lote-fat",
+   "file": "lote-fat/fat5-2aa6893a.jpg",
+   "source": "9e8012_2aa6893a18ae4cf48071cc7b135ae397~mv2.jpg",
+   "original": "FAT5.jfif",
+   "dim": "1600x1200",
+   "bytes": 670955
+  },
+  {
+   "cluster": "lote-fat",
+   "file": "lote-fat/fat3-ab379b6d.jpg",
+   "source": "9e8012_ab379b6d0db74902baaad4fb44c901eb~mv2.jpg",
+   "original": "fat3.jfif",
+   "dim": "1600x1200",
+   "bytes": 624307
+  },
+  {
+   "cluster": "lote-fat",
+   "file": "lote-fat/fat6-863e6f2e.jpg",
+   "source": "9e8012_863e6f2e85cd4633a8df0b4ea8c50d1d~mv2.jpg",
+   "original": "FAT6.jfif",
+   "dim": "1080x1109",
+   "bytes": 92108
+  }
+ ]
+}

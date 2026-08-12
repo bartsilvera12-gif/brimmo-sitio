@@ -9,7 +9,29 @@
 <x-dc>
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BRIMMO — La Cordillera, Paraguay</title>
+<title>BRIMMO — Inmobiliaria en La Cordillera, Paraguay</title>
+<meta name="description" content="Terrenos, quintas, villas y ranchos en Caacupé y La Cordillera, Paraguay. Asesoramiento inmobiliario con conocimiento real del territorio.">
+<meta property="og:title" content="BRIMMO — Inmobiliaria en La Cordillera, Paraguay">
+<meta property="og:description" content="Terrenos, quintas, villas y ranchos en Caacupé y La Cordillera, Paraguay.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_PY">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  "name": "BRIMMO",
+  "description": "Terrenos, quintas, villas y ranchos en Caacupé y La Cordillera, Paraguay.",
+  "telephone": "+595992984777",
+  "email": "loginvest7@gmail.com",
+  "areaServed": "Departamento de Cordillera, Paraguay",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Caacupé",
+    "addressRegion": "Cordillera",
+    "addressCountry": "PY"
+  }
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -209,7 +231,7 @@
       <a href="#" onClick="{{ goProps }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actProps }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Propiedades</a>
       <a href="#servicios" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid transparent;color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Servicios</a>
       <a href="#nosotros" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid transparent;color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Nosotros</a>
-      <a href="#inversiones" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid transparent;color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Inversiones</a>
+      <a href="#cordillera" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid transparent;color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">La zona</a>
       <a href="#contacto" style="display:inline-flex;align-items:center;height:42px;padding:0 20px;background:#A7C900;color:#1F5A36;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;border-radius:2px;transition:background .3s" style-hover="background:#1F5A36;color:#fff">Contacto</a>
     </nav>
   </div>
@@ -250,7 +272,7 @@
           <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">BRIMMO</span>
         </div>
         <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(28px,3.4vw,46px);line-height:1.1;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:18ch;text-wrap:balance">Decisiones inmobiliarias con claridad, confianza y conocimiento local.</h2>
-        <p style="margin:26px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:54ch">Conocemos La Cordillera, entendemos tus objetivos y te acompañamos en cada etapa para comprar, vender o invertir con seguridad.</p>
+        <p style="margin:26px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:54ch">En BRIMMO te acompañamos en cada etapa de tu proyecto inmobiliario. Nuestra experiencia y conocimiento del mercado local nos permiten ofrecer una atención personalizada, cercana y enfocada en tus necesidades.</p>
         <div data-stagger style="display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:#E3E2DC;margin-top:44px;border:1px solid #E3E2DC">
           <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Confianza</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Decisiones claras y relaciones duraderas.</div></div>
           <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Crecimiento</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Oportunidades que generan valor sostenible.</div></div>
@@ -303,8 +325,13 @@
       <sc-for list="{{ featured }}" as="p" hint-placeholder-count="3">
         <article data-reveal style="scroll-snap-align:start;flex:0 0 auto;width:min(400px,84vw);background:#fff;border:1px solid #E3E2DC">
           <a href="#" onClick="{{ p.open }}" style="display:block">
-            <div style="position:relative;aspect-ratio:4/3;overflow:hidden;background:#F2F1ED">
-              <img src="{{ p.image }}" alt="{{ p.title }}" class="bri-img-zoom" style="width:100%;height:100%;object-fit:cover;display:block">
+            <div class="bri-img-zoom" style="position:relative;aspect-ratio:4/3;overflow:hidden;background:linear-gradient(150deg,#22633C 0%,#1F5A36 55%,#17452A 100%);display:flex;align-items:center;justify-content:center">
+              <svg width="66" height="66" viewBox="0 0 24 24" aria-hidden="true" style="opacity:.30">
+                <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#A7C900"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#8FA83C"/>
+                <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#fff"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848"/>
+                <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#fff" transform="rotate(45 12 12)"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#A7C900" transform="rotate(45 12 12)"/>
+                <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848" transform="rotate(45 12 12)"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#fff" transform="rotate(45 12 12)"/>
+              </svg>
               <span style="position:absolute;top:14px;left:14px;padding:6px 12px;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#fff;background:{{ p.tagBg }};z-index:2">{{ p.operation }}</span>
             </div>
             <div style="padding:24px 22px 26px">
@@ -328,8 +355,8 @@
         <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Oportunidades</span>
       </div>
       <h2 data-reveal style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0 0 44px">Elegí por dónde empezar</h2>
-      <div data-stagger style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
-        <sc-for list="{{ categories }}" as="c" hint-placeholder-count="4">
+      <div data-stagger style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
+        <sc-for list="{{ categories }}" as="c" hint-placeholder-count="3">
           <a href="#" data-reveal onClick="{{ c.open }}" style="background:#fff;padding:34px 26px 30px;display:block;transition:background .4s cubic-bezier(.22,1,.36,1)" style-hover="background:#F2F1ED">
             <div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:34px;color:#A7C900;line-height:1">{{ c.count }}</div>
             <div style="margin-top:14px;font-family:Montserrat,sans-serif;font-weight:700;font-size:17px;color:#1F5A36">{{ c.name }}</div>
@@ -401,7 +428,7 @@
   </section>
 
   <section style="background:#fff;padding:104px 20px">
-    <div data-reveal style="max-width:1000px;margin:0 auto;text-align:center">
+    <div data-reveal ref="{{ tZoneRef }}" onMouseEnter="{{ pauseT }}" onMouseLeave="{{ resumeT }}" onFocusIn="{{ pauseT }}" onFocusOut="{{ resumeT }}" role="group" aria-roledescription="carrusel" aria-label="Testimonios de clientes" style="max-width:1000px;margin:0 auto;text-align:center">
       <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:28px">
         <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
         <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Testimonios</span>
@@ -417,7 +444,36 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
       </div>
-      <div style="margin-top:22px;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.14em;color:#B4B3AB;text-transform:uppercase">TODO_BRIMMO — testimonios provisionales</div>
+    </div>
+  </section>
+
+  <section id="cordillera" style="background:#F2F1ED;padding:104px 20px">
+    <div style="max-width:1320px;margin:0 auto">
+      <div data-reveal>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
+          <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">La zona</span>
+        </div>
+        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">Vivir e invertir en La Cordillera</h2>
+        <p style="margin:22px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:62ch">Una región verde y ondulada, con clima agradable y buen acceso a Asunción. Es la zona donde trabajamos y la conocemos de primera mano.</p>
+      </div>
+      <div data-stagger style="margin-top:52px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
+        <div data-reveal style="background:#fff;padding:36px 30px 34px">
+          <span style="display:block;width:22px;height:2px;background:#A7C900"></span>
+          <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36;margin:20px 0 0">Caacupé</h3>
+          <p style="margin:12px 0 0;font-size:14.5px;line-height:1.65;color:#6B6B65">Capital del departamento y corazón espiritual del país por su basílica. Tiene comercios, escuelas, universidades y hospital, a unos 50 km de Asunción, sin perder escala humana.</p>
+        </div>
+        <div data-reveal style="background:#fff;padding:36px 30px 34px">
+          <span style="display:block;width:22px;height:2px;background:#A7C900"></span>
+          <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36;margin:20px 0 0">San Bernardino y el lago</h3>
+          <p style="margin:12px 0 0;font-size:14.5px;line-height:1.65;color:#6B6B65">A orillas del lago Ypacaraí, con actividades al aire libre, gastronomía y vida cultural. En verano concentra la temporada; el resto del año recupera la calma. A unos 40 km de Asunción.</p>
+        </div>
+        <div data-reveal style="background:#fff;padding:36px 30px 34px">
+          <span style="display:block;width:22px;height:2px;background:#A7C900"></span>
+          <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36;margin:20px 0 0">Campo y proyectos</h3>
+          <p style="margin:12px 0 0;font-size:14.5px;line-height:1.65;color:#6B6B65">Terrenos, quintas y superficies mayores en Atyrá, Tobatí, Eusebio Ayala y alrededores, aptas para residencia, producción, loteamiento o desarrollo turístico.</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -431,11 +487,11 @@
         <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0">Hablemos de tu próximo proyecto.</h2>
         <p style="margin:20px 0 0;font-size:16px;line-height:1.7;color:#6B6B65;max-width:44ch">Contanos qué estás buscando y te respondemos con opciones concretas y asesoramiento claro.</p>
         <div style="margin-top:40px;display:flex;flex-direction:column;gap:18px">
-          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">Teléfono</div><div style="margin-top:6px;font-family:ui-monospace,Menlo,monospace;font-size:14px;color:#3A3A38">TODO_BRIMMO_TELEFONO</div></div>
-          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">Correo</div><div style="margin-top:6px;font-family:ui-monospace,Menlo,monospace;font-size:14px;color:#3A3A38">TODO_BRIMMO_EMAIL</div></div>
-          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">Oficina</div><div style="margin-top:6px;font-family:ui-monospace,Menlo,monospace;font-size:14px;color:#3A3A38">TODO_BRIMMO_DIRECCION</div></div>
+          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">Teléfono y WhatsApp</div><a href="{{ telHref }}" style="margin-top:6px;display:block;font-size:16px;font-weight:600;color:#3A3A38">{{ tel }}</a></div>
+          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">Correo</div><a href="{{ mailHref }}" style="margin-top:6px;display:block;font-size:16px;font-weight:600;color:#3A3A38">{{ mail }}</a></div>
+          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">Ubicación</div><div style="margin-top:6px;font-size:16px;color:#3A3A38">{{ direccion }}</div></div>
         </div>
-        <a href="#" style="display:inline-flex;align-items:center;gap:10px;margin-top:34px;height:50px;padding:0 24px;background:#1F5A36;color:#fff;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px" style-hover="background:#A7C900;color:#1F5A36">Escribir por WhatsApp</a>
+        <a href="{{ waHref }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;margin-top:34px;height:50px;padding:0 24px;background:#1F5A36;color:#fff;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px" style-hover="background:#A7C900;color:#1F5A36">Escribir por WhatsApp</a>
       </div>
 
       <form onSubmit="{{ onSubmit }}" data-reveal style="background:#fff;border:1px solid #E3E2DC;padding:38px 34px 34px;display:grid;grid-template-columns:1fr 1fr;gap:22px">
@@ -489,21 +545,25 @@
         <input type="search" placeholder="Buscar por título, ciudad o barrio" onInput="{{ onSearch }}" aria-label="Buscar propiedades" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 16px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)">
         <select onChange="{{ onType }}" aria-label="Tipo de propiedad" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
           <option value="">Todos los tipos</option>
-          <option value="Casa">Casas</option>
-          <option value="Departamento">Departamentos</option>
           <option value="Terreno">Terrenos</option>
-          <option value="Comercial">Comercial</option>
+          <option value="Quinta">Quintas</option>
+          <option value="Villa">Villas</option>
+          <option value="Casa">Casas</option>
+          <option value="Rancho">Ranchos</option>
         </select>
-        <select onChange="{{ onOp }}" aria-label="Operación" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
-          <option value="">Venta y alquiler</option>
-          <option value="VENTA">Venta</option>
-          <option value="ALQUILER">Alquiler</option>
+        <select onChange="{{ onCity }}" aria-label="Ciudad" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
+          <option value="">Todas las ciudades</option>
+          <sc-for list="{{ ciudades }}" as="c" hint-placeholder-count="3">
+            <option value="{{ c }}">{{ c }}</option>
+          </sc-for>
         </select>
         <select onChange="{{ onPrice }}" aria-label="Rango de precio" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
           <option value="">Cualquier precio</option>
-          <option value="0-80000">Hasta USD 80.000</option>
-          <option value="80000-150000">USD 80.000 — 150.000</option>
-          <option value="150000-999999999">Más de USD 150.000</option>
+          <option value="GS:0-300000000">Hasta Gs. 300.000.000</option>
+          <option value="GS:300000000-600000000">Gs. 300 — 600 millones</option>
+          <option value="GS:600000000-99999999999">Más de Gs. 600.000.000</option>
+          <option value="USD:0-160000">Hasta USD 160.000</option>
+          <option value="USD:160000-99999999">Más de USD 160.000</option>
         </select>
       </div>
       <div style="margin-top:16px;font-size:13px;color:#7E9848;font-weight:500">{{ resultCount }}</div>
@@ -515,8 +575,13 @@
       <sc-for list="{{ visible }}" as="p" hint-placeholder-count="4">
         <article data-reveal onMouseEnter="{{ p.hover }}" onMouseLeave="{{ p.unhover }}" style="border:1px solid #E3E2DC;background:#fff">
           <a href="#" onClick="{{ p.open }}" style="display:block">
-            <div style="position:relative;aspect-ratio:4/3;overflow:hidden;background:#F2F1ED">
-              <img src="{{ p.image }}" alt="{{ p.title }}" class="bri-img-zoom" style="width:100%;height:100%;object-fit:cover;display:block">
+            <div class="bri-img-zoom" style="position:relative;aspect-ratio:4/3;overflow:hidden;background:linear-gradient(150deg,#22633C 0%,#1F5A36 55%,#17452A 100%);display:flex;align-items:center;justify-content:center">
+              <svg width="56" height="56" viewBox="0 0 24 24" aria-hidden="true" style="opacity:.30">
+                <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#A7C900"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#8FA83C"/>
+                <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#fff"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848"/>
+                <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#fff" transform="rotate(45 12 12)"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#A7C900" transform="rotate(45 12 12)"/>
+                <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848" transform="rotate(45 12 12)"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#fff" transform="rotate(45 12 12)"/>
+              </svg>
               <span style="position:absolute;top:12px;left:12px;padding:5px 11px;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#fff;background:{{ p.tagBg }};z-index:2">{{ p.operation }}</span>
             </div>
             <div style="padding:20px 18px 22px">
@@ -552,12 +617,26 @@
     <a href="#" onClick="{{ goProps }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:600;color:#7E9848">← Volver al catálogo</a>
   </div>
   <div data-stagger style="max-width:1320px;margin:0 auto;padding:22px 20px 0;display:grid;grid-template-columns:2.2fr 1fr;gap:12px">
-    <div data-reveal style="aspect-ratio:16/10;overflow:hidden;background:#F2F1ED">
-      <img src="{{ detailImage }}" alt="{{ detailTitle }}" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 900ms cubic-bezier(.22,1,.36,1)">
+    <div data-reveal style="aspect-ratio:16/10;overflow:hidden;background:linear-gradient(150deg,#22633C 0%,#1F5A36 55%,#17452A 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center;padding:24px">
+      <svg width="88" height="88" viewBox="0 0 24 24" aria-hidden="true" style="opacity:.34">
+        <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#A7C900"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#8FA83C"/>
+        <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#fff"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848"/>
+        <rect x="10.6" y="1" width="2.8" height="8" rx="1.1" fill="#fff" transform="rotate(45 12 12)"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" fill="#A7C900" transform="rotate(45 12 12)"/>
+        <rect x="1" y="10.6" width="8" height="2.8" rx="1.1" fill="#7E9848" transform="rotate(45 12 12)"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" fill="#fff" transform="rotate(45 12 12)"/>
+      </svg>
+      <div style="font-size:13px;line-height:1.6;color:rgba(255,255,255,.8);max-width:38ch">Fotografías en preparación. Escribinos y te las enviamos junto con la disponibilidad actualizada.</div>
     </div>
     <div style="display:grid;grid-template-rows:repeat(2,1fr);gap:12px">
-      <div data-reveal style="overflow:hidden;background:#F2F1ED"><img src="{{ detailImageA }}" alt="Vista adicional" style="width:100%;height:100%;object-fit:cover;display:block"></div>
-      <div data-reveal style="overflow:hidden;background:#F2F1ED"><img src="{{ detailImageB }}" alt="Vista adicional" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      <sc-if value="{{ hasVideo }}" hint-placeholder-val="{{ true }}">
+        <div data-reveal style="overflow:hidden;background:#0D0D0C">
+          <iframe src="{{ videoSrc }}" title="Video de la propiedad" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;height:100%;border:0;display:block"></iframe>
+        </div>
+      </sc-if>
+      <div data-reveal style="background:#F2F1ED;border:1px solid #E3E2DC;padding:22px 20px;display:flex;flex-direction:column;justify-content:center;gap:10px">
+        <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#7E9848;font-weight:600">Visitá la propiedad</div>
+        <div style="font-size:14px;line-height:1.6;color:#6B6B65">Coordinamos una visita guiada y te acompañamos en la verificación de documentos.</div>
+        <a href="{{ detailWaHref }}" target="_blank" rel="noopener" style="margin-top:4px;display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;color:#1F5A36;border-bottom:2px solid #A7C900;padding-bottom:5px;align-self:flex-start">Coordinar por WhatsApp</a>
+      </div>
     </div>
   </div>
 
@@ -568,8 +647,9 @@
       <div style="margin-top:10px;font-size:15px;color:#7E9848;font-weight:500">{{ detailLocation }}</div>
       <div style="margin-top:26px;font-family:Montserrat,sans-serif;font-weight:800;font-size:30px;color:#3A3A38">{{ detailPrice }}</div>
 
-      <div style="margin-top:36px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
+      <div style="margin-top:36px;display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
         <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Superficie</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailArea }}</div></div>
+        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Construido</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailBuilt }}</div></div>
         <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Dormitorios</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailBeds }}</div></div>
         <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Baños</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailBaths }}</div></div>
         <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Tipo</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailType }}</div></div>
@@ -586,7 +666,8 @@
       </ul>
 
       <h2 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;color:#1F5A36;margin:48px 0 0">Ubicación</h2>
-      <div ref="{{ detailMapRef }}" role="application" aria-label="Ubicación de la propiedad" style="margin-top:18px;height:360px;border:1px solid #E3E2DC;background:#F2F1ED"></div>
+      <p style="margin:10px 0 0;font-size:14px;line-height:1.6;color:#8A8A82;max-width:60ch">El área señalada es una referencia aproximada sobre {{ detailCity }}. La ubicación exacta se comparte durante la visita.</p>
+      <div ref="{{ detailMapRef }}" role="application" aria-label="Ubicación aproximada de la propiedad" style="margin-top:18px;height:360px;border:1px solid #E3E2DC;background:#F2F1ED"></div>
     </div>
 
     <aside data-reveal style="position:sticky;top:110px;border:1px solid #E3E2DC;background:#F2F1ED;padding:30px 26px 28px">
@@ -598,12 +679,21 @@
         <input type="tel" placeholder="Teléfono" aria-label="Teléfono" style="height:46px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none" style-focus="border-color:#A7C900">
         <textarea rows="3" aria-label="Mensaje" placeholder="Me interesa esta propiedad" style="border:1px solid #DCDBD4;border-radius:2px;padding:12px 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none;resize:vertical"></textarea>
         <button type="button" style="height:50px;background:#1F5A36;color:#fff;border:none;border-radius:2px;font-family:Inter,sans-serif;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase" style-hover="background:#A7C900;color:#1F5A36">Enviar consulta</button>
-        <button type="button" style="height:50px;background:#fff;color:#1F5A36;border:1px solid #1F5A36;border-radius:2px;font-family:Inter,sans-serif;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase" style-hover="background:#1F5A36;color:#fff">WhatsApp</button>
+        <a href="{{ detailWaHref }}" target="_blank" rel="noopener" style="height:50px;display:flex;align-items:center;justify-content:center;background:#fff;color:#1F5A36;border:1px solid #1F5A36;border-radius:2px;font-family:Inter,sans-serif;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase" style-hover="background:#1F5A36;color:#fff">WhatsApp</a>
+        <a href="{{ telHref }}" style="text-align:center;font-size:13px;color:#6B6B65">o llamanos al {{ tel }}</a>
       </div>
     </aside>
   </div>
 </main>
 </sc-if>
+
+<a href="{{ waHref }}" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp"
+   style="position:fixed;right:22px;bottom:22px;z-index:70;width:58px;height:58px;border-radius:50%;background:#1F5A36;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(23,45,30,.32);transition:transform .4s cubic-bezier(.22,1,.36,1),background .3s"
+   style-hover="background:#A7C900;color:#1F5A36;transform:translateY(-3px)">
+  <svg width="27" height="27" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23a8.23 8.23 0 0 1 .01 16.47Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29Z"/>
+  </svg>
+</a>
 
 <footer style="background:#1F5A36;color:#fff;padding:76px 20px 34px">
   <div style="max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:48px">
@@ -633,26 +723,26 @@
         <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Propiedades</a>
         <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Servicios</a>
         <a href="#nosotros" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Nosotros</a>
-        <a href="#inversiones" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Inversiones</a>
+        <a href="#cordillera" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">La zona</a>
       </div>
     </div>
     <div>
-      <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#A7C900;font-weight:600">Servicios</div>
+      <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#A7C900;font-weight:600">Qué ofrecemos</div>
       <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px;font-size:14px">
-        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Compra y venta</a>
-        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Alquileres</a>
-        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Tasaciones</a>
-        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Administración</a>
-        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Inversiones</a>
+        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Terrenos rurales</a>
+        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Quintas</a>
+        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Villas y casas</a>
+        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Ranchos</a>
+        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Acompañamiento</a>
       </div>
     </div>
     <div>
       <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#A7C900;font-weight:600">Contacto</div>
-      <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:13px;color:rgba(255,255,255,.72)">
-        <span>TODO_BRIMMO_TELEFONO</span>
-        <span>TODO_BRIMMO_EMAIL</span>
-        <span>TODO_BRIMMO_DIRECCION</span>
-        <span>TODO_BRIMMO_REDES</span>
+      <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px;font-size:14px;color:rgba(255,255,255,.72)">
+        <a href="{{ telHref }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ tel }}</a>
+        <a href="{{ mailHref }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ mail }}</a>
+        <span>{{ direccion }}</span>
+        <a href="{{ waHref }}" target="_blank" rel="noopener" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">WhatsApp</a>
       </div>
     </div>
   </div>
@@ -670,31 +760,172 @@
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1000}}">
 const FOREST = "#1F5A36", LIME = "#A7C900", OLIVE = "#7E9848", CHARCOAL = "#3A3A38";
 
-// TODO_BRIMMO: datos provisionales de demostración. En producción provienen de Supabase.
+// Datos de contacto recuperados de la web anterior (immobilier-paraguay.com).
+// Pendientes de confirmación del cliente.
+const TEL = "+595 992 984 777", TEL_RAW = "595992984777";
+const MAIL = "loginvest7@gmail.com";
+const DIRECCION = "Cabañas, Caacupé, Paraguay";
+
+// Coordenadas de centro de ciudad. La web anterior no publica coordenadas de
+// ninguna propiedad, así que todas las ubicaciones son APROXIMADAS a nivel de
+// ciudad y se muestran identificadas como tales.
+const CIUDAD = {
+  "Caacupé":    { lat: -25.3861, lng: -57.1408 },
+  "Atyrá":      { lat: -25.2686, lng: -57.1736 },
+  "Tobatí":     { lat: -25.2536, lng: -57.0783 },
+  "Eusebio Ayala": { lat: -25.3833, lng: -56.9333 },
+  "Valenzuela": { lat: -25.6000, lng: -56.9833 },
+  "Itacurubí de la Cordillera": { lat: -25.4833, lng: -56.8500 },
+  "Asunción":   { lat: -25.2637, lng: -57.5759 }
+};
+
+// Propiedades migradas de la web anterior. `published:false` = borrador, no se
+// muestra en el sitio. `pendiente` documenta el conflicto detectado.
+// Sin fotografías asignadas: ver uploads/propiedades-origen/MANIFIESTO.json
 const DATA = [
-  { id: 1, title: "Casa con galería y parque en Atyrá", location: "Atyrá, Cordillera", type: "Casa", operation: "VENTA", price: 165000, beds: 3, baths: 2, area: 240, lat: -25.2686, lng: -57.1736, image: "uploads/img/04-propiedad-atyra-casa.png", gallery: ["uploads/img/10-atyra-galeria-interior.png","uploads/img/11-atyra-galeria-exterior.png"] },
-  { id: 2, title: "Terreno alto con vista al cerro", location: "Tobatí, Cordillera", type: "Terreno", operation: "VENTA", price: 48000, beds: 0, baths: 0, area: 1200, lat: -25.2536, lng: -57.0783, image: "uploads/img/05-propiedad-tobati-terreno.png" },
-  { id: 3, title: "Departamento céntrico en Caacupé", location: "Caacupé, Cordillera", type: "Departamento", operation: "ALQUILER", price: 620, beds: 2, baths: 1, area: 78, lat: -25.3861, lng: -57.1408, image: "uploads/img/06-propiedad-caacupe-departamento.png" },
-  { id: 4, title: "Local comercial sobre ruta", location: "Ypacaraí, Cordillera", type: "Comercial", operation: "ALQUILER", price: 1450, beds: 0, baths: 2, area: 180, lat: -25.4083, lng: -57.2856, image: "uploads/img/07-propiedad-ypacarai-local.png" },
-  { id: 5, title: "Casa quinta con pileta y arboleda", location: "Piribebuy, Cordillera", type: "Casa", operation: "VENTA", price: 128000, beds: 4, baths: 3, area: 320, lat: -25.4650, lng: -57.0433, image: "uploads/img/08-propiedad-piribebuy-quinta.png" },
-  { id: 6, title: "Loteamiento residencial en Emboscada", location: "Emboscada, Cordillera", type: "Terreno", operation: "VENTA", price: 32000, beds: 0, baths: 0, area: 600, lat: -25.1372, lng: -57.3439, image: "uploads/img/09-propiedad-emboscada-loteamiento.png" }
+  { id: 1, published: true, pendiente: null,
+    title: "Villa en Caacupé, zona urbana", type: "Villa", operation: "VENTA",
+    price: 515000000, currency: "GS", city: "Caacupé", zone: "Zona urbana",
+    land: 830, built: null, beds: 2, baths: null,
+    features: ["Terreno cerrado", "Living luminoso", "Amplia terraza", "Reserva de agua", "Barrio tranquilo y seguro", "Comercios y escuelas cerca"],
+    desc: "Villa en un barrio residencial de Caacupé, con entorno tranquilo y todos los servicios a pocos minutos. El terreno de 830 m² está completamente cerrado y la casa cuenta con dos dormitorios, living luminoso y una amplia terraza para aprovechar el clima durante todo el año. Tiene reserva de agua instalada, vista despejada al verde y acceso cómodo en cualquier época.",
+    video: "jb6os04D16A" },
+
+  { id: 2, published: false, pendiente: "La portada de la web anterior la describe como «villa de lujo con piscina», pero el catálogo no menciona piscina. Confirmar antes de publicar.",
+    title: "Villa a 5 minutos de Caacupé", type: "Villa", operation: "VENTA",
+    price: 890000000, currency: "GS", city: "Caacupé", zone: "A 5 minutos del centro",
+    land: null, built: 220, beds: null, baths: null,
+    features: ["Una sola planta", "A 50 m de ruta asfaltada", "Zona segura"],
+    desc: "Villa de una sola planta de 220 m², a cinco minutos de Caacupé y a una hora y media de Asunción. Está a 50 metros de la ruta asfaltada, en una zona tranquila y segura.",
+    video: "wgp7iHkPP9g" },
+
+  { id: 3, published: false, pendiente: "Conflicto de precio: la portada publica 37.600 USD y el catálogo 292.000.000 Gs (≈39.000 USD). Confirmar precio y moneda de referencia.",
+    title: "Quinta de 1,6 hectáreas en Atyrá", type: "Quinta", operation: "VENTA",
+    price: 292000000, currency: "GS", city: "Atyrá", zone: null,
+    land: 16000, built: 80, beds: 3, baths: 1,
+    features: ["Terreno plano y cerrado", "Pozo de agua potable", "Árboles frutales variados", "Dos colmenas", "Cocina exterior de 20 m²", "Construcción a refaccionar"],
+    desc: "Quinta de 1,6 hectáreas en Atyrá, a 30 minutos de Caacupé y 60 km de Asunción. El terreno es plano, está completamente cerrado y cuenta con pozo de agua potable. Tiene una gran variedad de árboles frutales —cítricos, mango, banana, guayaba, cacao— y dos colmenas para producción artesanal de miel. La construcción principal, de 80 m², es a refaccionar: tres dormitorios de 8, 9 y 14 m², entrada y living de 15 m², baño de 3,20 m² y cocina exterior de 20 m².",
+    video: "2pG6a87NuPk" },
+
+  { id: 4, published: true, pendiente: null,
+    title: "Terreno de 4.300 m² dividido en cinco lotes", type: "Terreno", operation: "VENTA",
+    price: 380000000, currency: "GS", city: "Tobatí", zone: "Entre Tobatí y Caacupé",
+    land: 4300, built: null, beds: null, baths: null,
+    features: ["Dividido en 5 lotes", "Acceso directo desde la ruta", "Listo para construir"],
+    desc: "Terreno de 4.300 m² dividido en cinco lotes, ubicado entre Tobatí y Caacupé. Tiene acceso directo desde la ruta y está listo para construir.",
+    video: "aXHUcTVrz9Y" },
+
+  { id: 5, published: false, pendiente: "El precio figura como «147 000» sin indicar moneda. Confirmar si son guaraníes, dólares o euros.",
+    title: "Terreno de 9,45 hectáreas en Valenzuela", type: "Terreno", operation: "VENTA",
+    price: 147000, currency: null, city: "Valenzuela", zone: "A 39 km de Caacupé",
+    land: 94500, built: null, beds: null, baths: null,
+    features: ["Completamente plano y despejado", "Limpio y listo para trabajar", "A 3 km de ruta asfaltada", "Apto para producción agrícola"],
+    desc: "Terreno de 94.500 m² a 39 km de Caacupé. Es completamente plano y despejado, está limpio y listo para trabajar, y queda a solo 3 km de la ruta asfaltada. Un entorno tranquilo, apto para producción agrícola, ganadería, proyectos de autonomía o residencia de campo.",
+    video: null },
+
+  { id: 6, published: true, pendiente: null,
+    title: "Terreno de 7,8 hectáreas sobre ruta Tobatí–Aguaity", type: "Terreno", operation: "VENTA",
+    price: 150000, currency: "USD", city: "Tobatí", zone: "Aguaity",
+    land: 78000, built: null, beds: null, baths: null,
+    features: ["217 m de frente sobre ruta asfaltada", "Acceso directo al arroyo Ytú", "Título e impuestos en regla", "Plano de mensura georreferenciado"],
+    desc: "Propiedad rural de 7,8 hectáreas en una ubicación privilegiada de La Cordillera, a pocos minutos de Tobatí. Tiene 217 metros lineales de frente sobre la ruta asfaltada Tobatí–Aguaity y acceso directo al arroyo Ytú. El título y los impuestos están en regla, listos para transferencia, e incluye plano de mensura georreferenciado inscripto en el Servicio Nacional de Catastro. Apta para estancia, explotación agrícola, proyecto turístico, loteamiento o inversión.",
+    video: null },
+
+  { id: 7, published: true, pendiente: null,
+    title: "Quinta de 2 hectáreas sobre la ruta de Atyrá", type: "Quinta", operation: "VENTA",
+    price: 180000, currency: "USD", city: "Caacupé", zone: "Ruta de Atyrá",
+    land: 20000, built: null, beds: null, baths: null,
+    features: ["Quincho amplio con parrilla", "Piscina", "Terreno plano", "Acceso directo desde la ruta", "Espacio para ampliar"],
+    desc: "Quinta a cinco minutos de Caacupé, sobre la ruta de Atyrá, en una zona tranquila y arbolada. La construcción principal es sólida y funcional, y el terreno es plano y de acceso fácil desde la ruta. Cuenta con quincho amplio con parrilla y piscina, con espacio suficiente para ampliar o desarrollar nuevas construcciones. Ideal para un proyecto ecoturístico, una residencia familiar o una casa de fin de semana.",
+    video: null },
+
+  { id: 8, published: false, pendiente: "El precio figura como «157 000» sin indicar moneda. Confirmar.",
+    title: "Propiedad de 5,7 hectáreas en Itacurubí", type: "Terreno", operation: "VENTA",
+    price: 157000, currency: null, city: "Itacurubí de la Cordillera", zone: "Camino Itacurubí–Isla Pucú",
+    land: 57000, built: null, beds: null, baths: null,
+    features: ["Completamente arbolada", "Electricidad trifásica", "Red de agua potable", "Cerca de mil pinos de 27 años", "Frutales: macadamia y mamón"],
+    desc: "Propiedad de 5,7 hectáreas completamente arbolada, sobre un camino de tierra con mantenimiento regular entre Itacurubí de la Cordillera y Santa Elena. Cuenta con conexión a electricidad trifásica y a la red de agua potable. Tiene cerca de mil pinos plantados hace 27 años, numerosos árboles nativos ya maduros y variedad de frutales, entre ellos alrededor de cien macadamias y cien mamones.",
+    video: null },
+
+  { id: 9, published: false, pendiente: "La publicación lo describe como 2 hectáreas, pero las medidas declaradas (110 × 200 m) equivalen a 2,2 ha. Confirmar superficie real.",
+    title: "Terreno de 2 hectáreas en las alturas de Atyrá", type: "Terreno", operation: "VENTA",
+    price: 370000000, currency: "GS", city: "Atyrá", zone: "Zona alta",
+    land: 20000, built: null, beds: null, baths: null,
+    features: ["Árboles frutales", "Vista despejada", "Agua y electricidad a 300 m", "Acceso por 1,2 km de camino"],
+    desc: "Terreno en las alturas de Atyrá, una de las zonas más buscadas de La Cordillera, con entorno natural preservado y vista despejada. Mide 110 por 200 metros, tiene árboles frutales y cuenta con agua y electricidad a 300 metros. El acceso es por 1,2 km de camino de tierra.",
+    video: null },
+
+  { id: 10, published: true, pendiente: null,
+    title: "Terreno de 2 hectáreas en Eusebio Ayala", type: "Terreno", operation: "VENTA",
+    price: 210000000, currency: "GS", city: "Eusebio Ayala", zone: null,
+    land: 20000, built: null, beds: null, baths: null,
+    features: ["Acceso fácil", "Electricidad y agua disponibles", "Terreno con servicios habilitados", "Zona tranquila y segura"],
+    desc: "Terreno de 2 hectáreas en Eusebio Ayala, con acceso fácil, electricidad y agua disponibles y servicios habilitados. Zona tranquila y segura, apta para construir una vivienda, desarrollar un proyecto o invertir en una región en crecimiento.",
+    video: null },
+
+  { id: 11, published: false, pendiente: "La publicación indica 5.440 m² pero las medidas declaradas (144 × 37 m) dan 5.328 m². Confirmar cuál figura en el catastro.",
+    title: "Terreno de 5.440 m² en Cabañas", type: "Terreno", operation: "VENTA",
+    price: 170000000, currency: "GS", city: "Caacupé", zone: "Cabañas",
+    land: 5440, built: null, beds: null, baths: null,
+    features: ["A 2 km del centro de Caacupé", "Terreno en altura", "Vista panorámica", "Barrio tranquilo"],
+    desc: "Terreno baldío en Cabañas, a solo 2 km del centro de Caacupé, en un barrio tranquilo y buscado. Está en altura y ofrece una vista panorámica amplia.",
+    video: null },
+
+  { id: 12, published: false, pendiente: "El título indica 10 hectáreas y la descripción 9 hectáreas. Confirmar superficie según título de propiedad.",
+    title: "Rancho en Eusebio Ayala", type: "Rancho", operation: "VENTA",
+    price: 840000000, currency: "GS", city: "Eusebio Ayala", zone: "A 20 km de Caacupé",
+    land: null, built: null, beds: null, baths: null,
+    features: ["Frente sobre ruta asfaltada", "Acceso cómodo todo el año", "Servicios esenciales cerca", "Apto para proyecto agrícola o turístico"],
+    desc: "Propiedad a 20 km de Caacupé, junto a Eusebio Ayala, donde se encuentran todos los servicios esenciales: comercios, escuelas, centros de salud, restaurantes y estaciones de servicio. Tiene frente sobre ruta asfaltada, con acceso cómodo durante todo el año. Apta para un proyecto agrícola, un loteamiento, una residencia de campo, una inversión o un desarrollo turístico.",
+    video: null },
+
+  { id: 13, published: false, pendiente: "Doble precio: 1.470.000.000 Gs y «~212.000» con la moneda ilegible en el original. Los dos valores no coinciden entre sí. Confirmar.",
+    title: "Terreno de 14 hectáreas en Ita Yvu Guasu", type: "Terreno", operation: "VENTA",
+    price: 1470000000, currency: "GS", city: "Caacupé", zone: "Ita Yvu Guasu",
+    land: 140000, built: null, beds: null, baths: null,
+    features: ["Arroyo natural que atraviesa la propiedad", "70% de vegetación natural", "A 3 km de camino de tierra", "Ruta de acceso en proceso de asfaltado"],
+    desc: "Propiedad de 14 hectáreas a pocos minutos de Caacupé, con un arroyo natural que la atraviesa y cerca del 70% de vegetación natural entre arbustos y árboles. El acceso es cómodo todo el año, con 3 km de camino de tierra, y la ruta de acceso está en proceso de asfaltado. Es una zona valorada por las comunidades suiza y alemana. Apta para estancia privada, proyecto turístico o ecológico, granja autónoma, ganadería, agroforestería o loteamiento rural.",
+    video: null },
+
+  { id: 14, published: true, pendiente: null,
+    title: "Terreno de 4.400 m² en Cabañas", type: "Terreno", operation: "VENTA",
+    price: 357000000, currency: "GS", city: "Caacupé", zone: "Cabañas",
+    land: 4400, built: null, beds: null, baths: null,
+    features: ["Completamente cerrado con portón", "Agua y electricidad", "A 700 m de ruta asfaltada", "Galpón/establo ya construido"],
+    desc: "Terreno de 4.400 m² en Cabañas, a pocos minutos del centro de Caacupé. Está completamente cerrado con portón de acceso, cuenta con agua y electricidad, y queda a 700 metros de la ruta asfaltada, con comercio de cercanía y acceso cómodo todo el año. Ya tiene un pequeño galpón/establo en el terreno.",
+    video: null },
+
+  { id: 15, published: false, pendiente: "La publicación original no incluye precio, superficie ni fotografías. Confirmar si sigue vigente.",
+    title: "Departamento en Asunción", type: "Departamento", operation: "VENTA",
+    price: null, currency: null, city: "Asunción", zone: null,
+    land: null, built: null, beds: null, baths: null,
+    features: [],
+    desc: "",
+    video: null },
+
+  { id: 16, published: false, pendiente: "Publicada solo en la portada de la web anterior, no en el catálogo. Confirmar vigencia y datos.",
+    title: "Casa sobre terreno de 448 m² en Cabañas", type: "Casa", operation: "VENTA",
+    price: 39500, currency: "USD", city: "Caacupé", zone: "Cabañas",
+    land: 448, built: null, beds: 2, baths: 1,
+    features: ["Terreno completamente cerrado", "Living", "Espacio de cocina", "Zona semiurbana", "Comercios a menos de 500 m"],
+    desc: "Casa en zona semiurbana de Cabañas, Caacupé, sobre un terreno de 448 m² completamente cerrado. Tiene dos dormitorios, living, baño y espacio de cocina. Está en buen estado general y admite trabajos menores de refacción. Los comercios quedan a menos de 500 metros.",
+    video: null }
 ];
 
+// Testimonios reales de la web anterior, traducidos conservando el sentido.
 const TESTIMONIALS = [
-  { text: "Nos guiaron en todo el proceso de compra y siempre tuvimos claridad sobre cada paso.", author: "Familia López", role: "Compradores — Atyrá" },
-  { text: "Vendimos el terreno en menos tiempo del que esperábamos y con un precio bien fundamentado.", author: "Rodrigo M.", role: "Propietario — Tobatí" },
-  { text: "El asesoramiento para invertir fue concreto, sin promesas exageradas.", author: "Carla B.", role: "Inversora — Caacupé" }
+  { text: "Bruno supo responder a todas nuestras necesidades y nos encontró el terreno de nuestros sueños. Un servicio profesional y atento.", author: "Aline y Martin Rieux", role: "Compradores" },
+  { text: "Nuestra experiencia en Caacupé fue muy positiva, excepcional. Más allá de lo inmobiliario, pudimos compartir nuestros proyectos: los consejos no tienen precio.", author: "Sophie Duchamps", role: "Compradora — Caacupé" },
+  { text: "Recomiendo a Bruno por su trato personalizado y su conocimiento del mercado local en La Cordillera. Una persona de confianza.", author: "Paul Rossi", role: "Comprador — La Cordillera" }
 ];
-
-const AMENITIES = ["Galería techada", "Parque arbolado", "Cochera doble", "Quincho", "Pozo artesiano", "Portón automático"];
 
 const SERVICES = [
-  { name: "Compra y venta", desc: "Búsqueda, negociación y cierre con documentación en regla." },
-  { name: "Alquileres", desc: "Publicación, selección de inquilinos y contratos claros." },
-  { name: "Tasaciones", desc: "Valor de mercado con criterio técnico y datos de la zona." },
-  { name: "Administración", desc: "Gestión integral de propiedades y cobranzas." },
-  { name: "Inversiones", desc: "Análisis de oportunidades y proyección de retorno." },
-  { name: "Marketing inmobiliario", desc: "Fotografía, difusión y presentación profesional." }
+  { name: "Terrenos rurales", desc: "Campos, chacras y fracciones con título e impuestos en regla." },
+  { name: "Villas y casas", desc: "Propiedades residenciales en Caacupé y alrededores." },
+  { name: "Quintas", desc: "Casas de campo con arboleda, quincho y espacio para proyectos." },
+  { name: "Ranchos", desc: "Superficies grandes para producción, ganadería o loteamiento." },
+  { name: "Inversión", desc: "Oportunidades con potencial de valorización en La Cordillera." },
+  { name: "Acompañamiento", desc: "Documentación, mensura y gestión hasta la transferencia." }
 ];
 
 const STEPS = [
@@ -704,10 +935,20 @@ const STEPS = [
   { n: "04", title: "Cerramos con seguridad", desc: "Documentación, negociación y acompañamiento hasta el final." }
 ];
 
-const money = (p, op) => op === "ALQUILER" ? "USD " + p.toLocaleString("es-PY") + "/mes" : "USD " + p.toLocaleString("es-PY");
+const money = (p) => {
+  if (p.price == null) return "Precio a consultar";
+  const n = p.price.toLocaleString("es-PY");
+  if (p.currency === "USD") return "USD " + n;
+  if (p.currency === "GS") return "Gs. " + n;
+  return n + " (moneda a confirmar)";
+};
+
+const areaLabel = (m2) => m2 == null ? null : (m2 >= 10000
+  ? (m2 / 10000).toLocaleString("es-PY", { maximumFractionDigits: 2 }) + " ha"
+  : m2.toLocaleString("es-PY") + " m²");
 
 class Component extends DCLogic {
-  state = { screen: "home", scrolled: false, t: 0, q: "", type: "", op: "", price: "", detailId: 1, sent: false, hovered: null };
+  state = { screen: "home", scrolled: false, t: 0, tPaused: false, q: "", type: "", city: "", price: "", detailId: 1, sent: false, hovered: null };
 
   componentDidMount() {
     this.onScroll = () => {
@@ -715,22 +956,51 @@ class Component extends DCLogic {
       if (s !== this.state.scrolled) this.setState({ scrolled: s });
     };
     window.addEventListener("scroll", this.onScroll, { passive: true });
-    this.tTimer = setInterval(() => this.setState(s => ({ t: (s.t + 1) % TESTIMONIALS.length })), 7000);
+
+    // Carrusel de testimonios: avanza solo, se pausa al pasar el cursor
+    // y respeta prefers-reduced-motion.
+    const quieto = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!quieto) {
+      this.tTimer = setInterval(() => {
+        if (!this.state.tPaused) this.setState(s => ({ t: (s.t + 1) % TESTIMONIALS.length }));
+      }, 7000);
+    }
+
+    // Navegación por teclado dentro del carrusel de testimonios
+    this.onKey = (e) => {
+      if (!this.tZone || !this.tZone.contains(document.activeElement)) return;
+      if (e.key === "ArrowLeft") { e.preventDefault(); this.setState(st => ({ t: (st.t + TESTIMONIALS.length - 1) % TESTIMONIALS.length })); }
+      if (e.key === "ArrowRight") { e.preventDefault(); this.setState(st => ({ t: (st.t + 1) % TESTIMONIALS.length })); }
+    };
+    window.addEventListener("keydown", this.onKey);
     this.tryMaps();
   }
   componentDidUpdate() { this.tryMaps(); }
   componentWillUnmount() {
     window.removeEventListener("scroll", this.onScroll);
+    window.removeEventListener("keydown", this.onKey);
     clearInterval(this.tTimer);
   }
 
+  // Solo propiedades publicadas. Los borradores (published:false) quedan fuera
+  // del sitio hasta que el cliente confirme los datos pendientes.
+  publicadas() { return DATA.filter(p => p.published); }
+
   filtered() {
-    const { q, type, op, price } = this.state;
-    let list = DATA;
-    if (q) { const k = q.toLowerCase(); list = list.filter(p => (p.title + " " + p.location + " " + p.type).toLowerCase().includes(k)); }
+    const { q, type, city, price } = this.state;
+    let list = this.publicadas();
+    if (q) {
+      const k = q.toLowerCase();
+      list = list.filter(p => (p.title + " " + p.city + " " + (p.zone || "") + " " + p.type).toLowerCase().includes(k));
+    }
     if (type) list = list.filter(p => p.type === type);
-    if (op) list = list.filter(p => p.operation === op);
-    if (price) { const [a, b] = price.split("-").map(Number); list = list.filter(p => p.price >= a && p.price <= b); }
+    if (city) list = list.filter(p => p.city === city);
+    if (price) {
+      // formato "MONEDA:min-max" — cada rango solo aplica a su propia moneda
+      const [cur, range] = price.split(":");
+      const [a, b] = range.split("-").map(Number);
+      list = list.filter(p => p.currency === cur && p.price >= a && p.price <= b);
+    }
     return list;
   }
 
@@ -755,26 +1025,34 @@ class Component extends DCLogic {
         L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(this.map);
         this.markers = {};
       }
-      const list = this.filtered().filter(p => typeof p.lat === "number" && typeof p.lng === "number");
+      // Ubicaciones aproximadas al centro de la ciudad: la web anterior no
+      // publica coordenadas de ninguna propiedad.
+      const list = this.filtered().filter(p => CIUDAD[p.city]);
       Object.values(this.markers || {}).forEach(m => this.map.removeLayer(m));
       this.markers = {};
+      const seen = {};
       list.forEach(p => {
-        const m = L.marker([p.lat, p.lng], { icon: this.icon(this.state.hovered === p.id) }).addTo(this.map);
+        const c = CIUDAD[p.city];
+        // desplazamiento mínimo para que no se superpongan los marcadores de una misma ciudad
+        const k = seen[p.city] = (seen[p.city] || 0);
+        seen[p.city]++;
+        const lat = c.lat + (k ? (k % 3 - 1) * 0.012 : 0);
+        const lng = c.lng + (k ? Math.floor(k / 3 + 1) * 0.012 : 0);
+        const m = L.marker([lat, lng], { icon: this.icon(this.state.hovered === p.id) }).addTo(this.map);
         m.bindPopup(
-          '<div style="font-family:Inter,sans-serif">' +
-          '<div style="height:96px;background:#F2F1ED;overflow:hidden"><img src="' + (p.image || '') + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>' +
-          '<div style="padding:12px 14px 14px">' +
+          '<div style="font-family:Inter,sans-serif;padding:14px 15px 15px">' +
           '<div style="font-size:9px;font-weight:700;letter-spacing:.18em;color:' + (p.operation === "VENTA" ? FOREST : OLIVE) + '">' + p.operation + '</div>' +
           '<div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:700;font-size:14px;line-height:1.25;color:' + FOREST + '">' + p.title + '</div>' +
-          '<div style="margin-top:4px;font-size:12px;color:#8A8A82">' + p.location + '</div>' +
-          '<div style="margin-top:8px;font-family:Montserrat,sans-serif;font-weight:800;font-size:14px;color:' + CHARCOAL + '">' + money(p.price, p.operation) + '</div>' +
-          '<div style="margin-top:10px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:' + OLIVE + '">Ver propiedad →</div>' +
-          '</div></div>'
+          '<div style="margin-top:4px;font-size:12px;color:#8A8A82">' + (p.zone ? p.zone + ", " : "") + p.city + '</div>' +
+          '<div style="margin-top:8px;font-family:Montserrat,sans-serif;font-weight:800;font-size:14px;color:' + CHARCOAL + '">' + money(p) + '</div>' +
+          '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #E3E2DC;font-size:10px;line-height:1.4;color:#A09F97">Ubicación aproximada — referencia de ciudad</div>' +
+          '<div style="margin-top:8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:' + OLIVE + '">Ver propiedad →</div>' +
+          '</div>'
         );
         m.on("click", () => this.setState({ screen: "detail", detailId: p.id }));
         this.markers[p.id] = m;
       });
-      if (list.length) this.map.fitBounds(list.map(p => [p.lat, p.lng]), { padding: [50, 50], maxZoom: 12 });
+      if (list.length) this.map.fitBounds(list.map(p => [CIUDAD[p.city].lat, CIUDAD[p.city].lng]), { padding: [50, 50], maxZoom: 11 });
     } else if (this.map && this.state.screen !== "properties") {
       this.map.remove(); this.map = null; this.mapHost = null;
     }
@@ -783,10 +1061,15 @@ class Component extends DCLogic {
       if (!this.dMap || this.dMapHost !== this.dMapEl) {
         if (this.dMap) this.dMap.remove();
         this.dMapHost = this.dMapEl;
-        const p = DATA.find(x => x.id === this.state.detailId) || DATA[0];
-        this.dMap = L.map(this.dMapEl, { scrollWheelZoom: false }).setView([p.lat, p.lng], 14);
-        L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(this.dMap);
-        L.marker([p.lat, p.lng], { icon: this.icon(true) }).addTo(this.dMap);
+        const p = this.publicadas().find(x => x.id === this.state.detailId) || this.publicadas()[0];
+        const c = p && CIUDAD[p.city];
+        if (c) {
+          this.dMap = L.map(this.dMapEl, { scrollWheelZoom: false }).setView([c.lat, c.lng], 12);
+          L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(this.dMap);
+          // círculo de referencia: la ubicación exacta no está publicada
+          L.circle([c.lat, c.lng], { radius: 2500, color: FOREST, weight: 1, fillColor: LIME, fillOpacity: 0.14 }).addTo(this.dMap);
+          L.marker([c.lat, c.lng], { icon: this.icon(true) }).addTo(this.dMap);
+        }
       }
     } else if (this.dMap && this.state.screen !== "detail") {
       this.dMap.remove(); this.dMap = null; this.dMapHost = null;
@@ -795,12 +1078,21 @@ class Component extends DCLogic {
 
   go(screen, e) { if (e) e.preventDefault(); this.setState({ screen }); window.scrollTo(0, 0); }
 
+  specs(p) {
+    const bits = [];
+    if (p.beds) bits.push(p.beds + (p.beds === 1 ? " dorm" : " dorm"));
+    if (p.baths) bits.push(p.baths + (p.baths === 1 ? " baño" : " baños"));
+    if (p.built) bits.push(p.built.toLocaleString("es-PY") + " m² const.");
+    else if (p.land) bits.push(areaLabel(p.land));
+    return bits.join(" · ") || "Consultar detalles";
+  }
+
   card(p) {
     return {
       ...p,
-      image: p.image,
-      price: money(p.price, p.operation),
-      specs: p.beds > 0 ? p.beds + " dorm · " + p.baths + " baños · " + p.area + " m²" : p.area + " m²",
+      price: money(p),
+      location: p.zone ? p.zone + ", " + p.city : p.city,
+      specs: this.specs(p),
       tagBg: p.operation === "VENTA" ? FOREST : OLIVE,
       open: (e) => { e.preventDefault(); this.setState({ screen: "detail", detailId: p.id }); window.scrollTo(0, 0); },
       hover: () => this.setState({ hovered: p.id }),
@@ -813,14 +1105,16 @@ class Component extends DCLogic {
     const home = s.screen === "home";
     const solid = s.scrolled || !home;
     const list = this.filtered();
-    const d = DATA.find(x => x.id === s.detailId) || DATA[0];
+    const pubs = this.publicadas();
+    const d = pubs.find(x => x.id === s.detailId) || pubs[0];
     const t = TESTIMONIALS[s.t];
-    const counts = { Casa: 0, Departamento: 0, Terreno: 0, Comercial: 0 };
-    DATA.forEach(p => counts[p.type]++);
+    const counts = {};
+    pubs.forEach(p => { counts[p.type] = (counts[p.type] || 0) + 1; });
     const cat = (name, key, hint) => ({
-      name, hint, count: String(counts[key]).padStart(2, "0"),
-      open: (e) => { e.preventDefault(); this.setState({ screen: "properties", type: key }); window.scrollTo(0, 0); }
+      name, hint, count: String(counts[key] || 0).padStart(2, "0"),
+      open: (e) => { e.preventDefault(); this.setState({ screen: "properties", type: key, city: "", price: "", q: "" }); window.scrollTo(0, 0); }
     });
+    const ciudades = [...new Set(pubs.map(p => p.city))].sort();
 
     return {
       year: new Date().getFullYear(),
@@ -834,16 +1128,20 @@ class Component extends DCLogic {
       goInicio: (e) => this.go("home", e),
       goProps: (e) => this.go("properties", e),
 
-      featured: DATA.slice(0, 5).map(p => this.card(p)),
+      featured: pubs.slice(0, 5).map(p => this.card(p)),
+      // solo categorías con propiedades publicadas: una categoría vacía
+      // llevaría a un catálogo sin resultados
       categories: [
-        cat("Casas", "Casa", "Para vivir en la zona"),
-        cat("Departamentos", "Departamento", "Urbano y práctico"),
         cat("Terrenos", "Terreno", "Para construir o invertir"),
-        cat("Comerciales", "Comercial", "Locales y depósitos")
-      ],
+        cat("Quintas", "Quinta", "Campo con casa y arboleda"),
+        cat("Villas", "Villa", "Residencias en Caacupé"),
+        cat("Casas", "Casa", "Para vivir en la zona"),
+        cat("Ranchos", "Rancho", "Superficies para producción")
+      ].filter(c => c.count !== "00"),
+      ciudades,
       services: SERVICES,
       steps: STEPS,
-      amenities: AMENITIES,
+      amenities: d.features || [],
 
       trackRef: (el) => { this.track = el; },
       prevSlide: () => this.track && this.track.scrollBy({ left: -this.track.clientWidth * 0.7, behavior: "smooth" }),
@@ -854,6 +1152,9 @@ class Component extends DCLogic {
       activeRole: t.role,
       prevT: () => this.setState(st => ({ t: (st.t + TESTIMONIALS.length - 1) % TESTIMONIALS.length })),
       nextT: () => this.setState(st => ({ t: (st.t + 1) % TESTIMONIALS.length })),
+      tZoneRef: (el) => { this.tZone = el; },
+      pauseT: () => this.setState({ tPaused: true }),
+      resumeT: () => this.setState({ tPaused: false }),
 
       onSubmit: (e) => { e.preventDefault(); this.setState({ sent: true }); },
       submitLabel: s.sent ? "Consulta enviada" : "Enviar consulta",
@@ -861,26 +1162,35 @@ class Component extends DCLogic {
 
       onSearch: (e) => this.setState({ q: e.target.value }),
       onType: (e) => this.setState({ type: e.target.value }),
-      onOp: (e) => this.setState({ op: e.target.value }),
+      onCity: (e) => this.setState({ city: e.target.value }),
       onPrice: (e) => this.setState({ price: e.target.value }),
       visible: list.map(p => this.card(p)),
       empty: list.length === 0,
-      resultCount: list.length === 1 ? "1 propiedad encontrada" : list.length + " propiedades encontradas",
+      resultCount: list.length === 1 ? "1 propiedad disponible" : list.length + " propiedades disponibles",
       mapRef: (el) => { this.mapEl = el; },
       detailMapRef: (el) => { this.dMapEl = el; },
 
+      tel: TEL, mail: MAIL, direccion: DIRECCION,
+      waHref: "https://wa.me/" + TEL_RAW,
+      telHref: "tel:+" + TEL_RAW,
+      mailHref: "mailto:" + MAIL,
+
       tKey: s.t,
-      detailTitle: d.title, detailLocation: d.location, detailOperation: d.operation,
-      detailImage: d.image,
-      detailImageA: (d.gallery && d.gallery[0]) || d.image,
-      detailImageB: (d.gallery && d.gallery[1]) || d.image,
+      detailTitle: d.title,
+      detailLocation: d.zone ? d.zone + ", " + d.city : d.city,
+      detailOperation: d.operation,
       detailTagBg: d.operation === "VENTA" ? FOREST : OLIVE,
-      detailPrice: money(d.price, d.operation),
-      detailArea: d.area + " m²",
-      detailBeds: d.beds > 0 ? String(d.beds) : "—",
-      detailBaths: d.baths > 0 ? String(d.baths) : "—",
+      detailPrice: money(d),
+      detailArea: areaLabel(d.land) || "A confirmar",
+      detailBuilt: d.built ? d.built.toLocaleString("es-PY") + " m²" : "—",
+      detailBeds: d.beds ? String(d.beds) : "—",
+      detailBaths: d.baths ? String(d.baths) : "—",
       detailType: d.type,
-      detailDesc: "TODO_BRIMMO — descripción provisional. Propiedad en " + d.location + ", con acceso directo y entorno tranquilo. La descripción real se carga desde el panel administrativo y se muestra tal cual fue publicada."
+      detailDesc: d.desc,
+      detailCity: d.city,
+      hasVideo: !!d.video,
+      videoSrc: d.video ? "https://www.youtube-nocookie.com/embed/" + d.video : "",
+      detailWaHref: "https://wa.me/" + TEL_RAW + "?text=" + encodeURIComponent("Hola, me interesa la propiedad: " + d.title)
     };
   }
 }

@@ -2,3 +2,7 @@ BRIMMO_imagenes_web.zip
 uploads_new/
 .DS_Store
 Thumbs.db
+*.zip
+.thumbnail
+uploads/*.png
+uploads/*.pdf
