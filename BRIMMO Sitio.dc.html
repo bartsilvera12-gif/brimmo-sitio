@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BRIMMO — La Cordillera, Paraguay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { margin:0; background:#FFFFFF; color:#3A3A38; font-family:Inter,Arial,sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+  a { color:#1F5A36; text-decoration:none; }
+  a:hover { color:#7E9848; }
+  ::selection { background:#A7C900; color:#1F5A36; }
+  .nsb::-webkit-scrollbar { display:none; }
+  .nsb { -ms-overflow-style:none; scrollbar-width:none; }
+  @keyframes bri-spin { to { transform: rotate(360deg); } }
+  @keyframes bri-scroll { 0%{transform:translateY(0);opacity:0} 30%{opacity:1} 100%{transform:translateY(14px);opacity:0} }
+  .leaflet-popup-content-wrapper { border-radius:2px; padding:0; }
+  .leaflet-popup-content { margin:0; width:220px !important; }
+  .leaflet-container { font-family:Inter,sans-serif; }
+
+  /* ===== Reveal animations ===== */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 820ms cubic-bezier(.22,1,.36,1) var(--d,0ms),
+                transform 820ms cubic-bezier(.22,1,.36,1) var(--d,0ms);
+    will-change: opacity, transform;
+  }
+  [data-reveal].is-visible { opacity: 1; transform: none; }
+
+  /* Stagger children of a container (up to 12) */
+  [data-stagger] > *:nth-child(1)  { --d: 0ms; }
+  [data-stagger] > *:nth-child(2)  { --d: 130ms; }
+  [data-stagger] > *:nth-child(3)  { --d: 260ms; }
+  [data-stagger] > *:nth-child(4)  { --d: 390ms; }
+  [data-stagger] > *:nth-child(5)  { --d: 520ms; }
+  [data-stagger] > *:nth-child(6)  { --d: 650ms; }
+  [data-stagger] > *:nth-child(7)  { --d: 780ms; }
+  [data-stagger] > *:nth-child(8)  { --d: 910ms; }
+  [data-stagger] > *:nth-child(9)  { --d: 1040ms; }
+  [data-stagger] > *:nth-child(10) { --d: 1170ms; }
+
+  /* ===== Hero cinemascope ===== */
+  @keyframes bri-hero-zoom { from { transform: scale(1.08); } to { transform: scale(1); } }
+  .bri-hero-media {
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:0;
+    animation: bri-hero-zoom 2400ms cubic-bezier(.22,1,.36,1) both;
+    will-change: transform;
+  }
+  .bri-parallax { will-change: transform; transition: transform 120ms linear; }
+
+  /* ===== Hero content stagger ===== */
+  .bri-hero-in > * {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: bri-hero-in 900ms cubic-bezier(.22,1,.36,1) forwards;
+  }
+  .bri-hero-in > *:nth-child(1) { animation-delay: 220ms; }
+  .bri-hero-in > *:nth-child(2) { animation-delay: 370ms; }
+  .bri-hero-in > *:nth-child(3) { animation-delay: 520ms; }
+  .bri-hero-in > *:nth-child(4) { animation-delay: 670ms; }
+  @keyframes bri-hero-in { to { opacity: 1; transform: none; } }
+
+  /* Seguí bajando cue */
+  .bri-hero-cue { opacity: 0; animation: bri-cue-in 700ms cubic-bezier(.22,1,.36,1) 1200ms forwards; }
+  @keyframes bri-cue-in { to { opacity: 1; } }
+
+  /* ===== Header slide down ===== */
+  @keyframes bri-header-in { from { transform: translateY(-100%); } to { transform: none; } }
+  .bri-header { animation: bri-header-in 700ms cubic-bezier(.22,1,.36,1) both; }
+
+  /* ===== Property image hover zoom ===== */
+  .bri-img-frame { position:absolute; inset:0; overflow:hidden; }
+  .bri-img-zoom { width:100%; height:100%; object-fit:cover; display:block; transition: transform 700ms cubic-bezier(.22,1,.36,1); }
+  article:hover .bri-img-zoom, a:hover .bri-img-zoom { transform: scale(1.04); }
+
+  /* Testimonials fade */
+  .bri-testimonial-fade { transition: opacity 500ms cubic-bezier(.22,1,.36,1), transform 500ms cubic-bezier(.22,1,.36,1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,*::before,*::after { animation-duration:.001ms !important; transition-duration:.001ms !important; animation-delay:0ms !important; transition-delay:0ms !important; }
+    [data-reveal] { opacity:1 !important; transform:none !important; }
+    .bri-hero-in > * { opacity:1 !important; transform:none !important; }
+    .bri-hero-cue { opacity:1 !important; }
+    .bri-hero-media { transform:none !important; }
+    .bri-parallax { transform:none !important; }
+  }
+</style>
+<script>
+(function(){
+  if (typeof window === 'undefined') return;
+  if (window.__brimmoAnimBooted) return;
+  window.__brimmoAnimBooted = true;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var io = null;
+  function ensureObserver(){
+    if (io || reduce) return io;
+    io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          e.target.classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+    return io;
+  }
+
+  function scan(root){
+    var ob = ensureObserver();
+    if (!ob) {
+      (root || document).querySelectorAll('[data-reveal]').forEach(function(el){ el.classList.add('is-visible'); });
+      return;
+    }
+    (root || document).querySelectorAll('[data-reveal]:not(.is-visible)').forEach(function(el){ ob.observe(el); });
+  }
+
+  var parallaxNodes = [];
+  function collectParallax(){
+    parallaxNodes = Array.prototype.slice.call(document.querySelectorAll('[data-parallax]'));
+  }
+  function tickParallax(){
+    if (reduce) return;
+    var y = window.scrollY || window.pageYOffset;
+    parallaxNodes.forEach(function(el){
+      var speed = parseFloat(el.getAttribute('data-parallax')) || 0.15;
+      var rect = el.getBoundingClientRect();
+      var vh = window.innerHeight || 1;
+      var mid = rect.top + rect.height/2;
+      var delta = (mid - vh/2) * speed * -1;
+      el.style.transform = 'translate3d(0,' + delta.toFixed(1) + 'px,0)';
+    });
+  }
+
+  var scheduled = false;
+  function onScroll(){
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(function(){ scheduled = false; tickParallax(); });
+  }
+
+  function boot(){
+    scan(document);
+    collectParallax();
+    tickParallax();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', function(){ collectParallax(); tickParallax(); }, { passive: true });
+
+    var mo = new MutationObserver(function(muts){
+      var needScan = false, needParallax = false;
+      muts.forEach(function(m){
+        m.addedNodes && m.addedNodes.forEach(function(n){
+          if (n.nodeType !== 1) return;
+          if (n.hasAttribute && (n.hasAttribute('data-reveal') || n.querySelector('[data-reveal]'))) needScan = true;
+          if (n.hasAttribute && (n.hasAttribute('data-parallax') || n.querySelector('[data-parallax]'))) needParallax = true;
+        });
+      });
+      if (needScan) scan(document);
+      if (needParallax) { collectParallax(); tickParallax(); }
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+</helmet>
+
+<div style="min-height:100vh;background:#fff">
+
+<header class="bri-header" style="position:fixed;top:0;left:0;right:0;z-index:60">
+  <div style="position:absolute;inset:0;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border-bottom:1px solid #E3E2DC;transition:opacity .5s cubic-bezier(.22,1,.36,1);opacity:{{ barOpacity }}"></div>
+  <div style="position:relative;max-width:1320px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+    <a href="#" onClick="{{ goInicio }}" aria-label="BRIMMO — La Cordillera, Paraguay" style="display:block;flex-shrink:0">
+      <img src="assets/brimmo-logo.png" alt="BRIMMO — La Cordillera, Paraguay" style="height:52px;width:auto;display:block;border-radius:3px">
+    </a>
+    <nav aria-label="Principal" style="display:flex;align-items:center;gap:30px">
+      <a href="#" onClick="{{ goInicio }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actInicio }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Inicio</a>
+      <a href="#" onClick="{{ goProps }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actProps }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Propiedades</a>
+      <a href="#servicios" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid transparent;color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Servicios</a>
+      <a href="#nosotros" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid transparent;color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Nosotros</a>
+      <a href="#inversiones" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid transparent;color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Inversiones</a>
+      <a href="#contacto" style="display:inline-flex;align-items:center;height:42px;padding:0 20px;background:#A7C900;color:#1F5A36;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;border-radius:2px;transition:background .3s" style-hover="background:#1F5A36;color:#fff">Contacto</a>
+    </nav>
+  </div>
+</header>
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<main>
+
+  <section style="position:relative;min-height:100vh;display:flex;align-items:flex-end;overflow:hidden;background:#1F5A36">
+    <img src="uploads/img/01-hero-brimmo-cordillera.png" alt="Paisaje de La Cordillera, Paraguay" class="bri-hero-media bri-parallax" data-parallax="0.12">
+    <div style="position:absolute;inset:0;background:radial-gradient(120% 90% at 75% 15%, rgba(167,201,0,0.16) 0%, rgba(31,90,54,0) 60%);z-index:1"></div>
+    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(to top,rgba(23,45,30,0.92) 0%,rgba(23,45,30,0.35) 45%,rgba(23,45,30,0.55) 100%);z-index:1"></div>
+
+    <div class="bri-hero-in" style="position:relative;z-index:2;width:100%;max-width:1320px;margin:0 auto;padding:0 20px 96px">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+        <span style="width:44px;height:2px;background:#A7C900;display:block"></span>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#A7C900;font-weight:600">La Cordillera — Paraguay</span>
+      </div>
+      <h1 style="font-family:Montserrat,sans-serif;font-weight:800;color:#fff;font-size:clamp(34px,5.2vw,72px);line-height:1.04;letter-spacing:-0.02em;max-width:16ch;margin:0;text-wrap:balance">Encontrá el lugar donde tu próximo proyecto comienza.</h1>
+      <p style="margin:26px 0 0;max-width:52ch;font-size:17px;line-height:1.6;color:rgba(255,255,255,.82)">Propiedades, inversiones y asesoramiento inmobiliario con conocimiento real del territorio.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:38px">
+        <a href="#" onClick="{{ goProps }}" style="display:inline-flex;align-items:center;gap:12px;height:54px;padding:0 30px;background:#A7C900;color:#1F5A36;font-weight:600;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:transform .4s cubic-bezier(.22,1,.36,1),background .3s" style-hover="background:#fff;transform:translateY(-2px)">Ver propiedades</a>
+        <a href="#contacto" style="display:inline-flex;align-items:center;gap:12px;height:54px;padding:0 30px;border:1px solid rgba(255,255,255,.55);color:#fff;font-weight:600;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:background .3s,border-color .3s" style-hover="background:rgba(255,255,255,.12);border-color:#A7C900">Hablar con un asesor</a>
+      </div>
+    </div>
+
+    <div class="bri-hero-cue" style="position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:2">
+      <span style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,.6)">Seguí bajando</span>
+      <span style="width:1px;height:26px;background:linear-gradient(to bottom,#A7C900,rgba(167,201,0,0));animation:bri-scroll 2.2s cubic-bezier(.22,1,.36,1) infinite"></span>
+    </div>
+  </section>
+
+  <section id="nosotros" style="background:#fff;padding:112px 20px">
+    <div style="max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1.05fr 1fr;gap:76px;align-items:center">
+      <div data-reveal>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+          <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
+          <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">BRIMMO</span>
+        </div>
+        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(28px,3.4vw,46px);line-height:1.1;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:18ch;text-wrap:balance">Decisiones inmobiliarias con claridad, confianza y conocimiento local.</h2>
+        <p style="margin:26px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:54ch">Conocemos La Cordillera, entendemos tus objetivos y te acompañamos en cada etapa para comprar, vender o invertir con seguridad.</p>
+        <div data-stagger style="display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:#E3E2DC;margin-top:44px;border:1px solid #E3E2DC">
+          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Confianza</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Decisiones claras y relaciones duraderas.</div></div>
+          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Crecimiento</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Oportunidades que generan valor sostenible.</div></div>
+          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Cercanía</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Conocimiento local y atención humana.</div></div>
+          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Estructura</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Método, criterio y profesionalismo.</div></div>
+        </div>
+        <a href="#" onClick="{{ goProps }}" style="display:inline-flex;align-items:center;gap:12px;margin-top:38px;font-size:12px;letter-spacing:0.18em;text-transform:uppercase;font-weight:600;color:#1F5A36;border-bottom:2px solid #A7C900;padding-bottom:6px">Conocé BRIMMO</a>
+      </div>
+      <div data-reveal style="position:relative">
+        <div style="aspect-ratio:4/5;border:1px solid #E3E2DC;overflow:hidden;background:#F2F1ED">
+          <img src="uploads/img/02-nosotros-asesoria-brimmo.png" alt="Asesoría BRIMMO — equipo y territorio" style="width:100%;height:100%;object-fit:cover;display:block">
+        </div>
+        <div style="position:absolute;left:-26px;bottom:-26px;width:120px;height:120px;background:#1F5A36;display:flex;align-items:center;justify-content:center">
+          <img src="assets/brimmo-isotipo.png" alt="" aria-hidden="true" style="width:62px;height:62px;object-fit:contain">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:#F2F1ED;padding:104px 0">
+    <div data-reveal style="max-width:1320px;margin:0 auto;padding:0 20px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
+          <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Catálogo</span>
+        </div>
+        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0">Propiedades destacadas</h2>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <a href="#" onClick="{{ goProps }}" style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;color:#7E9848">Ver todas</a>
+        <button onClick="{{ prevSlide }}" aria-label="Anterior" style="width:46px;height:46px;border-radius:50%;border:1px solid #CFCEC6;background:transparent;color:#1F5A36;display:flex;align-items:center;justify-content:center;transition:border-color .3s,background .3s" style-hover="border-color:#1F5A36;background:#fff">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button onClick="{{ nextSlide }}" aria-label="Siguiente" style="width:46px;height:46px;border-radius:50%;border:1px solid #1F5A36;background:#1F5A36;color:#fff;display:flex;align-items:center;justify-content:center;transition:background .3s" style-hover="background:#A7C900;color:#1F5A36;border-color:#A7C900">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+    </div>
+
+    <div ref="{{ trackRef }}" data-stagger class="nsb" style="margin-top:46px;padding:0 20px 8px;display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;max-width:1320px;margin-left:auto;margin-right:auto;cursor:grab;scroll-behavior:smooth">
+      <sc-for list="{{ featured }}" as="p" hint-placeholder-count="3">
+        <article data-reveal style="scroll-snap-align:start;flex:0 0 auto;width:min(400px,84vw);background:#fff;border:1px solid #E3E2DC">
+          <a href="#" onClick="{{ p.open }}" style="display:block">
+            <div style="position:relative;aspect-ratio:4/3;overflow:hidden;background:#F2F1ED">
+              <img src="{{ p.image }}" alt="{{ p.title }}" class="bri-img-zoom" style="width:100%;height:100%;object-fit:cover;display:block">
+              <span style="position:absolute;top:14px;left:14px;padding:6px 12px;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#fff;background:{{ p.tagBg }};z-index:2">{{ p.operation }}</span>
+            </div>
+            <div style="padding:24px 22px 26px">
+              <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;line-height:1.25;color:#1F5A36;margin:0">{{ p.title }}</h3>
+              <div style="margin-top:8px;font-size:13px;color:#7E9848;font-weight:500">{{ p.location }}</div>
+              <div style="margin-top:18px;padding-top:16px;border-top:1px solid #E3E2DC;display:flex;align-items:center;justify-content:space-between;gap:12px">
+                <span style="font-family:Montserrat,sans-serif;font-weight:800;font-size:17px;color:#3A3A38">{{ p.price }}</span>
+                <span style="font-size:12px;color:#8A8A82;letter-spacing:0.04em">{{ p.specs }}</span>
+              </div>
+            </div>
+          </a>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="background:#fff;padding:104px 20px">
+    <div style="max-width:1320px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Oportunidades</span>
+      </div>
+      <h2 data-reveal style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0 0 44px">Elegí por dónde empezar</h2>
+      <div data-stagger style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
+        <sc-for list="{{ categories }}" as="c" hint-placeholder-count="4">
+          <a href="#" data-reveal onClick="{{ c.open }}" style="background:#fff;padding:34px 26px 30px;display:block;transition:background .4s cubic-bezier(.22,1,.36,1)" style-hover="background:#F2F1ED">
+            <div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:34px;color:#A7C900;line-height:1">{{ c.count }}</div>
+            <div style="margin-top:14px;font-family:Montserrat,sans-serif;font-weight:700;font-size:17px;color:#1F5A36">{{ c.name }}</div>
+            <div style="margin-top:8px;font-size:13px;color:#8A8A82">{{ c.hint }}</div>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="position:relative;min-height:70vh;display:flex;align-items:center;background:#3A3A38;overflow:hidden">
+    <img src="uploads/img/03-experiencia-brimmo.png" alt="" aria-hidden="true" class="bri-parallax" data-parallax="0.08" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0">
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(23,45,30,0.82) 0%,rgba(23,45,30,0.55) 60%,rgba(23,45,30,0.35) 100%);z-index:1"></div>
+    <div style="position:relative;z-index:2;max-width:1320px;margin:0 auto;padding:120px 20px;width:100%">
+      <div data-reveal style="max-width:19ch">
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#A7C900;font-weight:600">Experiencia BRIMMO</span>
+        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(28px,3.8vw,52px);line-height:1.08;letter-spacing:-0.02em;color:#fff;margin:22px 0 0;text-wrap:balance">Espacios, oportunidades y decisiones que construyen futuro.</h2>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:#1F5A36;padding:112px 20px;position:relative;overflow:hidden">
+    <div style="position:absolute;right:-60px;top:50%;transform:translateY(-50%);opacity:.09">
+      <img src="assets/brimmo-isotipo.png" alt="" aria-hidden="true" style="width:340px;height:340px;object-fit:contain">
+    </div>
+    <div data-reveal style="position:relative;max-width:1000px;margin:0 auto;text-align:center">
+      <p style="font-family:Montserrat,sans-serif;font-weight:700;font-size:clamp(24px,3.2vw,40px);line-height:1.25;color:#fff;margin:0;text-wrap:balance">“Cada propiedad representa una oportunidad. Nuestro trabajo es ayudarte a verla con claridad.”</p>
+      <div style="margin-top:32px;font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#A7C900;font-weight:600">BRIMMO — La Cordillera, Paraguay</div>
+    </div>
+  </section>
+
+  <section id="servicios" style="background:#fff;padding:104px 20px">
+    <div style="max-width:1320px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Servicios</span>
+      </div>
+      <h2 data-reveal style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0 0 44px">Acompañamiento en cada etapa</h2>
+      <div data-stagger style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
+        <sc-for list="{{ services }}" as="s" hint-placeholder-count="6">
+          <a href="#contacto" data-reveal style="background:#fff;padding:36px 28px 34px;display:block;transition:background .4s cubic-bezier(.22,1,.36,1)" style-hover="background:#F2F1ED">
+            <span style="display:block;width:22px;height:2px;background:#A7C900"></span>
+            <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36;margin:20px 0 0">{{ s.name }}</h3>
+            <p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:#6B6B65">{{ s.desc }}</p>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="inversiones" style="background:#F2F1ED;padding:104px 20px">
+    <div style="max-width:1320px;margin:0 auto">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Proceso</span>
+      </div>
+      <h2 data-reveal style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0 0 56px">Cómo trabajamos</h2>
+      <div data-stagger style="display:grid;grid-template-columns:repeat(4,1fr);gap:28px">
+        <sc-for list="{{ steps }}" as="st" hint-placeholder-count="4">
+          <div data-reveal style="position:relative;padding-top:30px;border-top:2px solid #CFCEC6">
+            <span style="position:absolute;top:-9px;left:0;width:16px;height:16px;border-radius:50%;background:#A7C900;border:4px solid #F2F1ED"></span>
+            <div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.2em;color:#7E9848">{{ st.n }}</div>
+            <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;line-height:1.25;color:#1F5A36;margin:14px 0 0">{{ st.title }}</h3>
+            <p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:#6B6B65">{{ st.desc }}</p>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:#fff;padding:104px 20px">
+    <div data-reveal style="max-width:1000px;margin:0 auto;text-align:center">
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:28px">
+        <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Testimonios</span>
+      </div>
+      <blockquote key="{{ tKey }}" class="bri-testimonial-fade" style="margin:0;font-family:Montserrat,sans-serif;font-weight:600;font-size:clamp(20px,2.4vw,30px);line-height:1.4;color:#1F5A36;text-wrap:balance;animation:bri-hero-in 500ms cubic-bezier(.22,1,.36,1) both">{{ activeTestimonial }}</blockquote>
+      <div key="{{ tKey }}a" style="margin-top:26px;font-size:14px;font-weight:600;color:#3A3A38;animation:bri-hero-in 500ms cubic-bezier(.22,1,.36,1) 80ms both">{{ activeAuthor }}</div>
+      <div key="{{ tKey }}r" style="margin-top:4px;font-size:12px;color:#8A8A82;letter-spacing:0.06em;animation:bri-hero-in 500ms cubic-bezier(.22,1,.36,1) 140ms both">{{ activeRole }}</div>
+      <div style="margin-top:36px;display:flex;align-items:center;justify-content:center;gap:12px">
+        <button onClick="{{ prevT }}" aria-label="Testimonio anterior" style="width:44px;height:44px;border-radius:50%;border:1px solid #CFCEC6;background:#fff;color:#1F5A36;display:flex;align-items:center;justify-content:center" style-hover="border-color:#1F5A36">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <button onClick="{{ nextT }}" aria-label="Testimonio siguiente" style="width:44px;height:44px;border-radius:50%;border:1px solid #1F5A36;background:#1F5A36;color:#fff;display:flex;align-items:center;justify-content:center" style-hover="background:#A7C900;color:#1F5A36;border-color:#A7C900">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+      <div style="margin-top:22px;font-family:ui-monospace,Menlo,monospace;font-size:10px;letter-spacing:0.14em;color:#B4B3AB;text-transform:uppercase">TODO_BRIMMO — testimonios provisionales</div>
+    </div>
+  </section>
+
+  <section id="contacto" style="background:#F2F1ED;padding:104px 20px">
+    <div style="max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1fr 1.15fr;gap:76px">
+      <div data-reveal>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
+          <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Contacto</span>
+        </div>
+        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0">Hablemos de tu próximo proyecto.</h2>
+        <p style="margin:20px 0 0;font-size:16px;line-height:1.7;color:#6B6B65;max-width:44ch">Contanos qué estás buscando y te respondemos con opciones concretas y asesoramiento claro.</p>
+        <div style="margin-top:40px;display:flex;flex-direction:column;gap:18px">
+          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">Teléfono</div><div style="margin-top:6px;font-family:ui-monospace,Menlo,monospace;font-size:14px;color:#3A3A38">TODO_BRIMMO_TELEFONO</div></div>
+          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">Correo</div><div style="margin-top:6px;font-family:ui-monospace,Menlo,monospace;font-size:14px;color:#3A3A38">TODO_BRIMMO_EMAIL</div></div>
+          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">Oficina</div><div style="margin-top:6px;font-family:ui-monospace,Menlo,monospace;font-size:14px;color:#3A3A38">TODO_BRIMMO_DIRECCION</div></div>
+        </div>
+        <a href="#" style="display:inline-flex;align-items:center;gap:10px;margin-top:34px;height:50px;padding:0 24px;background:#1F5A36;color:#fff;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px" style-hover="background:#A7C900;color:#1F5A36">Escribir por WhatsApp</a>
+      </div>
+
+      <form onSubmit="{{ onSubmit }}" data-reveal style="background:#fff;border:1px solid #E3E2DC;padding:38px 34px 34px;display:grid;grid-template-columns:1fr 1fr;gap:22px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label for="f-nombre" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">Nombre</label>
+          <input id="f-nombre" name="nombre" type="text" required style="height:46px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;color:#3A3A38;background:#fff;outline:none" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label for="f-tel" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">Teléfono</label>
+          <input id="f-tel" name="telefono" type="tel" style="height:46px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;color:#3A3A38;background:#fff;outline:none" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label for="f-mail" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">Correo</label>
+          <input id="f-mail" name="email" type="email" required style="height:46px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;color:#3A3A38;background:#fff;outline:none" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label for="f-tipo" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">Tipo de consulta</label>
+          <select id="f-tipo" name="tipo" style="height:46px;border:1px solid #DCDBD4;border-radius:2px;padding:0 12px;font-family:Inter,sans-serif;font-size:15px;color:#3A3A38;background:#fff;outline:none" style-focus="border-color:#A7C900">
+            <option>Quiero comprar</option>
+            <option>Quiero vender</option>
+            <option>Quiero alquilar</option>
+            <option>Quiero invertir</option>
+            <option>Tasación</option>
+          </select>
+        </div>
+        <div style="grid-column:1 / -1;display:flex;flex-direction:column;gap:8px">
+          <label for="f-msg" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">Mensaje</label>
+          <textarea id="f-msg" name="mensaje" rows="4" style="border:1px solid #DCDBD4;border-radius:2px;padding:12px 14px;font-family:Inter,sans-serif;font-size:15px;color:#3A3A38;background:#fff;outline:none;resize:vertical" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)"></textarea>
+        </div>
+        <label style="grid-column:1 / -1;display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5;color:#6B6B65">
+          <input type="checkbox" required style="margin-top:3px;width:16px;height:16px;accent-color:#1F5A36">
+          <span>Acepto la política de privacidad y el tratamiento de mis datos para responder esta consulta.</span>
+        </label>
+        <div style="grid-column:1 / -1;display:flex;align-items:center;gap:18px">
+          <button type="submit" style="height:52px;padding:0 32px;background:#1F5A36;color:#fff;border:none;border-radius:2px;font-family:Inter,sans-serif;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;transition:background .3s" style-hover="background:#A7C900;color:#1F5A36">{{ submitLabel }}</button>
+          <span style="font-size:13px;color:#7E9848;font-weight:500">{{ formMsg }}</span>
+        </div>
+      </form>
+    </div>
+  </section>
+
+</main>
+</sc-if>
+
+<sc-if value="{{ isProps }}" hint-placeholder-val="{{ false }}">
+<main style="padding-top:92px;background:#fff;min-height:100vh">
+  <div style="background:#F2F1ED;border-bottom:1px solid #E3E2DC;padding:44px 20px 30px">
+    <div style="max-width:1320px;margin:0 auto">
+      <h1 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);color:#1F5A36;margin:0;letter-spacing:-0.02em">Propiedades</h1>
+      <div style="margin-top:24px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:14px">
+        <input type="search" placeholder="Buscar por título, ciudad o barrio" onInput="{{ onSearch }}" aria-label="Buscar propiedades" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 16px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)">
+        <select onChange="{{ onType }}" aria-label="Tipo de propiedad" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
+          <option value="">Todos los tipos</option>
+          <option value="Casa">Casas</option>
+          <option value="Departamento">Departamentos</option>
+          <option value="Terreno">Terrenos</option>
+          <option value="Comercial">Comercial</option>
+        </select>
+        <select onChange="{{ onOp }}" aria-label="Operación" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
+          <option value="">Venta y alquiler</option>
+          <option value="VENTA">Venta</option>
+          <option value="ALQUILER">Alquiler</option>
+        </select>
+        <select onChange="{{ onPrice }}" aria-label="Rango de precio" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
+          <option value="">Cualquier precio</option>
+          <option value="0-80000">Hasta USD 80.000</option>
+          <option value="80000-150000">USD 80.000 — 150.000</option>
+          <option value="150000-999999999">Más de USD 150.000</option>
+        </select>
+      </div>
+      <div style="margin-top:16px;font-size:13px;color:#7E9848;font-weight:500">{{ resultCount }}</div>
+    </div>
+  </div>
+
+  <div style="max-width:1320px;margin:0 auto;padding:36px 20px 96px;display:grid;grid-template-columns:1.15fr 1fr;gap:34px;align-items:start">
+    <div data-stagger style="display:grid;grid-template-columns:repeat(2,1fr);gap:22px">
+      <sc-for list="{{ visible }}" as="p" hint-placeholder-count="4">
+        <article data-reveal onMouseEnter="{{ p.hover }}" onMouseLeave="{{ p.unhover }}" style="border:1px solid #E3E2DC;background:#fff">
+          <a href="#" onClick="{{ p.open }}" style="display:block">
+            <div style="position:relative;aspect-ratio:4/3;overflow:hidden;background:#F2F1ED">
+              <img src="{{ p.image }}" alt="{{ p.title }}" class="bri-img-zoom" style="width:100%;height:100%;object-fit:cover;display:block">
+              <span style="position:absolute;top:12px;left:12px;padding:5px 11px;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#fff;background:{{ p.tagBg }};z-index:2">{{ p.operation }}</span>
+            </div>
+            <div style="padding:20px 18px 22px">
+              <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:17px;line-height:1.25;color:#1F5A36;margin:0">{{ p.title }}</h3>
+              <div style="margin-top:6px;font-size:13px;color:#7E9848">{{ p.location }}</div>
+              <div style="margin-top:14px;padding-top:12px;border-top:1px solid #E3E2DC;display:flex;justify-content:space-between;gap:10px">
+                <span style="font-family:Montserrat,sans-serif;font-weight:800;font-size:16px;color:#3A3A38">{{ p.price }}</span>
+                <span style="font-size:12px;color:#8A8A82">{{ p.specs }}</span>
+              </div>
+            </div>
+          </a>
+        </article>
+      </sc-for>
+      <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+        <div style="grid-column:1 / -1;padding:70px 20px;text-align:center;border:1px dashed #DCDBD4;background:#F2F1ED">
+          <div style="font-family:Montserrat,sans-serif;font-weight:700;font-size:18px;color:#1F5A36">No encontramos propiedades con esos filtros</div>
+          <div style="margin-top:8px;font-size:14px;color:#6B6B65">Probá ampliar el rango de precio o cambiar el tipo de propiedad.</div>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="position:sticky;top:104px">
+      <div ref="{{ mapRef }}" role="application" aria-label="Mapa de propiedades en La Cordillera" style="height:640px;border:1px solid #E3E2DC;background:#F2F1ED"></div>
+      <div style="margin-top:10px;font-size:12px;color:#8A8A82">Zoom con rueda desactivado — usá los controles del mapa. Marcador Lima = propiedad activa.</div>
+    </div>
+  </div>
+</main>
+</sc-if>
+
+<sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
+<main style="padding-top:92px;background:#fff;min-height:100vh">
+  <div style="max-width:1320px;margin:0 auto;padding:26px 20px 0">
+    <a href="#" onClick="{{ goProps }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:600;color:#7E9848">← Volver al catálogo</a>
+  </div>
+  <div data-stagger style="max-width:1320px;margin:0 auto;padding:22px 20px 0;display:grid;grid-template-columns:2.2fr 1fr;gap:12px">
+    <div data-reveal style="aspect-ratio:16/10;overflow:hidden;background:#F2F1ED">
+      <img src="{{ detailImage }}" alt="{{ detailTitle }}" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform 900ms cubic-bezier(.22,1,.36,1)">
+    </div>
+    <div style="display:grid;grid-template-rows:repeat(2,1fr);gap:12px">
+      <div data-reveal style="overflow:hidden;background:#F2F1ED"><img src="{{ detailImageA }}" alt="Vista adicional" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+      <div data-reveal style="overflow:hidden;background:#F2F1ED"><img src="{{ detailImageB }}" alt="Vista adicional" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+    </div>
+  </div>
+
+  <div style="max-width:1320px;margin:0 auto;padding:52px 20px 96px;display:grid;grid-template-columns:1.6fr 1fr;gap:64px;align-items:start">
+    <div data-reveal>
+      <span style="display:inline-block;padding:6px 12px;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#fff;background:{{ detailTagBg }}">{{ detailOperation }}</span>
+      <h1 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3.2vw,42px);line-height:1.1;letter-spacing:-0.02em;color:#1F5A36;margin:18px 0 0">{{ detailTitle }}</h1>
+      <div style="margin-top:10px;font-size:15px;color:#7E9848;font-weight:500">{{ detailLocation }}</div>
+      <div style="margin-top:26px;font-family:Montserrat,sans-serif;font-weight:800;font-size:30px;color:#3A3A38">{{ detailPrice }}</div>
+
+      <div style="margin-top:36px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
+        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Superficie</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailArea }}</div></div>
+        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Dormitorios</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailBeds }}</div></div>
+        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Baños</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailBaths }}</div></div>
+        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Tipo</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailType }}</div></div>
+      </div>
+
+      <h2 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;color:#1F5A36;margin:48px 0 0">Descripción</h2>
+      <p style="margin:16px 0 0;font-size:16px;line-height:1.75;color:#5A5A55;max-width:64ch">{{ detailDesc }}</p>
+
+      <h2 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;color:#1F5A36;margin:44px 0 0">Comodidades</h2>
+      <ul style="margin:18px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:12px 20px">
+        <sc-for list="{{ amenities }}" as="a" hint-placeholder-count="6">
+          <li style="display:flex;align-items:center;gap:10px;font-size:14px;color:#5A5A55"><span style="width:7px;height:7px;background:#A7C900;display:block;flex-shrink:0"></span>{{ a }}</li>
+        </sc-for>
+      </ul>
+
+      <h2 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;color:#1F5A36;margin:48px 0 0">Ubicación</h2>
+      <div ref="{{ detailMapRef }}" role="application" aria-label="Ubicación de la propiedad" style="margin-top:18px;height:360px;border:1px solid #E3E2DC;background:#F2F1ED"></div>
+    </div>
+
+    <aside data-reveal style="position:sticky;top:110px;border:1px solid #E3E2DC;background:#F2F1ED;padding:30px 26px 28px">
+      <div style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36">Consultar esta propiedad</div>
+      <p style="margin:10px 0 0;font-size:14px;line-height:1.6;color:#6B6B65">Te respondemos con disponibilidad, condiciones y una visita coordinada.</p>
+      <div style="margin-top:22px;display:flex;flex-direction:column;gap:12px">
+        <input type="text" placeholder="Nombre" aria-label="Nombre" style="height:46px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none" style-focus="border-color:#A7C900">
+        <input type="email" placeholder="Correo" aria-label="Correo" style="height:46px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none" style-focus="border-color:#A7C900">
+        <input type="tel" placeholder="Teléfono" aria-label="Teléfono" style="height:46px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none" style-focus="border-color:#A7C900">
+        <textarea rows="3" aria-label="Mensaje" placeholder="Me interesa esta propiedad" style="border:1px solid #DCDBD4;border-radius:2px;padding:12px 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none;resize:vertical"></textarea>
+        <button type="button" style="height:50px;background:#1F5A36;color:#fff;border:none;border-radius:2px;font-family:Inter,sans-serif;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase" style-hover="background:#A7C900;color:#1F5A36">Enviar consulta</button>
+        <button type="button" style="height:50px;background:#fff;color:#1F5A36;border:1px solid #1F5A36;border-radius:2px;font-family:Inter,sans-serif;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase" style-hover="background:#1F5A36;color:#fff">WhatsApp</button>
+      </div>
+    </aside>
+  </div>
+</main>
+</sc-if>
+
+<footer style="background:#1F5A36;color:#fff;padding:76px 20px 34px">
+  <div style="max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:48px">
+    <div>
+      <img src="assets/brimmo-logo.png" alt="BRIMMO — La Cordillera, Paraguay" style="height:56px;width:auto;display:block;border-radius:3px">
+      <p style="margin:22px 0 0;font-size:14px;line-height:1.7;color:rgba(255,255,255,.72);max-width:34ch">Servicios inmobiliarios y consultoría en La Cordillera y otras zonas de Paraguay.</p>
+    </div>
+    <div>
+      <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#A7C900;font-weight:600">Navegación</div>
+      <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px;font-size:14px">
+        <a href="#" onClick="{{ goInicio }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Inicio</a>
+        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Propiedades</a>
+        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Servicios</a>
+        <a href="#nosotros" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Nosotros</a>
+        <a href="#inversiones" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Inversiones</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#A7C900;font-weight:600">Servicios</div>
+      <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px;font-size:14px">
+        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Compra y venta</a>
+        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Alquileres</a>
+        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Tasaciones</a>
+        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Administración</a>
+        <a href="#servicios" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Inversiones</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#A7C900;font-weight:600">Contacto</div>
+      <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px;font-family:ui-monospace,Menlo,monospace;font-size:13px;color:rgba(255,255,255,.72)">
+        <span>TODO_BRIMMO_TELEFONO</span>
+        <span>TODO_BRIMMO_EMAIL</span>
+        <span>TODO_BRIMMO_DIRECCION</span>
+        <span>TODO_BRIMMO_REDES</span>
+      </div>
+    </div>
+  </div>
+  <div style="max-width:1320px;margin:52px auto 0;padding-top:22px;border-top:1px solid rgba(255,255,255,.16);display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.6)">
+    <span>© {{ year }} BRIMMO — La Cordillera, Paraguay</span>
+    <div style="display:flex;gap:22px;align-items:center">
+      <a href="#" style="color:rgba(255,255,255,.6)" style-hover="color:#A7C900">Política de privacidad</a>
+      <a href="https://neura.com.py" target="_blank" rel="noopener" style="color:rgba(255,255,255,.6)" style-hover="color:#A7C900">Desarrollado por Neura</a>
+    </div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1000}}">
+const FOREST = "#1F5A36", LIME = "#A7C900", OLIVE = "#7E9848", CHARCOAL = "#3A3A38";
+
+// TODO_BRIMMO: datos provisionales de demostración. En producción provienen de Supabase.
+const DATA = [
+  { id: 1, title: "Casa con galería y parque en Atyrá", location: "Atyrá, Cordillera", type: "Casa", operation: "VENTA", price: 165000, beds: 3, baths: 2, area: 240, lat: -25.2686, lng: -57.1736, image: "uploads/img/04-propiedad-atyra-casa.png", gallery: ["uploads/img/10-atyra-galeria-interior.png","uploads/img/11-atyra-galeria-exterior.png"] },
+  { id: 2, title: "Terreno alto con vista al cerro", location: "Tobatí, Cordillera", type: "Terreno", operation: "VENTA", price: 48000, beds: 0, baths: 0, area: 1200, lat: -25.2536, lng: -57.0783, image: "uploads/img/05-propiedad-tobati-terreno.png" },
+  { id: 3, title: "Departamento céntrico en Caacupé", location: "Caacupé, Cordillera", type: "Departamento", operation: "ALQUILER", price: 620, beds: 2, baths: 1, area: 78, lat: -25.3861, lng: -57.1408, image: "uploads/img/06-propiedad-caacupe-departamento.png" },
+  { id: 4, title: "Local comercial sobre ruta", location: "Ypacaraí, Cordillera", type: "Comercial", operation: "ALQUILER", price: 1450, beds: 0, baths: 2, area: 180, lat: -25.4083, lng: -57.2856, image: "uploads/img/07-propiedad-ypacarai-local.png" },
+  { id: 5, title: "Casa quinta con pileta y arboleda", location: "Piribebuy, Cordillera", type: "Casa", operation: "VENTA", price: 128000, beds: 4, baths: 3, area: 320, lat: -25.4650, lng: -57.0433, image: "uploads/img/08-propiedad-piribebuy-quinta.png" },
+  { id: 6, title: "Loteamiento residencial en Emboscada", location: "Emboscada, Cordillera", type: "Terreno", operation: "VENTA", price: 32000, beds: 0, baths: 0, area: 600, lat: -25.1372, lng: -57.3439, image: "uploads/img/09-propiedad-emboscada-loteamiento.png" }
+];
+
+const TESTIMONIALS = [
+  { text: "Nos guiaron en todo el proceso de compra y siempre tuvimos claridad sobre cada paso.", author: "Familia López", role: "Compradores — Atyrá" },
+  { text: "Vendimos el terreno en menos tiempo del que esperábamos y con un precio bien fundamentado.", author: "Rodrigo M.", role: "Propietario — Tobatí" },
+  { text: "El asesoramiento para invertir fue concreto, sin promesas exageradas.", author: "Carla B.", role: "Inversora — Caacupé" }
+];
+
+const AMENITIES = ["Galería techada", "Parque arbolado", "Cochera doble", "Quincho", "Pozo artesiano", "Portón automático"];
+
+const SERVICES = [
+  { name: "Compra y venta", desc: "Búsqueda, negociación y cierre con documentación en regla." },
+  { name: "Alquileres", desc: "Publicación, selección de inquilinos y contratos claros." },
+  { name: "Tasaciones", desc: "Valor de mercado con criterio técnico y datos de la zona." },
+  { name: "Administración", desc: "Gestión integral de propiedades y cobranzas." },
+  { name: "Inversiones", desc: "Análisis de oportunidades y proyección de retorno." },
+  { name: "Marketing inmobiliario", desc: "Fotografía, difusión y presentación profesional." }
+];
+
+const STEPS = [
+  { n: "01", title: "Escuchamos tus objetivos", desc: "Entendemos qué buscás, tu plazo y tu presupuesto real." },
+  { n: "02", title: "Analizamos el mercado", desc: "Comparamos valores y condiciones en La Cordillera." },
+  { n: "03", title: "Seleccionamos oportunidades", desc: "Te presentamos solo lo que encaja con tu objetivo." },
+  { n: "04", title: "Cerramos con seguridad", desc: "Documentación, negociación y acompañamiento hasta el final." }
+];
+
+const money = (p, op) => op === "ALQUILER" ? "USD " + p.toLocaleString("es-PY") + "/mes" : "USD " + p.toLocaleString("es-PY");
+
+class Component extends DCLogic {
+  state = { screen: "home", scrolled: false, t: 0, q: "", type: "", op: "", price: "", detailId: 1, sent: false, hovered: null };
+
+  componentDidMount() {
+    this.onScroll = () => {
+      const s = window.scrollY > 60;
+      if (s !== this.state.scrolled) this.setState({ scrolled: s });
+    };
+    window.addEventListener("scroll", this.onScroll, { passive: true });
+    this.tTimer = setInterval(() => this.setState(s => ({ t: (s.t + 1) % TESTIMONIALS.length })), 7000);
+    this.tryMaps();
+  }
+  componentDidUpdate() { this.tryMaps(); }
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.onScroll);
+    clearInterval(this.tTimer);
+  }
+
+  filtered() {
+    const { q, type, op, price } = this.state;
+    let list = DATA;
+    if (q) { const k = q.toLowerCase(); list = list.filter(p => (p.title + " " + p.location + " " + p.type).toLowerCase().includes(k)); }
+    if (type) list = list.filter(p => p.type === type);
+    if (op) list = list.filter(p => p.operation === op);
+    if (price) { const [a, b] = price.split("-").map(Number); list = list.filter(p => p.price >= a && p.price <= b); }
+    return list;
+  }
+
+  icon(active) {
+    const c = active ? LIME : FOREST;
+    const ring = active ? FOREST : "#ffffff";
+    return window.L.divIcon({
+      className: "",
+      html: '<div style="width:30px;height:30px;border-radius:50%;background:' + c + ';border:3px solid ' + ring + ';box-shadow:0 2px 6px rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="' + (active ? FOREST : "#fff") + '"><g><rect x="10.6" y="1" width="2.8" height="8" rx="1.1"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1"/><rect x="1" y="10.6" width="8" height="2.8" rx="1.1"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1"/><rect x="10.6" y="1" width="2.8" height="8" rx="1.1" transform="rotate(45 12 12)"/><rect x="10.6" y="15" width="2.8" height="8" rx="1.1" transform="rotate(45 12 12)"/><rect x="1" y="10.6" width="8" height="2.8" rx="1.1" transform="rotate(45 12 12)"/><rect x="15" y="10.6" width="8" height="2.8" rx="1.1" transform="rotate(45 12 12)"/></g></svg></div>',
+      iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -16]
+    });
+  }
+
+  tryMaps() {
+    if (!window.L) { setTimeout(() => this.tryMaps(), 250); return; }
+    const L = window.L;
+    if (this.state.screen === "properties" && this.mapEl) {
+      if (!this.map || this.mapHost !== this.mapEl) {
+        if (this.map) this.map.remove();
+        this.mapHost = this.mapEl;
+        this.map = L.map(this.mapEl, { scrollWheelZoom: false, zoomControl: true }).setView([-25.32, -57.15], 10);
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(this.map);
+        this.markers = {};
+      }
+      const list = this.filtered().filter(p => typeof p.lat === "number" && typeof p.lng === "number");
+      Object.values(this.markers || {}).forEach(m => this.map.removeLayer(m));
+      this.markers = {};
+      list.forEach(p => {
+        const m = L.marker([p.lat, p.lng], { icon: this.icon(this.state.hovered === p.id) }).addTo(this.map);
+        m.bindPopup(
+          '<div style="font-family:Inter,sans-serif">' +
+          '<div style="height:96px;background:#F2F1ED;overflow:hidden"><img src="' + (p.image || '') + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></div>' +
+          '<div style="padding:12px 14px 14px">' +
+          '<div style="font-size:9px;font-weight:700;letter-spacing:.18em;color:' + (p.operation === "VENTA" ? FOREST : OLIVE) + '">' + p.operation + '</div>' +
+          '<div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:700;font-size:14px;line-height:1.25;color:' + FOREST + '">' + p.title + '</div>' +
+          '<div style="margin-top:4px;font-size:12px;color:#8A8A82">' + p.location + '</div>' +
+          '<div style="margin-top:8px;font-family:Montserrat,sans-serif;font-weight:800;font-size:14px;color:' + CHARCOAL + '">' + money(p.price, p.operation) + '</div>' +
+          '<div style="margin-top:10px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:' + OLIVE + '">Ver propiedad →</div>' +
+          '</div></div>'
+        );
+        m.on("click", () => this.setState({ screen: "detail", detailId: p.id }));
+        this.markers[p.id] = m;
+      });
+      if (list.length) this.map.fitBounds(list.map(p => [p.lat, p.lng]), { padding: [50, 50], maxZoom: 12 });
+    } else if (this.map && this.state.screen !== "properties") {
+      this.map.remove(); this.map = null; this.mapHost = null;
+    }
+
+    if (this.state.screen === "detail" && this.dMapEl) {
+      if (!this.dMap || this.dMapHost !== this.dMapEl) {
+        if (this.dMap) this.dMap.remove();
+        this.dMapHost = this.dMapEl;
+        const p = DATA.find(x => x.id === this.state.detailId) || DATA[0];
+        this.dMap = L.map(this.dMapEl, { scrollWheelZoom: false }).setView([p.lat, p.lng], 14);
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", { attribution: "© OpenStreetMap, © CARTO", maxZoom: 19 }).addTo(this.dMap);
+        L.marker([p.lat, p.lng], { icon: this.icon(true) }).addTo(this.dMap);
+      }
+    } else if (this.dMap && this.state.screen !== "detail") {
+      this.dMap.remove(); this.dMap = null; this.dMapHost = null;
+    }
+  }
+
+  go(screen, e) { if (e) e.preventDefault(); this.setState({ screen }); window.scrollTo(0, 0); }
+
+  card(p) {
+    return {
+      ...p,
+      image: p.image,
+      price: money(p.price, p.operation),
+      specs: p.beds > 0 ? p.beds + " dorm · " + p.baths + " baños · " + p.area + " m²" : p.area + " m²",
+      tagBg: p.operation === "VENTA" ? FOREST : OLIVE,
+      open: (e) => { e.preventDefault(); this.setState({ screen: "detail", detailId: p.id }); window.scrollTo(0, 0); },
+      hover: () => this.setState({ hovered: p.id }),
+      unhover: () => this.setState({ hovered: null })
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const home = s.screen === "home";
+    const solid = s.scrolled || !home;
+    const list = this.filtered();
+    const d = DATA.find(x => x.id === s.detailId) || DATA[0];
+    const t = TESTIMONIALS[s.t];
+    const counts = { Casa: 0, Departamento: 0, Terreno: 0, Comercial: 0 };
+    DATA.forEach(p => counts[p.type]++);
+    const cat = (name, key, hint) => ({
+      name, hint, count: String(counts[key]).padStart(2, "0"),
+      open: (e) => { e.preventDefault(); this.setState({ screen: "properties", type: key }); window.scrollTo(0, 0); }
+    });
+
+    return {
+      year: new Date().getFullYear(),
+      isHome: home, isProps: s.screen === "properties", isDetail: s.screen === "detail",
+      barOpacity: solid ? 1 : 0,
+      navColor: solid ? CHARCOAL : "#ffffff",
+      actInicio: home ? LIME : "transparent",
+      actProps: s.screen !== "home" ? LIME : "transparent",
+      goInicio: (e) => this.go("home", e),
+      goProps: (e) => this.go("properties", e),
+
+      featured: DATA.slice(0, 5).map(p => this.card(p)),
+      categories: [
+        cat("Casas", "Casa", "Para vivir en la zona"),
+        cat("Departamentos", "Departamento", "Urbano y práctico"),
+        cat("Terrenos", "Terreno", "Para construir o invertir"),
+        cat("Comerciales", "Comercial", "Locales y depósitos")
+      ],
+      services: SERVICES,
+      steps: STEPS,
+      amenities: AMENITIES,
+
+      trackRef: (el) => { this.track = el; },
+      prevSlide: () => this.track && this.track.scrollBy({ left: -this.track.clientWidth * 0.7, behavior: "smooth" }),
+      nextSlide: () => this.track && this.track.scrollBy({ left: this.track.clientWidth * 0.7, behavior: "smooth" }),
+
+      activeTestimonial: "“" + t.text + "”",
+      activeAuthor: t.author,
+      activeRole: t.role,
+      prevT: () => this.setState(st => ({ t: (st.t + TESTIMONIALS.length - 1) % TESTIMONIALS.length })),
+      nextT: () => this.setState(st => ({ t: (st.t + 1) % TESTIMONIALS.length })),
+
+      onSubmit: (e) => { e.preventDefault(); this.setState({ sent: true }); },
+      submitLabel: s.sent ? "Consulta enviada" : "Enviar consulta",
+      formMsg: s.sent ? "Recibimos tu mensaje. Te respondemos a la brevedad." : "",
+
+      onSearch: (e) => this.setState({ q: e.target.value }),
+      onType: (e) => this.setState({ type: e.target.value }),
+      onOp: (e) => this.setState({ op: e.target.value }),
+      onPrice: (e) => this.setState({ price: e.target.value }),
+      visible: list.map(p => this.card(p)),
+      empty: list.length === 0,
+      resultCount: list.length === 1 ? "1 propiedad encontrada" : list.length + " propiedades encontradas",
+      mapRef: (el) => { this.mapEl = el; },
+      detailMapRef: (el) => { this.dMapEl = el; },
+
+      tKey: s.t,
+      detailTitle: d.title, detailLocation: d.location, detailOperation: d.operation,
+      detailImage: d.image,
+      detailImageA: (d.gallery && d.gallery[0]) || d.image,
+      detailImageB: (d.gallery && d.gallery[1]) || d.image,
+      detailTagBg: d.operation === "VENTA" ? FOREST : OLIVE,
+      detailPrice: money(d.price, d.operation),
+      detailArea: d.area + " m²",
+      detailBeds: d.beds > 0 ? String(d.beds) : "—",
+      detailBaths: d.baths > 0 ? String(d.baths) : "—",
+      detailType: d.type,
+      detailDesc: "TODO_BRIMMO — descripción provisional. Propiedad en " + d.location + ", con acceso directo y entorno tranquilo. La descripción real se carga desde el panel administrativo y se muestra tal cual fue publicada."
+    };
+  }
+}
+</script>
+</body>
+</html>
