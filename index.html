@@ -146,6 +146,33 @@
   .bri-cat:focus-visible { outline: 3px solid #A7C900; outline-offset: 3px; }
   @media (max-width: 900px) { .bri-cat { aspect-ratio: 3/2; } }
 
+  /* ===== Grillas adaptables =====
+     Las columnas fijas desbordaban en pantallas angostas: en 612px de
+     ancho el documento medía 629px y aparecía scroll horizontal. */
+  .g2, .g3, .g4, .g5, .g-split, .g-split-inv, .g-pie, .g-filtros { display: grid; }
+  .g2 { grid-template-columns: repeat(2,1fr); }
+  .g3 { grid-template-columns: repeat(3,1fr); }
+  .g4 { grid-template-columns: repeat(4,1fr); }
+  .g5 { grid-template-columns: repeat(5,1fr); }
+  .g-split     { grid-template-columns: 1.15fr 1fr; }
+  .g-split-inv { grid-template-columns: 1fr 1.15fr; }
+  .g-pie       { grid-template-columns: 1.4fr 1fr 1fr 1fr; }
+  .g-filtros   { grid-template-columns: 2fr 1fr 1fr 1fr; }
+
+  @media (max-width: 1080px) {
+    .g-split, .g-split-inv { grid-template-columns: 1fr; }
+    .g5 { grid-template-columns: repeat(3,1fr); }
+  }
+  @media (max-width: 980px) {
+    .g4, .g3 { grid-template-columns: repeat(2,1fr); }
+    .g-pie   { grid-template-columns: repeat(2,1fr); }
+    .g-filtros { grid-template-columns: repeat(2,1fr); }
+  }
+  @media (max-width: 620px) {
+    .g2, .g3, .g4, .g-pie, .g-filtros { grid-template-columns: 1fr; }
+    .g5 { grid-template-columns: repeat(2,1fr); }
+  }
+
   /* ===== Banda de encabezado de las páginas internas =====
      Fotografía institucional atenuada, con un velo que se hace opaco
      del lado del texto para no comprometer la legibilidad. */
@@ -461,7 +488,7 @@
         <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">Vivir e invertir en La Cordillera</h2>
         <p style="margin:22px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:62ch">Una región verde y ondulada, con clima agradable y buen acceso a Asunción. Es la zona donde trabajamos y la conocemos de primera mano.</p>
       </div>
-      <div data-stagger style="margin-top:52px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
+      <div class="g3" data-stagger style="margin-top:52px;display:grid;gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
         <div data-reveal style="background:#fff;padding:36px 30px 34px">
           <span style="display:block;width:22px;height:2px;background:#A7C900"></span>
           <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36;margin:20px 0 0">Caacupé</h3>
@@ -482,7 +509,7 @@
   </section>
 
   <section id="contacto" style="background:#F2F1ED;padding:104px 20px">
-    <div style="max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1fr 1.15fr;gap:76px">
+    <div class="g-split-inv" style="max-width:1320px;margin:0 auto;display:grid;gap:76px">
       <div data-reveal>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
           <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
@@ -498,7 +525,7 @@
         <a href="{{ waHref }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;margin-top:34px;height:50px;padding:0 24px;background:#1F5A36;color:#fff;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px" style-hover="background:#A7C900;color:#1F5A36">Escribir por WhatsApp</a>
       </div>
 
-      <form onSubmit="{{ onSubmit }}" data-reveal style="background:#fff;border:1px solid #E3E2DC;padding:38px 34px 34px;display:grid;grid-template-columns:1fr 1fr;gap:22px">
+      <form class="g2" onSubmit="{{ onSubmit }}" data-reveal style="background:#fff;border:1px solid #E3E2DC;padding:38px 34px 34px;display:grid;gap:22px">
         <div style="display:flex;flex-direction:column;gap:8px">
           <label for="f-nombre" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">Nombre</label>
           <input id="f-nombre" name="nombre" type="text" required style="height:46px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;color:#3A3A38;background:#fff;outline:none" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)">
@@ -545,7 +572,7 @@
   <div style="background:#F2F1ED;border-bottom:1px solid #E3E2DC;padding:44px 20px 30px">
     <div style="max-width:1320px;margin:0 auto">
       <h1 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);color:#1F5A36;margin:0;letter-spacing:-0.02em">Propiedades</h1>
-      <div style="margin-top:24px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:14px">
+      <div class="g-filtros" style="margin-top:24px;display:grid;gap:14px">
         <input type="search" placeholder="Buscar por título, ciudad o barrio" onInput="{{ onSearch }}" aria-label="Buscar propiedades" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 16px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)">
         <select onChange="{{ onType }}" aria-label="Tipo de propiedad" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
           <option value="">Todos los tipos</option>
@@ -574,8 +601,8 @@
     </div>
   </div>
 
-  <div style="max-width:1320px;margin:0 auto;padding:36px 20px 96px;display:grid;grid-template-columns:1.15fr 1fr;gap:34px;align-items:start">
-    <div data-stagger style="display:grid;grid-template-columns:repeat(2,1fr);gap:22px">
+  <div class="g-split" style="max-width:1320px;margin:0 auto;padding:36px 20px 96px;display:grid;gap:34px;align-items:start">
+    <div class="g2" data-stagger style="display:grid;gap:22px">
       <sc-for list="{{ visible }}" as="p" hint-placeholder-count="4">
         <article data-reveal onMouseEnter="{{ p.hover }}" onMouseLeave="{{ p.unhover }}" style="border:1px solid #E3E2DC;background:#fff">
           <a href="#" onClick="{{ p.open }}" style="display:block">
@@ -615,7 +642,7 @@
   <div style="max-width:1320px;margin:0 auto;padding:26px 20px 0">
     <a href="#" onClick="{{ goProps }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:600;color:#7E9848">← Volver al catálogo</a>
   </div>
-  <div data-stagger style="max-width:1320px;margin:0 auto;padding:22px 20px 0;display:grid;grid-template-columns:2.2fr 1fr;gap:12px">
+  <div class="g-split" data-stagger style="max-width:1320px;margin:0 auto;padding:22px 20px 0;display:grid;gap:12px">
     <div data-reveal style="aspect-ratio:16/10;overflow:hidden;background:#1F5A36">
       <img src="{{ detailImage }}" alt="{{ detailAlt }}" style="width:100%;height:100%;object-fit:cover;display:block">
     </div>
@@ -633,14 +660,14 @@
     </div>
   </div>
 
-  <div style="max-width:1320px;margin:0 auto;padding:52px 20px 96px;display:grid;grid-template-columns:1.6fr 1fr;gap:64px;align-items:start">
+  <div class="g-split" style="max-width:1320px;margin:0 auto;padding:52px 20px 96px;display:grid;gap:64px;align-items:start">
     <div data-reveal>
       <span style="display:inline-block;padding:6px 12px;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#fff;background:{{ detailTagBg }}">{{ detailOperation }}</span>
       <h1 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3.2vw,42px);line-height:1.1;letter-spacing:-0.02em;color:#1F5A36;margin:18px 0 0">{{ detailTitle }}</h1>
       <div style="margin-top:10px;font-size:15px;color:#7E9848;font-weight:500">{{ detailLocation }}</div>
       <div style="margin-top:26px;font-family:Montserrat,sans-serif;font-weight:800;font-size:30px;color:#3A3A38">{{ detailPrice }}</div>
 
-      <div style="margin-top:36px;display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
+      <div class="g5" style="margin-top:36px;display:grid;gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
         <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Superficie</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailArea }}</div></div>
         <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Construido</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailBuilt }}</div></div>
         <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Dormitorios</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailBeds }}</div></div>
@@ -652,7 +679,7 @@
       <p style="margin:16px 0 0;font-size:16px;line-height:1.75;color:#5A5A55;max-width:64ch">{{ detailDesc }}</p>
 
       <h2 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;color:#1F5A36;margin:44px 0 0">Comodidades</h2>
-      <ul style="margin:18px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:12px 20px">
+      <ul class="g3" style="margin:18px 0 0;padding:0;list-style:none;display:grid;gap:12px 20px">
         <sc-for list="{{ amenities }}" as="a" hint-placeholder-count="6">
           <li style="display:flex;align-items:center;gap:10px;font-size:14px;color:#5A5A55"><span style="width:7px;height:7px;background:#A7C900;display:block;flex-shrink:0"></span>{{ a }}</li>
         </sc-for>
@@ -697,12 +724,12 @@
   </section>
 
   <section style="background:#fff;padding:96px 20px">
-    <div style="max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1.05fr 1fr;gap:76px;align-items:center">
+    <div class="g-split" style="max-width:1320px;margin:0 auto;display:grid;gap:76px;align-items:center">
       <div data-reveal>
         <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(24px,2.6vw,34px);line-height:1.15;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">Trabajamos donde vivimos</h2>
         <p style="margin:22px 0 0;font-size:16.5px;line-height:1.75;color:#5A5A55;max-width:56ch">Operamos en Caacupé y el departamento de Cordillera. Conocemos los caminos, las zonas y el estado real de cada propiedad, y eso nos permite decirte con franqueza si algo conviene o no.</p>
         <p style="margin:18px 0 0;font-size:16.5px;line-height:1.75;color:#5A5A55;max-width:56ch">Acompañamos tanto a quien busca un terreno para construir como a quien evalúa una inversión mayor, y seguimos el proceso hasta la transferencia.</p>
-        <div data-stagger style="display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:#E3E2DC;margin-top:44px;border:1px solid #E3E2DC">
+        <div class="g2" data-stagger style="display:grid;gap:1px;background:#E3E2DC;margin-top:44px;border:1px solid #E3E2DC">
           <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Confianza</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Decisiones claras y relaciones duraderas.</div></div>
           <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Crecimiento</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Oportunidades que generan valor sostenible.</div></div>
           <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Cercanía</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Conocimiento local y atención humana.</div></div>
@@ -746,7 +773,7 @@
 
   <section style="background:#fff;padding:88px 20px">
     <div style="max-width:1320px;margin:0 auto">
-      <div data-stagger style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
+      <div data-stagger class="g3" style="display:grid;gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
         <sc-for list="{{ services }}" as="s" hint-placeholder-count="6">
           <a href="#" onClick="{{ goContacto }}" data-reveal style="background:#fff;padding:36px 28px 34px;display:block;transition:background .4s cubic-bezier(.22,1,.36,1)" style-hover="background:#F2F1ED">
             <span style="display:block;width:22px;height:2px;background:#A7C900"></span>
@@ -765,7 +792,7 @@
         <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Proceso</span>
       </div>
       <h2 data-reveal style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0 0 56px">Cómo trabajamos</h2>
-      <div data-stagger style="display:grid;grid-template-columns:repeat(4,1fr);gap:28px">
+      <div class="g4" data-stagger style="display:grid;gap:28px">
         <sc-for list="{{ steps }}" as="st" hint-placeholder-count="4">
           <div data-reveal style="position:relative;padding-top:30px;border-top:2px solid #CFCEC6">
             <span style="position:absolute;top:-9px;left:0;width:16px;height:16px;border-radius:50%;background:#A7C900;border:4px solid #F2F1ED"></span>
@@ -794,7 +821,7 @@
 </a>
 
 <footer style="background:#1F5A36;color:#fff;padding:50px 20px 24px">
-  <div style="max-width:1320px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:36px">
+  <div class="g-pie" style="max-width:1320px;margin:0 auto;display:grid;gap:36px">
     <div>
       <div aria-label="BRIMMO — La Cordillera, Paraguay" style="display:flex;align-items:center;gap:14px">
         <svg width="40" height="40" viewBox="0 0 24 24" aria-hidden="true" style="display:block;flex-shrink:0">
