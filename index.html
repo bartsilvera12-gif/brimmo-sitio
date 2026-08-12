@@ -146,6 +146,24 @@
   .bri-cat:focus-visible { outline: 3px solid #A7C900; outline-offset: 3px; }
   @media (max-width: 900px) { .bri-cat { aspect-ratio: 3/2; } }
 
+  /* ===== Barra inferior del footer =====
+     El botón flotante de WhatsApp ocupa la esquina inferior derecha
+     (58px + 22px de margen), así que se reserva ese espacio. */
+  .bri-pie {
+    max-width: 1320px; margin: 52px auto 0; padding-top: 22px;
+    border-top: 1px solid rgba(255,255,255,.16);
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center; gap: 14px;
+    font-size: 12px; color: rgba(255,255,255,.6);
+  }
+  .bri-pie-izq    { justify-self: start; }
+  .bri-pie-centro { justify-self: center; text-align: center; }
+  .bri-pie-der    { justify-self: end; padding-right: 92px; }
+  @media (max-width: 820px) {
+    .bri-pie { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 12px; padding-bottom: 78px; }
+    .bri-pie-izq, .bri-pie-centro, .bri-pie-der { justify-self: center; padding-right: 0; }
+  }
+
   /* Testimonials fade */
   .bri-testimonial-fade { transition: opacity 500ms cubic-bezier(.22,1,.36,1), transform 500ms cubic-bezier(.22,1,.36,1); }
 
@@ -810,12 +828,10 @@
       </div>
     </div>
   </div>
-  <div style="max-width:1320px;margin:52px auto 0;padding-top:22px;border-top:1px solid rgba(255,255,255,.16);display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.6)">
-    <span>© {{ year }} BRIMMO — La Cordillera, Paraguay</span>
-    <div style="display:flex;gap:22px;align-items:center">
-      <a href="#" style="color:rgba(255,255,255,.6)" style-hover="color:#A7C900">Política de privacidad</a>
-      <a href="https://neura.com.py" target="_blank" rel="noopener" style="color:rgba(255,255,255,.6)" style-hover="color:#A7C900">Desarrollado por Neura</a>
-    </div>
+  <div class="bri-pie">
+    <span class="bri-pie-izq">© {{ year }} BRIMMO — La Cordillera, Paraguay</span>
+    <a href="https://neura.com.py" target="_blank" rel="noopener" class="bri-pie-centro" style="color:rgba(255,255,255,.6)" style-hover="color:#A7C900">Desarrollado por Neura</a>
+    <a href="#" class="bri-pie-der" style="color:rgba(255,255,255,.6)" style-hover="color:#A7C900">Política de privacidad</a>
   </div>
 </footer>
 
