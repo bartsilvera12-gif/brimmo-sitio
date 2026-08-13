@@ -157,6 +157,12 @@
   .bri-featured { width: min(400px, 88vw); }
   @media (max-width: 720px) {
     .bri-featured { width: calc(100vw - 40px); }
+    /* El encabezado se parte en dos filas y los controles quedaban pegados
+       a la izquierda con el resto de la fila vacía. Al ocupar el ancho
+       completo, "Ver todas" queda a la izquierda y las flechas a la
+       derecha, alineadas con los bordes de la tarjeta. */
+    .bri-dest-cab { flex-direction: column; align-items: stretch !important; gap: 22px; }
+    .bri-dest-ctrl { width: 100%; justify-content: space-between; }
   }
 
   /* ===== Menú móvil =====
@@ -430,7 +436,7 @@
   </section>
 
   <section style="background:#F2F1ED;padding:104px 0">
-    <div data-reveal style="max-width:1320px;margin:0 auto;padding:0 20px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+    <div data-reveal class="bri-dest-cab" style="max-width:1320px;margin:0 auto;padding:0 20px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap">
       <div>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
           <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
@@ -438,7 +444,7 @@
         </div>
         <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0">{{ t.destacadas }}</h2>
       </div>
-      <div style="display:flex;align-items:center;gap:14px">
+      <div class="bri-dest-ctrl" style="display:flex;align-items:center;gap:14px">
         <a href="#" onClick="{{ goProps }}" style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;color:#7E9848">{{ t.verTodas }}</a>
         <button onClick="{{ prevSlide }}" aria-label="{{ t.anterior }}" style="width:46px;height:46px;border-radius:50%;border:1px solid #CFCEC6;background:transparent;color:#1F5A36;display:flex;align-items:center;justify-content:center;transition:border-color .3s,background .3s" style-hover="border-color:#1F5A36;background:#fff">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
