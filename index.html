@@ -146,6 +146,40 @@
   .bri-cat:focus-visible { outline: 3px solid #A7C900; outline-offset: 3px; }
   @media (max-width: 900px) { .bri-cat { aspect-ratio: 3/2; } }
 
+  /* ===== Menú móvil =====
+     A 390px el header necesitaba 942px: cinco enlaces quedaban fuera de
+     pantalla y el sitio era innavegable en móvil. */
+  .bri-burger {
+    display: none; background: transparent; border: 0; padding: 8px;
+    margin: -8px -8px -8px 0; cursor: pointer; line-height: 0;
+    transition: color .4s cubic-bezier(.22,1,.36,1);
+  }
+  @media (max-width: 900px) {
+    .bri-burger { display: inline-flex; }
+    .bri-nav {
+      position: fixed !important; top: 92px; left: 0; right: 0;
+      max-height: calc(100vh - 92px); overflow-y: auto;
+      background: #fff; border-bottom: 1px solid #E3E2DC;
+      flex-direction: column !important; align-items: stretch !important;
+      gap: 0 !important; padding: 8px 0 16px;
+      transform: translateY(-8px); opacity: 0; pointer-events: none;
+      transition: transform .35s cubic-bezier(.22,1,.36,1), opacity .3s;
+      box-shadow: 0 12px 24px -12px rgba(23,45,30,.18);
+    }
+    .bri-nav.abierto { transform: none; opacity: 1; pointer-events: auto; }
+    .bri-nav > a {
+      color: #3A3A38 !important;
+      padding: 15px 24px !important;
+      border-bottom: 1px solid #F2F1ED;
+    }
+    .bri-nav > a[href="#contacto"],
+    .bri-nav > a:last-child {
+      margin: 12px 24px 0;
+      justify-content: center;
+      border-bottom: 0;
+    }
+  }
+
   /* ===== Grillas adaptables =====
      Las columnas fijas desbordaban en pantallas angostas: en 612px de
      ancho el documento medía 629px y aparecía scroll horizontal. */
@@ -328,16 +362,29 @@
       </svg>
       <span style="display:block;line-height:1">
         <span style="display:block;font-family:Montserrat,sans-serif;font-weight:800;font-size:27px;letter-spacing:0.01em;color:{{ logoColor }};transition:color .4s cubic-bezier(.22,1,.36,1)">BRIMMO</span>
-        <span style="display:block;margin-top:5px;font-size:9px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:{{ logoSubColor }};transition:color .4s cubic-bezier(.22,1,.36,1)">La Cordillera — Paraguay</span>
+        <span style="display:block;margin-top:5px;font-size:9px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:{{ logoSubColor }};transition:color .4s cubic-bezier(.22,1,.36,1)">{{ t.marcaBajada }}</span>
       </span>
     </a>
-    <nav aria-label="Principal" style="display:flex;align-items:center;gap:30px">
-      <a href="#" onClick="{{ goInicio }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actInicio }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Inicio</a>
-      <a href="#" onClick="{{ goProps }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actProps }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Propiedades</a>
-      <a href="#" onClick="{{ goServicios }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actServicios }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Servicios</a>
-      <a href="#" onClick="{{ goNosotros }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actNosotros }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">Nosotros</a>
-      <a href="#" onClick="{{ goZona }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid transparent;color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">La zona</a>
-      <a href="#" onClick="{{ goContacto }}" style="display:inline-flex;align-items:center;height:42px;padding:0 20px;background:#A7C900;color:#1F5A36;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;border-radius:2px;transition:background .3s" style-hover="background:#1F5A36;color:#fff">Contacto</a>
+    <button type="button" class="bri-burger" onClick="{{ toggleMenu }}" aria-label="{{ menuAria }}" aria-expanded="{{ menuAbierto }}" aria-controls="nav-principal" style="color:{{ navColor }}">
+      <sc-if value="{{ menuAbierto }}" hint-placeholder-val="{{ false }}">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+      </sc-if>
+      <sc-if value="{{ menuCerrado }}" hint-placeholder-val="{{ true }}">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="17" x2="21" y2="17"></line></svg>
+      </sc-if>
+    </button>
+    <nav id="nav-principal" aria-label="{{ t.navegacion }}" class="bri-nav {{ menuClase }}" style="display:flex;align-items:center;gap:30px">
+      <a href="#" onClick="{{ goInicio }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actInicio }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">{{ t.navInicio }}</a>
+      <a href="#" onClick="{{ goProps }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actProps }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">{{ t.navPropiedades }}</a>
+      <a href="#" onClick="{{ goServicios }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actServicios }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">{{ t.navServicios }}</a>
+      <a href="#" onClick="{{ goNosotros }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid {{ actNosotros }};color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">{{ t.navNosotros }}</a>
+      <a href="#" onClick="{{ goZona }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:500;padding-bottom:5px;border-bottom:2px solid transparent;color:{{ navColor }};transition:color .4s cubic-bezier(.22,1,.36,1),border-color .3s">{{ t.navZona }}</a>
+      <a href="#" onClick="{{ goContacto }}" style="display:inline-flex;align-items:center;height:42px;padding:0 20px;background:#A7C900;color:#1F5A36;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;border-radius:2px;transition:background .3s" style-hover="background:#1F5A36;color:#fff">{{ t.navContacto }}</a>
+      <div role="group" aria-label="{{ t.idiomaAria }}" style="display:flex;align-items:center;gap:3px;margin-left:2px">
+        <sc-for list="{{ idiomas }}" as="l" hint-placeholder-count="3">
+          <a href="#" onClick="{{ l.elegir }}" lang="{{ l.code }}" aria-current="{{ l.activo }}" style="padding:5px 6px;font-size:11px;letter-spacing:0.1em;font-weight:{{ l.peso }};color:{{ l.color }};transition:color .3s" style-hover="color:#A7C900">{{ l.etiqueta }}</a>
+        </sc-for>
+      </div>
     </nav>
   </div>
 </header>
@@ -346,25 +393,25 @@
 <main>
 
   <section style="position:relative;min-height:100vh;display:flex;align-items:flex-end;overflow:hidden;background:#1F5A36">
-    <img src="uploads/img/01-hero-brimmo-cordillera.png" alt="Paisaje de La Cordillera, Paraguay" class="bri-hero-media bri-parallax" data-parallax="0.12">
+    <img src="uploads/img/01-hero-brimmo-cordillera.png" alt="{{ t.heroAlt }}" class="bri-hero-media bri-parallax" data-parallax="0.12">
     <div style="position:absolute;inset:0;background:radial-gradient(120% 90% at 75% 15%, rgba(167,201,0,0.16) 0%, rgba(31,90,54,0) 60%);z-index:1"></div>
     <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(to top,rgba(23,45,30,0.92) 0%,rgba(23,45,30,0.35) 45%,rgba(23,45,30,0.55) 100%);z-index:1"></div>
 
     <div class="bri-hero-in" style="position:relative;z-index:2;width:100%;max-width:1320px;margin:0 auto;padding:140px 20px 96px">
       <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
         <span style="width:44px;height:2px;background:#A7C900;display:block"></span>
-        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#A7C900;font-weight:600">La Cordillera — Paraguay</span>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#A7C900;font-weight:600">{{ t.marcaBajada }}</span>
       </div>
-      <h1 style="font-family:Montserrat,sans-serif;font-weight:800;color:#fff;font-size:clamp(34px,5.2vw,72px);line-height:1.04;letter-spacing:-0.02em;max-width:16ch;margin:0;text-wrap:balance">Encontrá el lugar donde tu próximo proyecto comienza.</h1>
-      <p style="margin:26px 0 0;max-width:52ch;font-size:17px;line-height:1.6;color:rgba(255,255,255,.82)">Propiedades, inversiones y asesoramiento inmobiliario con conocimiento real del territorio.</p>
+      <h1 style="font-family:Montserrat,sans-serif;font-weight:800;color:#fff;font-size:clamp(34px,5.2vw,72px);line-height:1.04;letter-spacing:-0.02em;max-width:16ch;margin:0;text-wrap:balance">{{ t.heroTitulo }}</h1>
+      <p style="margin:26px 0 0;max-width:52ch;font-size:17px;line-height:1.6;color:rgba(255,255,255,.82)">{{ t.heroTexto }}</p>
       <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:38px">
-        <a href="#" onClick="{{ goProps }}" style="display:inline-flex;align-items:center;gap:12px;height:54px;padding:0 30px;background:#A7C900;color:#1F5A36;font-weight:600;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:transform .4s cubic-bezier(.22,1,.36,1),background .3s" style-hover="background:#fff;transform:translateY(-2px)">Ver propiedades</a>
-        <a href="#contacto" style="display:inline-flex;align-items:center;gap:12px;height:54px;padding:0 30px;border:1px solid rgba(255,255,255,.55);color:#fff;font-weight:600;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:background .3s,border-color .3s" style-hover="background:rgba(255,255,255,.12);border-color:#A7C900">Hablar con un asesor</a>
+        <a href="#" onClick="{{ goProps }}" style="display:inline-flex;align-items:center;gap:12px;height:54px;padding:0 30px;background:#A7C900;color:#1F5A36;font-weight:600;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:transform .4s cubic-bezier(.22,1,.36,1),background .3s" style-hover="background:#fff;transform:translateY(-2px)">{{ t.verPropiedades }}</a>
+        <a href="#contacto" style="display:inline-flex;align-items:center;gap:12px;height:54px;padding:0 30px;border:1px solid rgba(255,255,255,.55);color:#fff;font-weight:600;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:background .3s,border-color .3s" style-hover="background:rgba(255,255,255,.12);border-color:#A7C900">{{ t.hablarAsesor }}</a>
       </div>
     </div>
 
     <div class="bri-hero-cue" style="position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;z-index:2">
-      <span style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,.6)">Seguí bajando</span>
+      <span style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,.6)">{{ t.seguiBajando }}</span>
       <span style="width:1px;height:26px;background:linear-gradient(to bottom,#A7C900,rgba(167,201,0,0));animation:bri-scroll 2.2s cubic-bezier(.22,1,.36,1) infinite"></span>
     </div>
   </section>
@@ -374,16 +421,16 @@
       <div>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
           <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
-          <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Catálogo</span>
+          <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ t.catalogo }}</span>
         </div>
-        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0">Propiedades destacadas</h2>
+        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0">{{ t.destacadas }}</h2>
       </div>
       <div style="display:flex;align-items:center;gap:14px">
-        <a href="#" onClick="{{ goProps }}" style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;color:#7E9848">Ver todas</a>
-        <button onClick="{{ prevSlide }}" aria-label="Anterior" style="width:46px;height:46px;border-radius:50%;border:1px solid #CFCEC6;background:transparent;color:#1F5A36;display:flex;align-items:center;justify-content:center;transition:border-color .3s,background .3s" style-hover="border-color:#1F5A36;background:#fff">
+        <a href="#" onClick="{{ goProps }}" style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;font-weight:600;color:#7E9848">{{ t.verTodas }}</a>
+        <button onClick="{{ prevSlide }}" aria-label="{{ t.anterior }}" style="width:46px;height:46px;border-radius:50%;border:1px solid #CFCEC6;background:transparent;color:#1F5A36;display:flex;align-items:center;justify-content:center;transition:border-color .3s,background .3s" style-hover="border-color:#1F5A36;background:#fff">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
-        <button onClick="{{ nextSlide }}" aria-label="Siguiente" style="width:46px;height:46px;border-radius:50%;border:1px solid #1F5A36;background:#1F5A36;color:#fff;display:flex;align-items:center;justify-content:center;transition:background .3s" style-hover="background:#A7C900;color:#1F5A36;border-color:#A7C900">
+        <button onClick="{{ nextSlide }}" aria-label="{{ t.siguiente }}" style="width:46px;height:46px;border-radius:50%;border:1px solid #1F5A36;background:#1F5A36;color:#fff;display:flex;align-items:center;justify-content:center;transition:background .3s" style-hover="background:#A7C900;color:#1F5A36;border-color:#A7C900">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
       </div>
@@ -415,9 +462,9 @@
     <div style="max-width:1320px;margin:0 auto">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
         <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
-        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Oportunidades</span>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ t.oportunidades }}</span>
       </div>
-      <h2 data-reveal style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0 0 44px">Elegí por dónde empezar</h2>
+      <h2 data-reveal style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0 0 44px">{{ t.elegiEmpezar }}</h2>
       <div data-stagger style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
         <sc-for list="{{ categories }}" as="c" hint-placeholder-count="3">
           <a href="#" data-reveal onClick="{{ c.open }}" class="bri-cat" aria-label="{{ c.aria }}">
@@ -427,7 +474,7 @@
               <span style="display:block;font-family:Montserrat,sans-serif;font-weight:800;font-size:34px;color:#A7C900;line-height:1">{{ c.count }}</span>
               <span style="display:block;margin-top:12px;font-family:Montserrat,sans-serif;font-weight:700;font-size:18px;color:#fff">{{ c.name }}</span>
               <span style="display:block;margin-top:6px;font-size:13px;line-height:1.5;color:rgba(255,255,255,.7)">{{ c.hint }}</span>
-              <span class="bri-cat-flecha">Ver
+              <span class="bri-cat-flecha">{{ t.ver }}
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><line x1="4" y1="12" x2="19" y2="12"></line><polyline points="13 6 19 12 13 18"></polyline></svg>
               </span>
             </span>
@@ -442,8 +489,8 @@
     <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(23,45,30,0.82) 0%,rgba(23,45,30,0.55) 60%,rgba(23,45,30,0.35) 100%);z-index:1"></div>
     <div style="position:relative;z-index:2;max-width:1320px;margin:0 auto;padding:120px 20px;width:100%">
       <div data-reveal style="max-width:19ch">
-        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#A7C900;font-weight:600">Experiencia BRIMMO</span>
-        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(28px,3.8vw,52px);line-height:1.08;letter-spacing:-0.02em;color:#fff;margin:22px 0 0;text-wrap:balance">Espacios, oportunidades y decisiones que construyen futuro.</h2>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#A7C900;font-weight:600">{{ t.experiencia }}</span>
+        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(28px,3.8vw,52px);line-height:1.08;letter-spacing:-0.02em;color:#fff;margin:22px 0 0;text-wrap:balance">{{ t.experienciaTitulo }}</h2>
       </div>
     </div>
   </section>
@@ -453,25 +500,25 @@
       <img src="assets/brimmo-isotipo.png" alt="" aria-hidden="true" style="width:340px;height:340px;object-fit:contain">
     </div>
     <div data-reveal style="position:relative;max-width:1000px;margin:0 auto;text-align:center">
-      <p style="font-family:Montserrat,sans-serif;font-weight:700;font-size:clamp(24px,3.2vw,40px);line-height:1.25;color:#fff;margin:0;text-wrap:balance">“Cada propiedad representa una oportunidad. Nuestro trabajo es ayudarte a verla con claridad.”</p>
-      <div style="margin-top:32px;font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#A7C900;font-weight:600">BRIMMO — La Cordillera, Paraguay</div>
+      <p style="font-family:Montserrat,sans-serif;font-weight:700;font-size:clamp(24px,3.2vw,40px);line-height:1.25;color:#fff;margin:0;text-wrap:balance">{{ t.cita }}</p>
+      <div style="margin-top:32px;font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#A7C900;font-weight:600">{{ t.citaPie }}</div>
     </div>
   </section>
 
   <section style="background:#fff;padding:104px 20px">
-    <div data-reveal ref="{{ tZoneRef }}" onMouseEnter="{{ pauseT }}" onMouseLeave="{{ resumeT }}" onFocusIn="{{ pauseT }}" onFocusOut="{{ resumeT }}" role="group" aria-roledescription="carrusel" aria-label="Testimonios de clientes" style="max-width:1000px;margin:0 auto;text-align:center">
+    <div data-reveal ref="{{ tZoneRef }}" onMouseEnter="{{ pauseT }}" onMouseLeave="{{ resumeT }}" onFocusIn="{{ pauseT }}" onFocusOut="{{ resumeT }}" role="group" aria-roledescription="carrusel" aria-label="{{ t.testimonios }}" style="max-width:1000px;margin:0 auto;text-align:center">
       <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:28px">
         <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
-        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Testimonios</span>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ t.testimonios }}</span>
       </div>
       <blockquote key="{{ tKey }}" class="bri-testimonial-fade" style="margin:0;font-family:Montserrat,sans-serif;font-weight:600;font-size:clamp(20px,2.4vw,30px);line-height:1.4;color:#1F5A36;text-wrap:balance;animation:bri-hero-in 500ms cubic-bezier(.22,1,.36,1) both">{{ activeTestimonial }}</blockquote>
       <div key="{{ tKey }}a" style="margin-top:26px;font-size:14px;font-weight:600;color:#3A3A38;animation:bri-hero-in 500ms cubic-bezier(.22,1,.36,1) 80ms both">{{ activeAuthor }}</div>
       <div key="{{ tKey }}r" style="margin-top:4px;font-size:12px;color:#8A8A82;letter-spacing:0.06em;animation:bri-hero-in 500ms cubic-bezier(.22,1,.36,1) 140ms both">{{ activeRole }}</div>
       <div style="margin-top:36px;display:flex;align-items:center;justify-content:center;gap:12px">
-        <button onClick="{{ prevT }}" aria-label="Testimonio anterior" style="width:44px;height:44px;border-radius:50%;border:1px solid #CFCEC6;background:#fff;color:#1F5A36;display:flex;align-items:center;justify-content:center" style-hover="border-color:#1F5A36">
+        <button onClick="{{ prevT }}" aria-label="{{ t.testimonioAnterior }}" style="width:44px;height:44px;border-radius:50%;border:1px solid #CFCEC6;background:#fff;color:#1F5A36;display:flex;align-items:center;justify-content:center" style-hover="border-color:#1F5A36">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
-        <button onClick="{{ nextT }}" aria-label="Testimonio siguiente" style="width:44px;height:44px;border-radius:50%;border:1px solid #1F5A36;background:#1F5A36;color:#fff;display:flex;align-items:center;justify-content:center" style-hover="background:#A7C900;color:#1F5A36;border-color:#A7C900">
+        <button onClick="{{ nextT }}" aria-label="{{ t.testimonioSiguiente }}" style="width:44px;height:44px;border-radius:50%;border:1px solid #1F5A36;background:#1F5A36;color:#fff;display:flex;align-items:center;justify-content:center" style-hover="background:#A7C900;color:#1F5A36;border-color:#A7C900">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
       </div>
@@ -483,26 +530,26 @@
       <div data-reveal>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
           <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
-          <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">La zona</span>
+          <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ t.navZona }}</span>
         </div>
-        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">Vivir e invertir en La Cordillera</h2>
-        <p style="margin:22px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:62ch">Una región verde y ondulada, con clima agradable y buen acceso a Asunción. Es la zona donde trabajamos y la conocemos de primera mano.</p>
+        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">{{ t.zonaTitulo }}</h2>
+        <p style="margin:22px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:62ch">{{ t.zonaTexto }}</p>
       </div>
       <div class="g3" data-stagger style="margin-top:52px;display:grid;gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
         <div data-reveal style="background:#fff;padding:36px 30px 34px">
           <span style="display:block;width:22px;height:2px;background:#A7C900"></span>
-          <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36;margin:20px 0 0">Caacupé</h3>
-          <p style="margin:12px 0 0;font-size:14.5px;line-height:1.65;color:#6B6B65">Capital del departamento y corazón espiritual del país por su basílica. Tiene comercios, escuelas, universidades y hospital, a unos 50 km de Asunción, sin perder escala humana.</p>
+          <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36;margin:20px 0 0">{{ t.zonaCaacupe }}</h3>
+          <p style="margin:12px 0 0;font-size:14.5px;line-height:1.65;color:#6B6B65">{{ t.zonaCaacupeTexto }}</p>
         </div>
         <div data-reveal style="background:#fff;padding:36px 30px 34px">
           <span style="display:block;width:22px;height:2px;background:#A7C900"></span>
-          <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36;margin:20px 0 0">San Bernardino y el lago</h3>
-          <p style="margin:12px 0 0;font-size:14.5px;line-height:1.65;color:#6B6B65">A orillas del lago Ypacaraí, con actividades al aire libre, gastronomía y vida cultural. En verano concentra la temporada; el resto del año recupera la calma. A unos 40 km de Asunción.</p>
+          <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36;margin:20px 0 0">{{ t.zonaSb }}</h3>
+          <p style="margin:12px 0 0;font-size:14.5px;line-height:1.65;color:#6B6B65">{{ t.zonaSbTexto }}</p>
         </div>
         <div data-reveal style="background:#fff;padding:36px 30px 34px">
           <span style="display:block;width:22px;height:2px;background:#A7C900"></span>
-          <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36;margin:20px 0 0">Campo y proyectos</h3>
-          <p style="margin:12px 0 0;font-size:14.5px;line-height:1.65;color:#6B6B65">Terrenos, quintas y superficies mayores en Atyrá, Tobatí, Eusebio Ayala y alrededores, aptas para residencia, producción, loteamiento o desarrollo turístico.</p>
+          <h3 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36;margin:20px 0 0">{{ t.zonaCampo }}</h3>
+          <p style="margin:12px 0 0;font-size:14.5px;line-height:1.65;color:#6B6B65">{{ t.zonaCampoTexto }}</p>
         </div>
       </div>
     </div>
@@ -513,48 +560,48 @@
       <div data-reveal>
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
           <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
-          <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Contacto</span>
+          <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ t.navContacto }}</span>
         </div>
-        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0">Hablemos de tu próximo proyecto.</h2>
-        <p style="margin:20px 0 0;font-size:16px;line-height:1.7;color:#6B6B65;max-width:44ch">Contanos qué estás buscando y te respondemos con opciones concretas y asesoramiento claro.</p>
+        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0">{{ t.contactoTitulo }}</h2>
+        <p style="margin:20px 0 0;font-size:16px;line-height:1.7;color:#6B6B65;max-width:44ch">{{ t.contactoTexto }}</p>
         <div style="margin-top:40px;display:flex;flex-direction:column;gap:18px">
-          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">Teléfono y WhatsApp</div><a href="{{ telHref }}" style="margin-top:6px;display:block;font-size:16px;font-weight:600;color:#3A3A38">{{ tel }}</a></div>
-          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">Correo</div><a href="{{ mailHref }}" style="margin-top:6px;display:block;font-size:16px;font-weight:600;color:#3A3A38">{{ mail }}</a></div>
-          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">Ubicación</div><div style="margin-top:6px;font-size:16px;color:#3A3A38">{{ direccion }}</div></div>
+          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">{{ t.telWhats }}</div><a href="{{ telHref }}" style="margin-top:6px;display:block;font-size:16px;font-weight:600;color:#3A3A38">{{ tel }}</a></div>
+          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">{{ t.correo }}</div><a href="{{ mailHref }}" style="margin-top:6px;display:block;font-size:16px;font-weight:600;color:#3A3A38">{{ mail }}</a></div>
+          <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">{{ t.ubicacion }}</div><div style="margin-top:6px;font-size:16px;color:#3A3A38">{{ direccion }}</div></div>
         </div>
-        <a href="{{ waHref }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;margin-top:34px;height:50px;padding:0 24px;background:#1F5A36;color:#fff;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px" style-hover="background:#A7C900;color:#1F5A36">Escribir por WhatsApp</a>
+        <a href="{{ waHref }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;margin-top:34px;height:50px;padding:0 24px;background:#1F5A36;color:#fff;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px" style-hover="background:#A7C900;color:#1F5A36">{{ t.escribirWhats }}</a>
       </div>
 
       <form class="g2" onSubmit="{{ onSubmit }}" data-reveal style="background:#fff;border:1px solid #E3E2DC;padding:38px 34px 34px;display:grid;gap:22px">
         <div style="display:flex;flex-direction:column;gap:8px">
-          <label for="f-nombre" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">Nombre</label>
+          <label for="f-nombre" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ t.nombre }}</label>
           <input id="f-nombre" name="nombre" type="text" required style="height:46px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;color:#3A3A38;background:#fff;outline:none" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)">
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
-          <label for="f-tel" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">Teléfono</label>
+          <label for="f-tel" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ t.telefono }}</label>
           <input id="f-tel" name="telefono" type="tel" style="height:46px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;color:#3A3A38;background:#fff;outline:none" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)">
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
-          <label for="f-mail" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">Correo</label>
+          <label for="f-mail" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ t.correo }}</label>
           <input id="f-mail" name="email" type="email" required style="height:46px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;color:#3A3A38;background:#fff;outline:none" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)">
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
-          <label for="f-tipo" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">Tipo de consulta</label>
+          <label for="f-tipo" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ t.tipoConsulta }}</label>
           <select id="f-tipo" name="tipo" style="height:46px;border:1px solid #DCDBD4;border-radius:2px;padding:0 12px;font-family:Inter,sans-serif;font-size:15px;color:#3A3A38;background:#fff;outline:none" style-focus="border-color:#A7C900">
-            <option>Quiero comprar</option>
-            <option>Quiero vender</option>
-            <option>Quiero alquilar</option>
-            <option>Quiero invertir</option>
-            <option>Tasación</option>
+            <option>{{ t.optComprar }}</option>
+            <option>{{ t.optVender }}</option>
+            <option>{{ t.optAlquilar }}</option>
+            <option>{{ t.optInvertir }}</option>
+            <option>{{ t.optTasacion }}</option>
           </select>
         </div>
         <div style="grid-column:1 / -1;display:flex;flex-direction:column;gap:8px">
-          <label for="f-msg" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">Mensaje</label>
+          <label for="f-msg" style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ t.mensaje }}</label>
           <textarea id="f-msg" name="mensaje" rows="4" style="border:1px solid #DCDBD4;border-radius:2px;padding:12px 14px;font-family:Inter,sans-serif;font-size:15px;color:#3A3A38;background:#fff;outline:none;resize:vertical" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)"></textarea>
         </div>
         <label style="grid-column:1 / -1;display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.5;color:#6B6B65">
           <input type="checkbox" required style="margin-top:3px;width:16px;height:16px;accent-color:#1F5A36">
-          <span>Acepto la política de privacidad y el tratamiento de mis datos para responder esta consulta.</span>
+          <span>{{ t.aceptoPolitica }}</span>
         </label>
         <div style="grid-column:1 / -1;display:flex;align-items:center;gap:18px">
           <button type="submit" style="height:52px;padding:0 32px;background:#1F5A36;color:#fff;border:none;border-radius:2px;font-family:Inter,sans-serif;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;transition:background .3s" style-hover="background:#A7C900;color:#1F5A36">{{ submitLabel }}</button>
@@ -571,30 +618,30 @@
 <main style="padding-top:92px;background:#fff;min-height:100vh">
   <div style="background:#F2F1ED;border-bottom:1px solid #E3E2DC;padding:44px 20px 30px">
     <div style="max-width:1320px;margin:0 auto">
-      <h1 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);color:#1F5A36;margin:0;letter-spacing:-0.02em">Propiedades</h1>
+      <h1 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);color:#1F5A36;margin:0;letter-spacing:-0.02em">{{ t.navPropiedades }}</h1>
       <div class="g-filtros" style="margin-top:24px;display:grid;gap:14px">
-        <input type="search" placeholder="Buscar por título, ciudad o barrio" onInput="{{ onSearch }}" aria-label="Buscar propiedades" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 16px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)">
-        <select onChange="{{ onType }}" aria-label="Tipo de propiedad" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
-          <option value="">Todos los tipos</option>
-          <option value="Terreno">Terrenos</option>
-          <option value="Quinta">Quintas</option>
-          <option value="Villa">Villas</option>
-          <option value="Casa">Casas</option>
-          <option value="Rancho">Ranchos</option>
+        <input type="search" placeholder="{{ t.buscarPlaceholder }}" onInput="{{ onSearch }}" aria-label="{{ t.buscarAria }}" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 16px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none" style-focus="border-color:#A7C900;box-shadow:0 0 0 3px rgba(167,201,0,.22)">
+        <select onChange="{{ onType }}" aria-label="{{ t.tipoPropiedad }}" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
+          <option value="">{{ t.todosTipos }}</option>
+          <option value="Terreno">{{ t.catTerrenos }}</option>
+          <option value="Quinta">{{ t.catQuintas }}</option>
+          <option value="Villa">{{ t.catVillas }}</option>
+          <option value="Casa">{{ t.catCasas }}</option>
+          <option value="Rancho">{{ t.catRanchos }}</option>
         </select>
-        <select onChange="{{ onCity }}" aria-label="Ciudad" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
-          <option value="">Todas las ciudades</option>
+        <select onChange="{{ onCity }}" aria-label="{{ t.ciudadAria }}" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
+          <option value="">{{ t.todasCiudades }}</option>
           <sc-for list="{{ ciudades }}" as="c" hint-placeholder-count="3">
             <option value="{{ c }}">{{ c }}</option>
           </sc-for>
         </select>
-        <select onChange="{{ onPrice }}" aria-label="Rango de precio" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
-          <option value="">Cualquier precio</option>
-          <option value="GS:0-300000000">Hasta Gs. 300.000.000</option>
-          <option value="GS:300000000-600000000">Gs. 300 — 600 millones</option>
-          <option value="GS:600000000-99999999999">Más de Gs. 600.000.000</option>
-          <option value="USD:0-160000">Hasta USD 160.000</option>
-          <option value="USD:160000-99999999">Más de USD 160.000</option>
+        <select onChange="{{ onPrice }}" aria-label="{{ t.rangoPrecio }}" style="height:48px;border:1px solid #DCDBD4;border-radius:2px;padding:0 14px;font-family:Inter,sans-serif;font-size:15px;background:#fff;outline:none">
+          <option value="">{{ t.cualquierPrecio }}</option>
+          <option value="GS:0-300000000">{{ t.precio1 }}</option>
+          <option value="GS:300000000-600000000">{{ t.precio2 }}</option>
+          <option value="GS:600000000-99999999999">{{ t.precio3 }}</option>
+          <option value="USD:0-160000">{{ t.precio4 }}</option>
+          <option value="USD:160000-99999999">{{ t.precio5 }}</option>
         </select>
       </div>
       <div style="margin-top:16px;font-size:13px;color:#7E9848;font-weight:500">{{ resultCount }}</div>
@@ -623,15 +670,15 @@
       </sc-for>
       <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
         <div style="grid-column:1 / -1;padding:70px 20px;text-align:center;border:1px dashed #DCDBD4;background:#F2F1ED">
-          <div style="font-family:Montserrat,sans-serif;font-weight:700;font-size:18px;color:#1F5A36">No encontramos propiedades con esos filtros</div>
-          <div style="margin-top:8px;font-size:14px;color:#6B6B65">Probá ampliar el rango de precio o cambiar el tipo de propiedad.</div>
+          <div style="font-family:Montserrat,sans-serif;font-weight:700;font-size:18px;color:#1F5A36">{{ t.sinResultados }}</div>
+          <div style="margin-top:8px;font-size:14px;color:#6B6B65">{{ t.sinResultadosTexto }}</div>
         </div>
       </sc-if>
     </div>
 
     <div style="position:sticky;top:104px">
-      <div ref="{{ mapRef }}" role="application" aria-label="Mapa de propiedades en La Cordillera" style="height:640px;border:1px solid #E3E2DC;background:#F2F1ED"></div>
-      <div style="margin-top:10px;font-size:12px;color:#8A8A82">Zoom con rueda desactivado — usá los controles del mapa. Marcador Lima = propiedad activa.</div>
+      <div ref="{{ mapRef }}" role="application" aria-label="{{ t.mapaAria }}" style="height:640px;border:1px solid #E3E2DC;background:#F2F1ED"></div>
+      <div style="margin-top:10px;font-size:12px;color:#8A8A82">{{ t.mapaNota }}</div>
     </div>
   </div>
 </main>
@@ -640,7 +687,7 @@
 <sc-if value="{{ isDetail }}" hint-placeholder-val="{{ false }}">
 <main style="padding-top:92px;background:#fff;min-height:100vh">
   <div style="max-width:1320px;margin:0 auto;padding:26px 20px 0">
-    <a href="#" onClick="{{ goProps }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:600;color:#7E9848">← Volver al catálogo</a>
+    <a href="#" onClick="{{ goProps }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:600;color:#7E9848">{{ t.volverCatalogo }}</a>
   </div>
   <div class="g-split" data-stagger style="max-width:1320px;margin:0 auto;padding:22px 20px 0;display:grid;gap:12px">
     <div data-reveal style="aspect-ratio:16/10;overflow:hidden;background:#1F5A36">
@@ -649,13 +696,13 @@
     <div style="display:grid;grid-template-rows:repeat(2,1fr);gap:12px">
       <sc-if value="{{ hasVideo }}" hint-placeholder-val="{{ true }}">
         <div data-reveal style="overflow:hidden;background:#0D0D0C">
-          <iframe src="{{ videoSrc }}" title="Video de la propiedad" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;height:100%;border:0;display:block"></iframe>
+          <iframe src="{{ videoSrc }}" title="{{ t.videoTitulo }}" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;height:100%;border:0;display:block"></iframe>
         </div>
       </sc-if>
       <div data-reveal style="background:#F2F1ED;border:1px solid #E3E2DC;padding:22px 20px;display:flex;flex-direction:column;justify-content:center;gap:10px">
-        <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#7E9848;font-weight:600">Visitá la propiedad</div>
-        <div style="font-size:14px;line-height:1.6;color:#6B6B65">Coordinamos una visita guiada y te acompañamos en la verificación de documentos.</div>
-        <a href="{{ detailWaHref }}" target="_blank" rel="noopener" style="margin-top:4px;display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;color:#1F5A36;border-bottom:2px solid #A7C900;padding-bottom:5px;align-self:flex-start">Coordinar por WhatsApp</a>
+        <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ t.visitaPropiedad }}</div>
+        <div style="font-size:14px;line-height:1.6;color:#6B6B65">{{ t.visitaTexto }}</div>
+        <a href="{{ detailWaHref }}" target="_blank" rel="noopener" style="margin-top:4px;display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;color:#1F5A36;border-bottom:2px solid #A7C900;padding-bottom:5px;align-self:flex-start">{{ t.coordinarWhats }}</a>
       </div>
     </div>
   </div>
@@ -668,37 +715,37 @@
       <div style="margin-top:26px;font-family:Montserrat,sans-serif;font-weight:800;font-size:30px;color:#3A3A38">{{ detailPrice }}</div>
 
       <div class="g5" style="margin-top:36px;display:grid;gap:1px;background:#E3E2DC;border:1px solid #E3E2DC">
-        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Superficie</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailArea }}</div></div>
-        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Construido</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailBuilt }}</div></div>
-        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Dormitorios</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailBeds }}</div></div>
-        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Baños</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailBaths }}</div></div>
-        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">Tipo</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailType }}</div></div>
+        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">{{ t.superficie }}</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailArea }}</div></div>
+        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">{{ t.construido }}</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailBuilt }}</div></div>
+        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">{{ t.dormitorios }}</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailBeds }}</div></div>
+        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">{{ t.banos }}</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailBaths }}</div></div>
+        <div style="background:#fff;padding:20px 18px"><div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#8A8A82">{{ t.tipo }}</div><div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:800;font-size:19px;color:#1F5A36">{{ detailType }}</div></div>
       </div>
 
-      <h2 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;color:#1F5A36;margin:48px 0 0">Descripción</h2>
+      <h2 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;color:#1F5A36;margin:48px 0 0">{{ t.descripcion }}</h2>
       <p style="margin:16px 0 0;font-size:16px;line-height:1.75;color:#5A5A55;max-width:64ch">{{ detailDesc }}</p>
 
-      <h2 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;color:#1F5A36;margin:44px 0 0">Comodidades</h2>
+      <h2 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;color:#1F5A36;margin:44px 0 0">{{ t.comodidades }}</h2>
       <ul class="g3" style="margin:18px 0 0;padding:0;list-style:none;display:grid;gap:12px 20px">
         <sc-for list="{{ amenities }}" as="a" hint-placeholder-count="6">
           <li style="display:flex;align-items:center;gap:10px;font-size:14px;color:#5A5A55"><span style="width:7px;height:7px;background:#A7C900;display:block;flex-shrink:0"></span>{{ a }}</li>
         </sc-for>
       </ul>
 
-      <h2 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;color:#1F5A36;margin:48px 0 0">Ubicación</h2>
-      <p style="margin:10px 0 0;font-size:14px;line-height:1.6;color:#8A8A82;max-width:60ch">El área señalada es una referencia aproximada sobre {{ detailCity }}. La ubicación exacta se comparte durante la visita.</p>
-      <div ref="{{ detailMapRef }}" role="application" aria-label="Ubicación aproximada de la propiedad" style="margin-top:18px;height:360px;border:1px solid #E3E2DC;background:#F2F1ED"></div>
+      <h2 style="font-family:Montserrat,sans-serif;font-weight:700;font-size:20px;color:#1F5A36;margin:48px 0 0">{{ t.ubicacion }}</h2>
+      <p style="margin:10px 0 0;font-size:14px;line-height:1.6;color:#8A8A82;max-width:60ch">{{ t.ubicacionNotaA }}{{ detailCity }}{{ t.ubicacionNotaB }}</p>
+      <div ref="{{ detailMapRef }}" role="application" aria-label="{{ t.ubicacionAria }}" style="margin-top:18px;height:360px;border:1px solid #E3E2DC;background:#F2F1ED"></div>
     </div>
 
     <aside data-reveal style="position:sticky;top:110px;border:1px solid #E3E2DC;background:#F2F1ED;padding:30px 26px 28px">
-      <div style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36">Consultar esta propiedad</div>
-      <p style="margin:10px 0 0;font-size:14px;line-height:1.6;color:#6B6B65">Te respondemos con disponibilidad, condiciones y una visita coordinada.</p>
+      <div style="font-family:Montserrat,sans-serif;font-weight:700;font-size:19px;color:#1F5A36">{{ t.consultarPropiedad }}</div>
+      <p style="margin:10px 0 0;font-size:14px;line-height:1.6;color:#6B6B65">{{ t.consultarTexto }}</p>
       <div style="margin-top:24px;display:flex;flex-direction:column;gap:14px">
         <a href="{{ detailWaHref }}" target="_blank" rel="noopener" style="height:56px;display:flex;align-items:center;justify-content:center;gap:11px;background:#1F5A36;color:#fff;border-radius:2px;font-family:Inter,sans-serif;font-size:13px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;transition:background .3s,transform .4s cubic-bezier(.22,1,.36,1)" style-hover="background:#A7C900;color:#1F5A36;transform:translateY(-2px)">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23a8.23 8.23 0 0 1 .01 16.47Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29Z"/>
           </svg>
-          Consultar por WhatsApp
+          {{ t.consultarWhats }}
         </a>
         <div style="padding-top:14px;border-top:1px solid #E3E2DC;display:flex;flex-direction:column;gap:7px">
           <a href="{{ telHref }}" style="font-size:15px;font-weight:600;color:#1F5A36">{{ tel }}</a>
@@ -721,27 +768,27 @@
         <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
         <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">BRIMMO</span>
       </div>
-      <h1 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(28px,3.6vw,48px);line-height:1.1;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">Decisiones inmobiliarias con claridad, confianza y conocimiento local.</h1>
-      <p style="margin:24px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:60ch">En BRIMMO te acompañamos en cada etapa de tu proyecto inmobiliario. Nuestra experiencia y conocimiento del mercado local nos permiten ofrecer una atención personalizada, cercana y enfocada en tus necesidades.</p>
+      <h1 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(28px,3.6vw,48px);line-height:1.1;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">{{ t.nosotrosTitulo }}</h1>
+      <p style="margin:24px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:60ch">{{ t.nosotrosTexto }}</p>
     </div>
   </section>
 
   <section style="background:#fff;padding:96px 20px">
     <div class="g-split" style="max-width:1320px;margin:0 auto;display:grid;gap:76px;align-items:center">
       <div data-reveal>
-        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(24px,2.6vw,34px);line-height:1.15;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">Trabajamos donde vivimos</h2>
-        <p style="margin:22px 0 0;font-size:16.5px;line-height:1.75;color:#5A5A55;max-width:56ch">Operamos en Caacupé y el departamento de Cordillera. Conocemos los caminos, las zonas y el estado real de cada propiedad, y eso nos permite decirte con franqueza si algo conviene o no.</p>
-        <p style="margin:18px 0 0;font-size:16.5px;line-height:1.75;color:#5A5A55;max-width:56ch">Acompañamos tanto a quien busca un terreno para construir como a quien evalúa una inversión mayor, y seguimos el proceso hasta la transferencia.</p>
+        <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(24px,2.6vw,34px);line-height:1.15;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">{{ t.trabajamosDonde }}</h2>
+        <p style="margin:22px 0 0;font-size:16.5px;line-height:1.75;color:#5A5A55;max-width:56ch">{{ t.trabajamosP1 }}</p>
+        <p style="margin:18px 0 0;font-size:16.5px;line-height:1.75;color:#5A5A55;max-width:56ch">{{ t.trabajamosP2 }}</p>
         <div class="g2" data-stagger style="display:grid;gap:1px;background:#E3E2DC;margin-top:44px;border:1px solid #E3E2DC">
-          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Confianza</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Decisiones claras y relaciones duraderas.</div></div>
-          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Crecimiento</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Oportunidades que generan valor sostenible.</div></div>
-          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Cercanía</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Conocimiento local y atención humana.</div></div>
-          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">Estructura</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">Método, criterio y profesionalismo.</div></div>
+          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">{{ t.valConfianza }}</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">{{ t.valConfianzaTexto }}</div></div>
+          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">{{ t.valCrecimiento }}</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">{{ t.valCrecimientoTexto }}</div></div>
+          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">{{ t.valCercania }}</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">{{ t.valCercaniaTexto }}</div></div>
+          <div data-reveal style="background:#fff;padding:24px 22px"><div style="font-family:Montserrat,sans-serif;font-weight:800;font-size:13px;letter-spacing:0.1em;color:#1F5A36;text-transform:uppercase">{{ t.valEstructura }}</div><div style="margin-top:8px;font-size:14px;color:#6B6B65;line-height:1.55">{{ t.valEstructuraTexto }}</div></div>
         </div>
       </div>
       <div data-reveal style="position:relative">
         <div style="aspect-ratio:4/5;border:1px solid #E3E2DC;overflow:hidden;background:#F2F1ED">
-          <img src="uploads/img/02-nosotros-asesoria-brimmo.png" alt="Asesoría BRIMMO — equipo y territorio" style="width:100%;height:100%;object-fit:cover;display:block">
+          <img src="uploads/img/02-nosotros-asesoria-brimmo.png" alt="{{ t.fotoNosotrosAlt }}" style="width:100%;height:100%;object-fit:cover;display:block">
         </div>
         <div style="position:absolute;left:-26px;bottom:-26px;width:120px;height:120px;background:#1F5A36;display:flex;align-items:center;justify-content:center">
           <svg width="62" height="62" viewBox="0 0 24 24" aria-hidden="true" style="display:block">
@@ -767,10 +814,10 @@
     <div data-reveal class="bri-banda-txt">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px">
         <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
-        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Servicios</span>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ t.navServicios }}</span>
       </div>
-      <h1 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(28px,3.6vw,48px);line-height:1.1;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">Acompañamiento en cada etapa</h1>
-      <p style="margin:24px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:60ch">Desde la búsqueda hasta la transferencia, trabajamos sobre propiedades que conocemos y con documentación verificada.</p>
+      <h1 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(28px,3.6vw,48px);line-height:1.1;letter-spacing:-0.02em;color:#1F5A36;margin:0;max-width:20ch;text-wrap:balance">{{ t.serviciosTitulo }}</h1>
+      <p style="margin:24px 0 0;font-size:17px;line-height:1.7;color:#5A5A55;max-width:60ch">{{ t.serviciosTexto }}</p>
     </div>
   </section>
 
@@ -792,9 +839,9 @@
     <div style="max-width:1320px;margin:0 auto">
       <div data-reveal style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
         <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
-        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">Proceso</span>
+        <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ t.proceso }}</span>
       </div>
-      <h2 data-reveal style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0 0 56px">Cómo trabajamos</h2>
+      <h2 data-reveal style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0 0 56px">{{ t.comoTrabajamos }}</h2>
       <div class="g4" data-stagger style="display:grid;gap:28px">
         <sc-for list="{{ steps }}" as="st" hint-placeholder-count="4">
           <div data-reveal style="position:relative;padding-top:30px;border-top:2px solid #CFCEC6">
@@ -806,8 +853,8 @@
         </sc-for>
       </div>
       <div data-reveal style="margin-top:64px;display:flex;flex-wrap:wrap;gap:14px">
-        <a href="{{ waHref }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;height:52px;padding:0 28px;background:#1F5A36;color:#fff;font-weight:600;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:background .3s" style-hover="background:#A7C900;color:#1F5A36">Consultar por WhatsApp</a>
-        <a href="#" onClick="{{ goProps }}" style="display:inline-flex;align-items:center;height:52px;padding:0 28px;border:1px solid #1F5A36;color:#1F5A36;font-weight:600;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:background .3s" style-hover="background:#1F5A36;color:#fff">Ver propiedades</a>
+        <a href="{{ waHref }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;height:52px;padding:0 28px;background:#1F5A36;color:#fff;font-weight:600;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:background .3s" style-hover="background:#A7C900;color:#1F5A36">{{ t.consultarWhats }}</a>
+        <a href="#" onClick="{{ goProps }}" style="display:inline-flex;align-items:center;height:52px;padding:0 28px;border:1px solid #1F5A36;color:#1F5A36;font-weight:600;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:background .3s" style-hover="background:#1F5A36;color:#fff">{{ t.verPropiedades }}</a>
       </div>
     </div>
   </section>
@@ -815,7 +862,7 @@
 </main>
 </sc-if>
 
-<a href="{{ waHref }}" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp"
+<a href="{{ waHref }}" target="_blank" rel="noopener" aria-label="{{ t.whatsappAria }}"
    style="position:fixed;right:22px;bottom:22px;z-index:70;width:58px;height:58px;border-radius:50%;background:#1F5A36;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(23,45,30,.32);transition:transform .4s cubic-bezier(.22,1,.36,1),background .3s"
    style-hover="background:#A7C900;color:#1F5A36;transform:translateY(-3px)">
   <svg width="27" height="27" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -839,45 +886,45 @@
         </svg>
         <span style="display:block;line-height:1">
           <span style="display:block;font-family:Montserrat,sans-serif;font-weight:800;font-size:23px;letter-spacing:0.01em;color:#fff">BRIMMO</span>
-          <span style="display:block;margin-top:5px;font-size:9px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#A7C900">La Cordillera — Paraguay</span>
+          <span style="display:block;margin-top:5px;font-size:9px;font-weight:600;letter-spacing:0.26em;text-transform:uppercase;color:#A7C900">{{ t.marcaBajada }}</span>
         </span>
       </div>
-      <p style="margin:16px 0 0;font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.72);max-width:34ch">Servicios inmobiliarios y consultoría en La Cordillera y otras zonas de Paraguay.</p>
+      <p style="margin:16px 0 0;font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.72);max-width:34ch">{{ t.footerTexto }}</p>
     </div>
     <div>
-      <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#A7C900;font-weight:600">Navegación</div>
+      <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#A7C900;font-weight:600">{{ t.navegacion }}</div>
       <div style="margin-top:13px;display:flex;flex-direction:column;gap:7px;font-size:13.5px">
-        <a href="#" onClick="{{ goInicio }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Inicio</a>
-        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Propiedades</a>
-        <a href="#" onClick="{{ goServicios }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Servicios</a>
-        <a href="#" onClick="{{ goNosotros }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Nosotros</a>
-        <a href="#" onClick="{{ goZona }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">La zona</a>
+        <a href="#" onClick="{{ goInicio }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ t.navInicio }}</a>
+        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ t.navPropiedades }}</a>
+        <a href="#" onClick="{{ goServicios }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ t.navServicios }}</a>
+        <a href="#" onClick="{{ goNosotros }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ t.navNosotros }}</a>
+        <a href="#" onClick="{{ goZona }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ t.navZona }}</a>
       </div>
     </div>
     <div>
-      <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#A7C900;font-weight:600">Qué ofrecemos</div>
+      <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#A7C900;font-weight:600">{{ t.queOfrecemos }}</div>
       <div style="margin-top:13px;display:flex;flex-direction:column;gap:7px;font-size:13.5px">
-        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Terrenos rurales</a>
-        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Quintas</a>
-        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Villas y casas</a>
-        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Ranchos</a>
-        <a href="#" onClick="{{ goServicios }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Acompañamiento</a>
+        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ t.terrenosRurales }}</a>
+        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ t.catQuintas }}</a>
+        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ t.villasCasas }}</a>
+        <a href="#" onClick="{{ goProps }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ t.catRanchos }}</a>
+        <a href="#" onClick="{{ goServicios }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ t.acompanamiento }}</a>
       </div>
     </div>
     <div>
-      <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#A7C900;font-weight:600">Contacto</div>
+      <div style="font-size:11px;letter-spacing:0.24em;text-transform:uppercase;color:#A7C900;font-weight:600">{{ t.navContacto }}</div>
       <div style="margin-top:13px;display:flex;flex-direction:column;gap:7px;font-size:13.5px;color:rgba(255,255,255,.72)">
         <a href="{{ telHref }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ tel }}</a>
         <a href="{{ mailHref }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ mail }}</a>
         <span>{{ direccion }}</span>
-        <a href="{{ waHref }}" target="_blank" rel="noopener" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">WhatsApp</a>
+        <a href="{{ waHref }}" target="_blank" rel="noopener" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ t.escribirWhats }}</a>
       </div>
     </div>
   </div>
   <div class="bri-pie">
     <span class="bri-pie-izq">© {{ year }} BRIMMO — La Cordillera, Paraguay</span>
-    <a href="https://neura.com.py" target="_blank" rel="noopener" class="bri-pie-centro" style="color:rgba(255,255,255,.6)" style-hover="color:#A7C900">Desarrollado por Neura</a>
-    <a href="#" class="bri-pie-der" style="color:rgba(255,255,255,.6)" style-hover="color:#A7C900">Política de privacidad</a>
+    <a href="https://neura.com.py" target="_blank" rel="noopener" class="bri-pie-centro" style="color:rgba(255,255,255,.6)" style-hover="color:#A7C900">{{ t.desarrolladoNeura }}</a>
+    <a href="#" class="bri-pie-der" style="color:rgba(255,255,255,.6)" style-hover="color:#A7C900">{{ t.politicaPrivacidad }}</a>
   </div>
 </footer>
 
@@ -1067,26 +1114,516 @@ const STEPS = [
   { n: "04", title: "Cerramos con seguridad", desc: "Documentación, negociación y acompañamiento hasta el final." }
 ];
 
+// ===== Idiomas =====
+const IDIOMAS = ["es", "fr", "en"];
+const IDIOMA_NOMBRE = { es: "ES", fr: "FR", en: "EN" };
+
+const TXT = {
+  es: {
+    heroAlt: "Paisaje de La Cordillera, Paraguay",
+    precio1: "Hasta Gs. 300.000.000",
+    precio2: "Gs. 300 — 600 millones",
+    precio3: "Más de Gs. 600.000.000",
+    precio4: "Hasta USD 160.000",
+    precio5: "Más de USD 160.000",
+    metaTitulo: "BRIMMO — Inmobiliaria en La Cordillera, Paraguay",
+    metaDesc: "Terrenos, quintas, villas y ranchos en Caacupé y La Cordillera, Paraguay. Asesoramiento inmobiliario con conocimiento real del territorio.",
+    marcaBajada: "La Cordillera — Paraguay",
+    navInicio: "Inicio", navPropiedades: "Propiedades", navServicios: "Servicios",
+    navNosotros: "Nosotros", navZona: "La zona", navContacto: "Contacto",
+    heroEyebrow: "La Cordillera — Paraguay",
+    heroTitulo: "Encontrá el lugar donde tu próximo proyecto comienza.",
+    heroTexto: "Propiedades, inversiones y asesoramiento inmobiliario con conocimiento real del territorio.",
+    verPropiedades: "Ver propiedades", hablarAsesor: "Hablar con un asesor", seguiBajando: "Seguí bajando",
+    catalogo: "Catálogo", destacadas: "Propiedades destacadas", verTodas: "Ver todas",
+    anterior: "Anterior", siguiente: "Siguiente",
+    oportunidades: "Oportunidades", elegiEmpezar: "Elegí por dónde empezar", ver: "Ver",
+    experiencia: "Experiencia BRIMMO",
+    experienciaTitulo: "Espacios, oportunidades y decisiones que construyen futuro.",
+    cita: "“Cada propiedad representa una oportunidad. Nuestro trabajo es ayudarte a verla con claridad.”",
+    citaPie: "BRIMMO — La Cordillera, Paraguay",
+    testimonios: "Testimonios", testimonioAnterior: "Testimonio anterior", testimonioSiguiente: "Testimonio siguiente",
+    zonaEyebrow: "La zona", zonaTitulo: "Vivir e invertir en La Cordillera",
+    zonaTexto: "Una región verde y ondulada, con clima agradable y buen acceso a Asunción. Es la zona donde trabajamos y la conocemos de primera mano.",
+    zonaCaacupe: "Caacupé",
+    zonaCaacupeTexto: "Capital del departamento y corazón espiritual del país por su basílica. Tiene comercios, escuelas, universidades y hospital, a unos 50 km de Asunción, sin perder escala humana.",
+    zonaSb: "San Bernardino y el lago",
+    zonaSbTexto: "A orillas del lago Ypacaraí, con actividades al aire libre, gastronomía y vida cultural. En verano concentra la temporada; el resto del año recupera la calma. A unos 40 km de Asunción.",
+    zonaCampo: "Campo y proyectos",
+    zonaCampoTexto: "Terrenos, quintas y superficies mayores en Atyrá, Tobatí, Eusebio Ayala y alrededores, aptas para residencia, producción, loteamiento o desarrollo turístico.",
+    contacto: "Contacto", contactoTitulo: "Hablemos de tu próximo proyecto.",
+    contactoTexto: "Contanos qué estás buscando y te respondemos con opciones concretas y asesoramiento claro.",
+    telWhats: "Teléfono y WhatsApp", correo: "Correo", ubicacion: "Ubicación",
+    escribirWhats: "Escribir por WhatsApp", whatsappAria: "Escribinos por WhatsApp",
+    nombre: "Nombre", telefono: "Teléfono", tipoConsulta: "Tipo de consulta",
+    optComprar: "Quiero comprar", optVender: "Quiero vender", optAlquilar: "Quiero alquilar",
+    optInvertir: "Quiero invertir", optTasacion: "Tasación",
+    mensaje: "Mensaje", aceptoPolitica: "Acepto la política de privacidad y el tratamiento de mis datos para responder esta consulta.",
+    enviarConsulta: "Enviar consulta", consultaEnviada: "Consulta enviada",
+    formOk: "Recibimos tu mensaje. Te respondemos a la brevedad.",
+    buscarPlaceholder: "Buscar por título, ciudad o barrio", buscarAria: "Buscar propiedades",
+    tipoPropiedad: "Tipo de propiedad", ciudadAria: "Ciudad", rangoPrecio: "Rango de precio",
+    todosTipos: "Todos los tipos", todasCiudades: "Todas las ciudades", cualquierPrecio: "Cualquier precio",
+    catTerrenos: "Terrenos", catQuintas: "Quintas", catVillas: "Villas", catCasas: "Casas", catRanchos: "Ranchos",
+    catTerrenosHint: "Para construir o invertir", catQuintasHint: "Campo con casa y arboleda",
+    catVillasHint: "Residencias en Caacupé", catCasasHint: "Para vivir en la zona",
+    catRanchosHint: "Superficies para producción",
+    sinResultados: "No encontramos propiedades con esos filtros",
+    sinResultadosTexto: "Probá ampliar el rango de precio o cambiar el tipo de propiedad.",
+    mapaAria: "Mapa de propiedades en La Cordillera",
+    mapaNota: "Zoom con rueda desactivado — usá los controles del mapa. El marcador lima indica la propiedad activa.",
+    volverCatalogo: "← Volver al catálogo",
+    visitaPropiedad: "Visitá la propiedad",
+    visitaTexto: "Coordinamos una visita guiada y te acompañamos en la verificación de documentos.",
+    coordinarWhats: "Coordinar por WhatsApp",
+    superficie: "Superficie", construido: "Construido", dormitorios: "Dormitorios",
+    banos: "Baños", tipo: "Tipo", descripcion: "Descripción", comodidades: "Comodidades",
+    ubicacionNotaA: "El área señalada es una referencia aproximada sobre ", ubicacionNotaB: ". La ubicación exacta se comparte durante la visita.",
+    ubicacionAria: "Ubicación aproximada de la propiedad",
+    consultarPropiedad: "Consultar esta propiedad",
+    consultarTexto: "Te respondemos con disponibilidad, condiciones y una visita coordinada.",
+    consultarWhats: "Consultar por WhatsApp",
+    videoTitulo: "Video de la propiedad",
+    nosotrosTitulo: "Decisiones inmobiliarias con claridad, confianza y conocimiento local.",
+    nosotrosTexto: "En BRIMMO te acompañamos en cada etapa de tu proyecto inmobiliario. Nuestra experiencia y conocimiento del mercado local nos permiten ofrecer una atención personalizada, cercana y enfocada en tus necesidades.",
+    trabajamosDonde: "Trabajamos donde vivimos",
+    trabajamosP1: "Operamos en Caacupé y el departamento de Cordillera. Conocemos los caminos, las zonas y el estado real de cada propiedad, y eso nos permite decirte con franqueza si algo conviene o no.",
+    trabajamosP2: "Acompañamos tanto a quien busca un terreno para construir como a quien evalúa una inversión mayor, y seguimos el proceso hasta la transferencia.",
+    valConfianza: "Confianza", valConfianzaTexto: "Decisiones claras y relaciones duraderas.",
+    valCrecimiento: "Crecimiento", valCrecimientoTexto: "Oportunidades que generan valor sostenible.",
+    valCercania: "Cercanía", valCercaniaTexto: "Conocimiento local y atención humana.",
+    valEstructura: "Estructura", valEstructuraTexto: "Método, criterio y profesionalismo.",
+    fotoNosotrosAlt: "Asesoría BRIMMO — equipo y territorio",
+    servicios: "Servicios", serviciosTitulo: "Acompañamiento en cada etapa",
+    serviciosTexto: "Desde la búsqueda hasta la transferencia, trabajamos sobre propiedades que conocemos y con documentación verificada.",
+    proceso: "Proceso", comoTrabajamos: "Cómo trabajamos",
+    footerTexto: "Servicios inmobiliarios y consultoría en La Cordillera y otras zonas de Paraguay.",
+    navegacion: "Navegación", queOfrecemos: "Qué ofrecemos",
+    terrenosRurales: "Terrenos rurales", villasCasas: "Villas y casas", acompanamiento: "Acompañamiento",
+    desarrolladoNeura: "Desarrollado por Neura", politicaPrivacidad: "Política de privacidad",
+    idiomaAria: "Elegir idioma", abrirMenu: "Abrir menú", cerrarMenu: "Cerrar menú",
+    precioConsultar: "Precio a consultar", aConfirmar: "A confirmar", monedaConfirmar: "moneda a confirmar",
+    consultarDetalles: "Consultar detalles",
+    unaDisponible: "1 propiedad disponible", variasDisponibles: " propiedades disponibles",
+    dorm: "dorm", bano: "baño", banosCorto: "baños", construidoCorto: "m² const.",
+    ubicacionAprox: "Ubicación aproximada — referencia de ciudad", verPropiedad: "Ver propiedad →"
+  },
+
+  fr: {
+    heroAlt: "Paysage de La Cordillera, Paraguay",
+    precio1: "Jusqu'à 300 000 000 Gs",
+    precio2: "300 à 600 millions Gs",
+    precio3: "Plus de 600 000 000 Gs",
+    precio4: "Jusqu'à 160 000 USD",
+    precio5: "Plus de 160 000 USD",
+    metaTitulo: "BRIMMO — Agence immobilière à La Cordillera, Paraguay",
+    metaDesc: "Terrains, quintas, villas et ranchs à Caacupé et dans La Cordillera, Paraguay. Conseil immobilier avec une vraie connaissance du terrain.",
+    marcaBajada: "La Cordillera — Paraguay",
+    navInicio: "Accueil", navPropiedades: "Propriétés", navServicios: "Services",
+    navNosotros: "À propos", navZona: "La région", navContacto: "Contact",
+    heroEyebrow: "La Cordillera — Paraguay",
+    heroTitulo: "Trouvez le lieu où commence votre prochain projet.",
+    heroTexto: "Propriétés, investissements et conseil immobilier avec une vraie connaissance du terrain.",
+    verPropiedades: "Voir les propriétés", hablarAsesor: "Parler à un conseiller", seguiBajando: "Faites défiler",
+    catalogo: "Catalogue", destacadas: "Propriétés en vedette", verTodas: "Voir tout",
+    anterior: "Précédent", siguiente: "Suivant",
+    oportunidades: "Opportunités", elegiEmpezar: "Choisissez par où commencer", ver: "Voir",
+    experiencia: "L'expérience BRIMMO",
+    experienciaTitulo: "Des espaces, des opportunités et des décisions qui construisent l'avenir.",
+    cita: "« Chaque propriété représente une opportunité. Notre travail est de vous aider à la voir clairement. »",
+    citaPie: "BRIMMO — La Cordillera, Paraguay",
+    testimonios: "Témoignages", testimonioAnterior: "Témoignage précédent", testimonioSiguiente: "Témoignage suivant",
+    zonaEyebrow: "La région", zonaTitulo: "Vivre et investir dans La Cordillera",
+    zonaTexto: "Une région verte et vallonnée, au climat agréable et bien reliée à Asunción. C'est la zone où nous travaillons et que nous connaissons de première main.",
+    zonaCaacupe: "Caacupé",
+    zonaCaacupeTexto: "Chef-lieu du département et cœur spirituel du pays grâce à sa basilique. On y trouve commerces, écoles, universités et hôpital, à environ 50 km d'Asunción, tout en gardant une taille humaine.",
+    zonaSb: "San Bernardino et le lac",
+    zonaSbTexto: "Au bord du lac Ypacaraí, avec des activités de plein air, une vie gastronomique et culturelle. L'été concentre la saison ; le reste de l'année, le calme revient. À environ 40 km d'Asunción.",
+    zonaCampo: "Campagne et projets",
+    zonaCampoTexto: "Terrains, quintas et grandes surfaces à Atyrá, Tobatí, Eusebio Ayala et alentours, adaptés à une résidence, une exploitation, un lotissement ou un projet touristique.",
+    contacto: "Contact", contactoTitulo: "Parlons de votre prochain projet.",
+    contactoTexto: "Dites-nous ce que vous cherchez et nous vous répondons avec des options concrètes et un conseil clair.",
+    telWhats: "Téléphone et WhatsApp", correo: "E-mail", ubicacion: "Adresse",
+    escribirWhats: "Écrire sur WhatsApp", whatsappAria: "Écrivez-nous sur WhatsApp",
+    nombre: "Nom", telefono: "Téléphone", tipoConsulta: "Type de demande",
+    optComprar: "Je veux acheter", optVender: "Je veux vendre", optAlquilar: "Je veux louer",
+    optInvertir: "Je veux investir", optTasacion: "Estimation",
+    mensaje: "Message", aceptoPolitica: "J'accepte la politique de confidentialité et le traitement de mes données pour répondre à cette demande.",
+    enviarConsulta: "Envoyer la demande", consultaEnviada: "Demande envoyée",
+    formOk: "Nous avons bien reçu votre message. Nous vous répondons rapidement.",
+    buscarPlaceholder: "Rechercher par titre, ville ou quartier", buscarAria: "Rechercher des propriétés",
+    tipoPropiedad: "Type de bien", ciudadAria: "Ville", rangoPrecio: "Fourchette de prix",
+    todosTipos: "Tous les types", todasCiudades: "Toutes les villes", cualquierPrecio: "Tous les prix",
+    catTerrenos: "Terrains", catQuintas: "Quintas", catVillas: "Villas", catCasas: "Maisons", catRanchos: "Ranchs",
+    catTerrenosHint: "Pour construire ou investir", catQuintasHint: "Campagne avec maison et arbres",
+    catVillasHint: "Résidences à Caacupé", catCasasHint: "Pour vivre dans la région",
+    catRanchosHint: "Grandes surfaces d'exploitation",
+    sinResultados: "Aucune propriété ne correspond à ces filtres",
+    sinResultadosTexto: "Essayez d'élargir la fourchette de prix ou de changer le type de bien.",
+    mapaAria: "Carte des propriétés dans La Cordillera",
+    mapaNota: "Zoom à la molette désactivé — utilisez les contrôles de la carte. Le marqueur vert clair indique la propriété active.",
+    volverCatalogo: "← Retour au catalogue",
+    visitaPropiedad: "Visitez la propriété",
+    visitaTexto: "Nous organisons une visite guidée et vous accompagnons dans la vérification des documents.",
+    coordinarWhats: "Organiser sur WhatsApp",
+    superficie: "Surface", construido: "Bâti", dormitorios: "Chambres",
+    banos: "Salles de bain", tipo: "Type", descripcion: "Description", comodidades: "Équipements",
+    ubicacionNotaA: "La zone indiquée est une référence approximative sur ", ubicacionNotaB: ". L'emplacement exact est communiqué lors de la visite.",
+    ubicacionAria: "Emplacement approximatif de la propriété",
+    consultarPropiedad: "Se renseigner sur ce bien",
+    consultarTexto: "Nous vous répondons avec la disponibilité, les conditions et une visite organisée.",
+    consultarWhats: "Se renseigner sur WhatsApp",
+    videoTitulo: "Vidéo de la propriété",
+    nosotrosTitulo: "Des décisions immobilières avec clarté, confiance et connaissance du terrain.",
+    nosotrosTexto: "Chez BRIMMO, nous vous accompagnons à chaque étape de votre projet immobilier. Notre expérience et notre connaissance du marché local nous permettent d'offrir un service personnalisé, proche et attentif à vos besoins.",
+    trabajamosDonde: "Nous travaillons là où nous vivons",
+    trabajamosP1: "Nous opérons à Caacupé et dans le département de Cordillera. Nous connaissons les routes, les quartiers et l'état réel de chaque bien, ce qui nous permet de vous dire franchement si une opportunité vaut la peine.",
+    trabajamosP2: "Nous accompagnons aussi bien celui qui cherche un terrain à bâtir que celui qui évalue un investissement plus important, et nous suivons le processus jusqu'au transfert.",
+    valConfianza: "Confiance", valConfianzaTexto: "Des décisions claires et des relations durables.",
+    valCrecimiento: "Croissance", valCrecimientoTexto: "Des opportunités qui créent de la valeur durable.",
+    valCercania: "Proximité", valCercaniaTexto: "Connaissance locale et attention humaine.",
+    valEstructura: "Structure", valEstructuraTexto: "Méthode, discernement et professionnalisme.",
+    fotoNosotrosAlt: "Conseil BRIMMO — équipe et territoire",
+    servicios: "Services", serviciosTitulo: "Un accompagnement à chaque étape",
+    serviciosTexto: "De la recherche au transfert, nous travaillons sur des biens que nous connaissons et dont les documents sont vérifiés.",
+    proceso: "Processus", comoTrabajamos: "Notre méthode",
+    footerTexto: "Services immobiliers et conseil dans La Cordillera et d'autres régions du Paraguay.",
+    navegacion: "Navigation", queOfrecemos: "Notre offre",
+    terrenosRurales: "Terrains ruraux", villasCasas: "Villas et maisons", acompanamiento: "Accompagnement",
+    desarrolladoNeura: "Développé par Neura", politicaPrivacidad: "Politique de confidentialité",
+    idiomaAria: "Choisir la langue", abrirMenu: "Ouvrir le menu", cerrarMenu: "Fermer le menu",
+    precioConsultar: "Prix sur demande", aConfirmar: "À confirmer", monedaConfirmar: "devise à confirmer",
+    consultarDetalles: "Nous consulter",
+    unaDisponible: "1 propriété disponible", variasDisponibles: " propriétés disponibles",
+    dorm: "ch.", bano: "s. de bain", banosCorto: "s. de bain", construidoCorto: "m² bâtis",
+    ubicacionAprox: "Emplacement approximatif — repère de ville", verPropiedad: "Voir la propriété →"
+  },
+
+  en: {
+    heroAlt: "Landscape of La Cordillera, Paraguay",
+    precio1: "Up to Gs. 300,000,000",
+    precio2: "Gs. 300–600 million",
+    precio3: "Over Gs. 600,000,000",
+    precio4: "Up to USD 160,000",
+    precio5: "Over USD 160,000",
+    metaTitulo: "BRIMMO — Real estate in La Cordillera, Paraguay",
+    metaDesc: "Land, country homes, villas and ranches in Caacupé and La Cordillera, Paraguay. Real estate advice grounded in real local knowledge.",
+    marcaBajada: "La Cordillera — Paraguay",
+    navInicio: "Home", navPropiedades: "Properties", navServicios: "Services",
+    navNosotros: "About", navZona: "The area", navContacto: "Contact",
+    heroEyebrow: "La Cordillera — Paraguay",
+    heroTitulo: "Find the place where your next project begins.",
+    heroTexto: "Properties, investments and real estate advice grounded in real local knowledge.",
+    verPropiedades: "View properties", hablarAsesor: "Talk to an advisor", seguiBajando: "Scroll down",
+    catalogo: "Catalogue", destacadas: "Featured properties", verTodas: "View all",
+    anterior: "Previous", siguiente: "Next",
+    oportunidades: "Opportunities", elegiEmpezar: "Choose where to start", ver: "View",
+    experiencia: "The BRIMMO experience",
+    experienciaTitulo: "Places, opportunities and decisions that build the future.",
+    cita: "“Every property is an opportunity. Our job is to help you see it clearly.”",
+    citaPie: "BRIMMO — La Cordillera, Paraguay",
+    testimonios: "Testimonials", testimonioAnterior: "Previous testimonial", testimonioSiguiente: "Next testimonial",
+    zonaEyebrow: "The area", zonaTitulo: "Living and investing in La Cordillera",
+    zonaTexto: "A green, rolling region with a pleasant climate and good access to Asunción. This is where we work, and we know it first hand.",
+    zonaCaacupe: "Caacupé",
+    zonaCaacupeTexto: "Capital of the department and the country's spiritual heart thanks to its basilica. It has shops, schools, universities and a hospital, about 50 km from Asunción, while keeping a human scale.",
+    zonaSb: "San Bernardino and the lake",
+    zonaSbTexto: "On the shore of Lake Ypacaraí, with outdoor activities, dining and cultural life. Summer is peak season; the rest of the year it returns to calm. About 40 km from Asunción.",
+    zonaCampo: "Countryside and projects",
+    zonaCampoTexto: "Land, country homes and larger holdings in Atyrá, Tobatí, Eusebio Ayala and nearby, suited to a residence, farming, subdivision or tourism development.",
+    contacto: "Contact", contactoTitulo: "Let's talk about your next project.",
+    contactoTexto: "Tell us what you are looking for and we will reply with concrete options and clear advice.",
+    telWhats: "Phone and WhatsApp", correo: "Email", ubicacion: "Location",
+    escribirWhats: "Message us on WhatsApp", whatsappAria: "Message us on WhatsApp",
+    nombre: "Name", telefono: "Phone", tipoConsulta: "Type of enquiry",
+    optComprar: "I want to buy", optVender: "I want to sell", optAlquilar: "I want to rent",
+    optInvertir: "I want to invest", optTasacion: "Valuation",
+    mensaje: "Message", aceptoPolitica: "I accept the privacy policy and the processing of my data in order to answer this enquiry.",
+    enviarConsulta: "Send enquiry", consultaEnviada: "Enquiry sent",
+    formOk: "We received your message. We will get back to you shortly.",
+    buscarPlaceholder: "Search by title, city or area", buscarAria: "Search properties",
+    tipoPropiedad: "Property type", ciudadAria: "City", rangoPrecio: "Price range",
+    todosTipos: "All types", todasCiudades: "All cities", cualquierPrecio: "Any price",
+    catTerrenos: "Land", catQuintas: "Country homes", catVillas: "Villas", catCasas: "Houses", catRanchos: "Ranches",
+    catTerrenosHint: "To build on or invest in", catQuintasHint: "Countryside with house and trees",
+    catVillasHint: "Homes in Caacupé", catCasasHint: "To live in the area",
+    catRanchosHint: "Large holdings for farming",
+    sinResultados: "No properties match those filters",
+    sinResultadosTexto: "Try widening the price range or changing the property type.",
+    mapaAria: "Map of properties in La Cordillera",
+    mapaNota: "Scroll zoom is off — use the map controls. The lime marker shows the active property.",
+    volverCatalogo: "← Back to catalogue",
+    visitaPropiedad: "Visit the property",
+    visitaTexto: "We arrange a guided visit and support you through the document checks.",
+    coordinarWhats: "Arrange on WhatsApp",
+    superficie: "Land area", construido: "Built area", dormitorios: "Bedrooms",
+    banos: "Bathrooms", tipo: "Type", descripcion: "Description", comodidades: "Features",
+    ubicacionNotaA: "The highlighted area is an approximate reference over ", ubicacionNotaB: ". The exact location is shared during the visit.",
+    ubicacionAria: "Approximate location of the property",
+    consultarPropiedad: "Enquire about this property",
+    consultarTexto: "We reply with availability, terms and an arranged visit.",
+    consultarWhats: "Enquire on WhatsApp",
+    videoTitulo: "Property video",
+    nosotrosTitulo: "Real estate decisions with clarity, confidence and local knowledge.",
+    nosotrosTexto: "At BRIMMO we support you at every stage of your real estate project. Our experience and knowledge of the local market let us offer personal, close attention focused on what you need.",
+    trabajamosDonde: "We work where we live",
+    trabajamosP1: "We operate in Caacupé and the Cordillera department. We know the roads, the areas and the real condition of each property, which lets us tell you frankly whether something is worth it.",
+    trabajamosP2: "We work with people looking for a plot to build on and with those weighing a larger investment, and we follow the process through to transfer.",
+    valConfianza: "Trust", valConfianzaTexto: "Clear decisions and lasting relationships.",
+    valCrecimiento: "Growth", valCrecimientoTexto: "Opportunities that create lasting value.",
+    valCercania: "Closeness", valCercaniaTexto: "Local knowledge and human attention.",
+    valEstructura: "Structure", valEstructuraTexto: "Method, judgement and professionalism.",
+    fotoNosotrosAlt: "BRIMMO advisory — team and territory",
+    servicios: "Services", serviciosTitulo: "Support at every stage",
+    serviciosTexto: "From the search to the transfer, we work on properties we know and with verified paperwork.",
+    proceso: "Process", comoTrabajamos: "How we work",
+    footerTexto: "Real estate services and consulting in La Cordillera and other parts of Paraguay.",
+    navegacion: "Navigation", queOfrecemos: "What we offer",
+    terrenosRurales: "Rural land", villasCasas: "Villas and houses", acompanamiento: "Support",
+    desarrolladoNeura: "Built by Neura", politicaPrivacidad: "Privacy policy",
+    idiomaAria: "Choose language", abrirMenu: "Open menu", cerrarMenu: "Close menu",
+    precioConsultar: "Price on request", aConfirmar: "To confirm", monedaConfirmar: "currency to confirm",
+    consultarDetalles: "Contact us for details",
+    unaDisponible: "1 property available", variasDisponibles: " properties available",
+    dorm: "bed", bano: "bath", banosCorto: "baths", construidoCorto: "m² built",
+    ubicacionAprox: "Approximate location — city reference", verPropiedad: "View property →"
+  }
+};
+// Traducciones de contenido. El español vive en DATA/SERVICES/STEPS/TESTIMONIALS.
+// El francés recupera la redacción original de la web anterior donde existía.
+const PROP_T = {
+  1: {
+    fr: { title: "Villa à Caacupé, zone urbaine", zone: "Zone urbaine",
+      desc: "Villa dans un quartier résidentiel de Caacupé, dans un environnement paisible avec tous les services à quelques minutes. Le terrain de 830 m² est entièrement clôturé et la maison compte deux chambres, un salon lumineux et une grande terrasse pour profiter du climat toute l'année. Réserve d'eau installée, vue dégagée sur la verdure et accès facile en toute saison.",
+      features: ["Terrain clôturé", "Salon lumineux", "Grande terrasse", "Réserve d'eau", "Quartier calme et sécurisé", "Commerces et écoles à proximité"] },
+    en: { title: "Villa in Caacupé, urban area", zone: "Urban area",
+      desc: "Villa in a residential neighbourhood of Caacupé, in a quiet setting with every service a few minutes away. The 830 m² plot is fully fenced and the house has two bedrooms, a bright living room and a wide terrace to enjoy the climate year round. It has an installed water reserve, open views over greenery and easy access in any season.",
+      features: ["Fenced plot", "Bright living room", "Wide terrace", "Water reserve", "Quiet, secure neighbourhood", "Shops and schools nearby"] }
+  },
+  2: {
+    fr: { title: "Villa à 5 minutes de Caacupé", zone: "À 5 minutes du centre",
+      desc: "Villa de plain-pied de 220 m², à cinq minutes de Caacupé et à une heure et demie d'Asunción. Elle se trouve à 50 mètres de la route asphaltée, dans une zone calme et sécurisée.",
+      features: ["De plain-pied", "À 50 m de la route asphaltée", "Zone sécurisée"] },
+    en: { title: "Villa 5 minutes from Caacupé", zone: "5 minutes from the centre",
+      desc: "Single-storey villa of 220 m², five minutes from Caacupé and an hour and a half from Asunción. It sits 50 metres from the paved road, in a quiet and secure area.",
+      features: ["Single storey", "50 m from the paved road", "Secure area"] }
+  },
+  3: {
+    fr: { title: "Quinta de 1,6 hectare à Atyrá", zone: null,
+      desc: "Quinta de 1,6 hectare à Atyrá, à 30 minutes de Caacupé et 60 km d'Asunción. Le terrain est plat, entièrement clôturé et dispose d'un puits d'eau potable. Il compte de nombreux arbres fruitiers — citronniers, orangers, pamplemoussiers, manguiers, bananiers, goyaviers, cacaoyers — et deux ruches pour une production artisanale de miel. Le bâti principal, de 80 m², est à rénover : trois chambres de 8, 9 et 14 m², entrée et salon de 15 m², salle de bain de 3,20 m² et cuisine extérieure de 20 m².",
+      features: ["Terrain plat et clôturé", "Puits d'eau potable", "Nombreux arbres fruitiers", "Deux ruches", "Cuisine extérieure de 20 m²", "Bâti à rénover"] },
+    en: { title: "1.6-hectare country home in Atyrá", zone: null,
+      desc: "A 1.6-hectare country property in Atyrá, 30 minutes from Caacupé and 60 km from Asunción. The land is flat, fully fenced and has a drinking-water well. It holds a wide range of fruit trees — lemon, orange, grapefruit, mango, banana, guava, cacao — and two beehives for small-scale honey production. The main 80 m² building needs renovation: three bedrooms of 8, 9 and 14 m², a 15 m² entrance and living room, a 3.20 m² bathroom and a 20 m² outdoor kitchen.",
+      features: ["Flat, fenced land", "Drinking-water well", "Many fruit trees", "Two beehives", "20 m² outdoor kitchen", "Building needs renovation"] }
+  },
+  4: {
+    fr: { title: "Terrain de 4 300 m² divisé en cinq lots", zone: "Entre Tobatí et Caacupé",
+      desc: "Terrain de 4 300 m² divisé en cinq lots, situé entre Tobatí et Caacupé. Accès direct depuis la route et prêt à construire.",
+      features: ["Divisé en 5 lots", "Accès direct depuis la route", "Prêt à construire"] },
+    en: { title: "4,300 m² plot divided into five lots", zone: "Between Tobatí and Caacupé",
+      desc: "A 4,300 m² plot divided into five lots, between Tobatí and Caacupé. Direct access from the road and ready to build on.",
+      features: ["Divided into 5 lots", "Direct road access", "Ready to build"] }
+  },
+  5: {
+    fr: { title: "Terrain de 9,45 hectares à Valenzuela", zone: "À 39 km de Caacupé",
+      desc: "Terrain de 94 500 m² à 39 km de Caacupé. Entièrement plat et dégagé, propre et prêt à être exploité, à seulement 3 km d'une route asphaltée. Un cadre paisible, adapté à une production agricole, à l'élevage, à un projet d'autonomie ou à une résidence de campagne.",
+      features: ["Entièrement plat et dégagé", "Propre et prêt à exploiter", "À 3 km d'une route asphaltée", "Adapté à la production agricole"] },
+    en: { title: "9.45-hectare plot in Valenzuela", zone: "39 km from Caacupé",
+      desc: "A 94,500 m² plot 39 km from Caacupé. Completely flat and clear, clean and ready to work, just 3 km from a paved road. A quiet setting suited to farming, livestock, a self-sufficiency project or a country residence.",
+      features: ["Completely flat and clear", "Clean and ready to work", "3 km from a paved road", "Suited to farming"] }
+  },
+  6: {
+    fr: { title: "Terrain de 7,8 hectares sur la route Tobatí–Aguaity", zone: "Aguaity",
+      desc: "Propriété rurale de 7,8 hectares dans un emplacement privilégié de La Cordillera, à quelques minutes de Tobatí. Elle bénéficie de 217 mètres linéaires de façade sur la route asphaltée Tobatí–Aguaity et d'un accès direct au ruisseau Ytú. Titre de propriété et taxes en règle, prêt pour le transfert, avec un plan de bornage géoréférencé enregistré auprès du Service national du cadastre. Idéale pour un domaine, une exploitation agricole, un projet touristique, un lotissement ou un investissement.",
+      features: ["217 m de façade sur route asphaltée", "Accès direct au ruisseau Ytú", "Titre et taxes en règle", "Plan de bornage géoréférencé"] },
+    en: { title: "7.8-hectare plot on the Tobatí–Aguaity road", zone: "Aguaity",
+      desc: "A 7.8-hectare rural property in a prime spot in La Cordillera, minutes from Tobatí. It has 217 linear metres of frontage on the paved Tobatí–Aguaity road and direct access to the Ytú stream. Title and taxes are in order and ready for transfer, and it includes a georeferenced survey plan registered with the National Cadastre Service. Suited to an estate, farming, a tourism project, a subdivision or an investment.",
+      features: ["217 m of paved-road frontage", "Direct access to the Ytú stream", "Title and taxes in order", "Georeferenced survey plan"] }
+  },
+  7: {
+    fr: { title: "Quinta de 2 hectares sur la route d'Atyrá", zone: "Route d'Atyrá",
+      desc: "Quinta à cinq minutes de Caacupé, sur la route d'Atyrá, dans une zone calme et verdoyante. La construction principale est solide et fonctionnelle, et le terrain est plat, d'accès facile depuis la route. Elle dispose d'un grand quincho avec barbecue et d'une piscine, avec assez d'espace pour agrandir ou développer d'autres constructions. Idéale pour un projet éco-touristique, une résidence familiale ou une maison de vacances.",
+      features: ["Grand quincho avec barbecue", "Piscine", "Terrain plat", "Accès direct depuis la route", "Espace pour agrandir"] },
+    en: { title: "2-hectare country home on the Atyrá road", zone: "Atyrá road",
+      desc: "A country property five minutes from Caacupé, on the Atyrá road, in a quiet, wooded area. The main building is solid and functional, and the land is flat with easy access from the road. It has a large covered barbecue area and a pool, with room to extend or add further buildings. Ideal for an eco-tourism project, a family home or a weekend house.",
+      features: ["Large covered barbecue area", "Swimming pool", "Flat land", "Direct road access", "Room to extend"] }
+  },
+  8: {
+    fr: { title: "Propriété de 5,7 hectares à Itacurubí", zone: "Chemin Itacurubí–Isla Pucú",
+      desc: "Propriété de 5,7 hectares entièrement boisée, sur un chemin non goudronné mais régulièrement entretenu entre Itacurubí de la Cordillera et Santa Elena. Elle bénéficie d'un raccordement à l'électricité triphasée et au réseau d'eau potable. Elle compte environ mille pins plantés il y a 27 ans, de nombreux arbres indigènes déjà matures et une variété d'arbres fruitiers, dont une centaine de macadamias et une centaine de papayers.",
+      features: ["Entièrement boisée", "Électricité triphasée", "Réseau d'eau potable", "Près de mille pins de 27 ans", "Fruitiers : macadamia et papaye"] },
+    en: { title: "5.7-hectare property in Itacurubí", zone: "Itacurubí–Isla Pucú road",
+      desc: "A fully wooded 5.7-hectare property on an unpaved but regularly maintained road between Itacurubí de la Cordillera and Santa Elena. It has three-phase electricity and a mains water connection. It holds around a thousand pines planted 27 years ago, many mature native trees and a range of fruit trees, including about a hundred macadamias and a hundred papayas.",
+      features: ["Fully wooded", "Three-phase electricity", "Mains water", "Around a thousand 27-year-old pines", "Fruit trees: macadamia and papaya"] }
+  },
+  9: {
+    fr: { title: "Terrain de 2 hectares sur les hauteurs d'Atyrá", zone: "Zone haute",
+      desc: "Terrain sur les hauteurs d'Atyrá, l'une des zones les plus recherchées de La Cordillera, dans un environnement naturel préservé avec vue dégagée. Il mesure 110 sur 200 mètres, compte des arbres fruitiers et dispose de l'eau et de l'électricité à 300 mètres. L'accès se fait par 1,2 km de piste.",
+      features: ["Arbres fruitiers", "Vue dégagée", "Eau et électricité à 300 m", "Accès par 1,2 km de piste"] },
+    en: { title: "2-hectare plot in the hills of Atyrá", zone: "Upper area",
+      desc: "A plot in the hills of Atyrá, one of the most sought-after areas in La Cordillera, in a preserved natural setting with open views. It measures 110 by 200 metres, has fruit trees and water and electricity 300 metres away. Access is via 1.2 km of dirt track.",
+      features: ["Fruit trees", "Open views", "Water and power 300 m away", "Access via 1.2 km track"] }
+  },
+  10: {
+    fr: { title: "Terrain de 2 hectares à Eusebio Ayala", zone: null,
+      desc: "Terrain de 2 hectares à Eusebio Ayala, d'accès facile, avec électricité et eau disponibles et les services viabilisés. Zone calme et sécurisée, adaptée à la construction d'une résidence, au développement d'un projet ou à un investissement dans une région en pleine croissance.",
+      features: ["Accès facile", "Électricité et eau disponibles", "Terrain viabilisé", "Zone calme et sécurisée"] },
+    en: { title: "2-hectare plot in Eusebio Ayala", zone: null,
+      desc: "A 2-hectare plot in Eusebio Ayala with easy access, electricity and water available and services connected. A quiet, secure area suited to building a home, developing a project or investing in a growing region.",
+      features: ["Easy access", "Electricity and water available", "Services connected", "Quiet, secure area"] }
+  },
+  11: {
+    fr: { title: "Terrain de 5 440 m² à Cabañas", zone: "Cabañas",
+      desc: "Terrain nu à Cabañas, à seulement 2 km du centre de Caacupé, dans un quartier calme et recherché. Situé en hauteur, il offre une belle vue panoramique.",
+      features: ["À 2 km du centre de Caacupé", "Terrain en hauteur", "Vue panoramique", "Quartier calme"] },
+    en: { title: "5,440 m² plot in Cabañas", zone: "Cabañas",
+      desc: "An empty plot in Cabañas, just 2 km from the centre of Caacupé, in a quiet, sought-after neighbourhood. It sits high up and offers wide panoramic views.",
+      features: ["2 km from central Caacupé", "Elevated plot", "Panoramic views", "Quiet neighbourhood"] }
+  },
+  12: {
+    fr: { title: "Ranch à Eusebio Ayala", zone: "À 20 km de Caacupé",
+      desc: "Propriété à 20 km de Caacupé, près d'Eusebio Ayala, où se trouvent tous les services essentiels : commerces, écoles, centres de santé, restaurants et stations-service. Elle dispose d'une façade sur route asphaltée, avec un accès facile toute l'année. Idéale pour un projet agricole, un lotissement, une résidence de campagne, un investissement ou un projet touristique.",
+      features: ["Façade sur route asphaltée", "Accès facile toute l'année", "Services essentiels à proximité", "Adaptée à un projet agricole ou touristique"] },
+    en: { title: "Ranch in Eusebio Ayala", zone: "20 km from Caacupé",
+      desc: "A property 20 km from Caacupé, next to Eusebio Ayala, where all essential services are available: shops, schools, health centres, restaurants and petrol stations. It has frontage on a paved road with easy access year round. Suited to a farming project, a subdivision, a country residence, an investment or a tourism development.",
+      features: ["Paved-road frontage", "Easy access year round", "Essential services nearby", "Suited to farming or tourism"] }
+  },
+  13: {
+    fr: { title: "Terrain de 14 hectares à Ita Yvu Guasu", zone: "Ita Yvu Guasu",
+      desc: "Propriété de 14 hectares à quelques minutes de Caacupé, traversée par un ruisseau naturel et couverte à près de 70 % de végétation naturelle, arbustes et arbres. L'accès est aisé toute l'année, avec 3 km de piste, et la route d'accès est en cours de bitumage. C'est un secteur apprécié des communautés suisse et allemande. Idéale pour un domaine privé, un projet touristique ou écologique, une ferme autonome, de l'élevage, de l'agroforesterie ou un lotissement rural.",
+      features: ["Ruisseau naturel traversant la propriété", "70 % de végétation naturelle", "3 km de piste", "Route d'accès en cours de bitumage"] },
+    en: { title: "14-hectare plot in Ita Yvu Guasu", zone: "Ita Yvu Guasu",
+      desc: "A 14-hectare property minutes from Caacupé, crossed by a natural stream and around 70% covered in natural vegetation, shrubs and trees. Access is comfortable year round over 3 km of track, and the access road is being paved. The area is favoured by the Swiss and German communities. Suited to a private estate, a tourism or ecological project, a self-sufficient farm, livestock, agroforestry or a rural subdivision.",
+      features: ["Natural stream crossing the land", "70% natural vegetation", "3 km of track", "Access road being paved"] }
+  },
+  14: {
+    fr: { title: "Terrain de 4 400 m² à Cabañas", zone: "Cabañas",
+      desc: "Terrain de 4 400 m² à Cabañas, à quelques minutes du centre de Caacupé. Entièrement clôturé avec portail d'accès, il dispose de l'eau et de l'électricité et se trouve à 700 mètres de la route asphaltée, avec commerce de proximité et un accès facile toute l'année. Un petit bâtiment/étable est déjà présent sur le terrain.",
+      features: ["Entièrement clôturé avec portail", "Eau et électricité", "À 700 m de la route asphaltée", "Petit bâtiment/étable déjà construit"] },
+    en: { title: "4,400 m² plot in Cabañas", zone: "Cabañas",
+      desc: "A 4,400 m² plot in Cabañas, minutes from the centre of Caacupé. Fully fenced with an access gate, it has water and electricity and sits 700 metres from the paved road, with a local shop nearby and easy access year round. A small shed/stable is already built on the land.",
+      features: ["Fully fenced with gate", "Water and electricity", "700 m from the paved road", "Small shed/stable already built"] }
+  },
+  15: {
+    fr: { title: "Appartement à Asunción", zone: null, desc: "", features: [] },
+    en: { title: "Apartment in Asunción", zone: null, desc: "", features: [] }
+  },
+  16: {
+    fr: { title: "Maison sur terrain de 448 m² à Cabañas", zone: "Cabañas",
+      desc: "Maison en zone semi-urbaine de Cabañas, Caacupé, sur un terrain de 448 m² entièrement clôturé. Elle compte deux chambres, un salon, une salle de bain et un espace cuisine. En bon état général, elle admet quelques petits travaux de rafraîchissement. Les commerces sont à moins de 500 mètres.",
+      features: ["Terrain entièrement clôturé", "Salon", "Espace cuisine", "Zone semi-urbaine", "Commerces à moins de 500 m"] },
+    en: { title: "House on a 448 m² plot in Cabañas", zone: "Cabañas",
+      desc: "A house in the semi-urban area of Cabañas, Caacupé, on a fully fenced 448 m² plot. It has two bedrooms, a living room, a bathroom and a kitchen space. In good general condition, it would take some light refreshing. Shops are less than 500 metres away.",
+      features: ["Fully fenced plot", "Living room", "Kitchen space", "Semi-urban area", "Shops under 500 m away"] }
+  }
+};
+
+const TIPO_T = {
+  fr: { Villa: "Villa", Quinta: "Quinta", Terreno: "Terrain", Casa: "Maison", Rancho: "Ranch", Departamento: "Appartement" },
+  en: { Villa: "Villa", Quinta: "Country home", Terreno: "Land", Casa: "House", Rancho: "Ranch", Departamento: "Apartment" }
+};
+const OPERACION_T = { es: { VENTA: "VENTA" }, fr: { VENTA: "À VENDRE" }, en: { VENTA: "FOR SALE" } };
+
+const SERVICES_T = {
+  fr: [
+    { name: "Terrains ruraux", desc: "Champs et parcelles avec titre et taxes en règle." },
+    { name: "Villas et maisons", desc: "Biens résidentiels à Caacupé et alentours." },
+    { name: "Quintas", desc: "Maisons de campagne avec arbres, quincho et espace pour des projets." },
+    { name: "Ranchs", desc: "Grandes surfaces pour l'exploitation, l'élevage ou le lotissement." },
+    { name: "Investissement", desc: "Opportunités à fort potentiel de valorisation dans La Cordillera." },
+    { name: "Accompagnement", desc: "Documents, bornage et démarches jusqu'au transfert." }
+  ],
+  en: [
+    { name: "Rural land", desc: "Fields and parcels with title and taxes in order." },
+    { name: "Villas and houses", desc: "Residential property in Caacupé and nearby." },
+    { name: "Country homes", desc: "Rural houses with trees, barbecue area and room for projects." },
+    { name: "Ranches", desc: "Large holdings for farming, livestock or subdivision." },
+    { name: "Investment", desc: "Opportunities with strong growth potential in La Cordillera." },
+    { name: "Support", desc: "Paperwork, surveying and handling through to transfer." }
+  ]
+};
+
+const STEPS_T = {
+  fr: [
+    { n: "01", title: "Nous écoutons vos objectifs", desc: "Nous comprenons ce que vous cherchez, votre délai et votre budget réel." },
+    { n: "02", title: "Nous analysons le marché", desc: "Nous comparons les valeurs et les conditions dans La Cordillera." },
+    { n: "03", title: "Nous sélectionnons les opportunités", desc: "Nous ne présentons que ce qui correspond à votre objectif." },
+    { n: "04", title: "Nous concluons en sécurité", desc: "Documents, négociation et accompagnement jusqu'au bout." }
+  ],
+  en: [
+    { n: "01", title: "We listen to your goals", desc: "We understand what you are looking for, your timeline and your real budget." },
+    { n: "02", title: "We analyse the market", desc: "We compare values and conditions across La Cordillera." },
+    { n: "03", title: "We select opportunities", desc: "We only present what fits your goal." },
+    { n: "04", title: "We close safely", desc: "Paperwork, negotiation and support all the way through." }
+  ]
+};
+
+const TESTIMONIALS_T = {
+  fr: [
+    { text: "Bruno a su répondre à tous nos besoins et nous a trouvé le terrain de nos rêves. Un service professionnel et attentionné.", author: "Aline et Martin Rieux", role: "Acheteurs" },
+    { text: "Notre expérience à Caacupé a été très positive, exceptionnelle. Au-delà de l'immobilier, nous avons pu partager nos projets : les conseils n'ont pas de prix.", author: "Sophie Duchamps", role: "Acheteuse — Caacupé" },
+    { text: "Je recommande Bruno pour son approche personnalisée et sa connaissance du marché local dans La Cordillera. Une personne de confiance.", author: "Paul Rossi", role: "Acheteur — La Cordillera" }
+  ],
+  en: [
+    { text: "Bruno met every one of our needs and found us the land we had dreamed of. A professional and attentive service.", author: "Aline and Martin Rieux", role: "Buyers" },
+    { text: "Our experience in Caacupé was very positive, exceptional. Beyond the property itself, we were able to share our plans: the advice was priceless.", author: "Sophie Duchamps", role: "Buyer — Caacupé" },
+    { text: "I recommend Bruno for his personal approach and his knowledge of the local market in La Cordillera. Someone you can trust.", author: "Paul Rossi", role: "Buyer — La Cordillera" }
+  ]
+};
+
 // Degradado de marca para cualquier propiedad sin fotografía asignada.
 const SIN_FOTO = "data:image/svg+xml;utf8," + encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22633C"/><stop offset=".55" stop-color="#1F5A36"/><stop offset="1" stop-color="#17452A"/></linearGradient></defs><rect width="400" height="300" fill="url(#g)"/></svg>');
 
-const money = (p) => {
-  if (p.price == null) return "Precio a consultar";
-  const n = p.price.toLocaleString("es-PY");
+const LOCALE = { es: "es-PY", fr: "fr-FR", en: "en-GB" };
+
+// Idioma guardado > idioma del navegador > español.
+function detectarIdioma() {
+  try {
+    const guardado = window.localStorage && localStorage.getItem("brimmo_lang");
+    if (guardado && IDIOMAS.indexOf(guardado) !== -1) return guardado;
+  } catch (e) { /* localStorage bloqueado */ }
+  const nav = (navigator.languages && navigator.languages[0]) || navigator.language || "es";
+  const base = String(nav).slice(0, 2).toLowerCase();
+  return IDIOMAS.indexOf(base) !== -1 ? base : "es";
+}
+
+const money = (p, lang) => {
+  const t = TXT[lang] || TXT.es;
+  if (p.price == null) return t.precioConsultar;
+  const n = p.price.toLocaleString(LOCALE[lang] || "es-PY");
   if (p.currency === "USD") return "USD " + n;
   if (p.currency === "GS") return "Gs. " + n;
-  return n + " (moneda a confirmar)";
+  return n + " (" + t.monedaConfirmar + ")";
 };
 
-const areaLabel = (m2) => m2 == null ? null : (m2 >= 10000
-  ? (m2 / 10000).toLocaleString("es-PY", { maximumFractionDigits: 2 }) + " ha"
-  : m2.toLocaleString("es-PY") + " m²");
+const areaLabel = (m2, lang) => {
+  if (m2 == null) return null;
+  const loc = LOCALE[lang] || "es-PY";
+  return m2 >= 10000
+    ? (m2 / 10000).toLocaleString(loc, { maximumFractionDigits: 2 }) + " ha"
+    : m2.toLocaleString(loc) + " m²";
+};
+
+// Devuelve la propiedad con los campos traducidos al idioma activo.
+// El español es la base: si falta una traducción, cae al español.
+const propEn = (p, lang) => {
+  if (lang === "es") return p;
+  const tr = (PROP_T[p.id] || {})[lang];
+  if (!tr) return p;
+  return Object.assign({}, p, {
+    title: tr.title || p.title,
+    zone: tr.zone !== undefined ? tr.zone : p.zone,
+    desc: tr.desc !== undefined ? tr.desc : p.desc,
+    features: tr.features || p.features
+  });
+};
 
 class Component extends DCLogic {
-  state = { screen: "home", scrolled: false, t: 0, tPaused: false, q: "", type: "", city: "", price: "", detailId: 1, sent: false, hovered: null };
+  state = { screen: "home", scrolled: false, t: 0, tPaused: false, q: "", type: "", city: "", price: "", detailId: 1, sent: false, hovered: null, lang: detectarIdioma(), menu: false };
 
   componentDidMount() {
+    this.aplicarIdioma();
     this.onScroll = () => {
       const s = window.scrollY > 60;
       if (s !== this.state.scrolled) this.setState({ scrolled: s });
@@ -1104,6 +1641,8 @@ class Component extends DCLogic {
 
     // Navegación por teclado dentro del carrusel de testimonios
     this.onKey = (e) => {
+      // Escape cierra el menú móvil desde cualquier foco
+      if (e.key === "Escape" && this.state.menu) { this.setState({ menu: false }); return; }
       if (!this.tZone || !this.tZone.contains(document.activeElement)) return;
       if (e.key === "ArrowLeft") { e.preventDefault(); this.setState(st => ({ t: (st.t + TESTIMONIALS.length - 1) % TESTIMONIALS.length })); }
       if (e.key === "ArrowRight") { e.preventDefault(); this.setState(st => ({ t: (st.t + 1) % TESTIMONIALS.length })); }
@@ -1127,7 +1666,15 @@ class Component extends DCLogic {
     let list = this.publicadas();
     if (q) {
       const k = q.toLowerCase();
-      list = list.filter(p => (p.title + " " + p.city + " " + (p.zone || "") + " " + p.type).toLowerCase().includes(k));
+      // busca en el idioma activo y también en español, para que un término
+      // en cualquiera de los dos encuentre la propiedad
+      const tipoTr = (TIPO_T[this.state.lang] || {});
+      list = list.filter(p => {
+        const tr = propEn(p, this.state.lang);
+        return (tr.title + " " + p.title + " " + p.city + " " + (tr.zone || "") + " " +
+                (p.zone || "") + " " + p.type + " " + (tipoTr[p.type] || ""))
+          .toLowerCase().includes(k);
+      });
     }
     if (type) list = list.filter(p => p.type === type);
     if (city) list = list.filter(p => p.city === city);
@@ -1167,7 +1714,9 @@ class Component extends DCLogic {
       Object.values(this.markers || {}).forEach(m => this.map.removeLayer(m));
       this.markers = {};
       const seen = {};
-      list.forEach(p => {
+      const tMapa = TXT[this.state.lang] || TXT.es;
+      list.forEach(raw => {
+        const p = propEn(raw, this.state.lang);
         const c = CIUDAD[p.city];
         // desplazamiento mínimo para que no se superpongan los marcadores de una misma ciudad
         const k = seen[p.city] = (seen[p.city] || 0);
@@ -1177,12 +1726,12 @@ class Component extends DCLogic {
         const m = L.marker([lat, lng], { icon: this.icon(this.state.hovered === p.id) }).addTo(this.map);
         m.bindPopup(
           '<div style="font-family:Inter,sans-serif;padding:14px 15px 15px">' +
-          '<div style="font-size:9px;font-weight:700;letter-spacing:.18em;color:' + (p.operation === "VENTA" ? FOREST : OLIVE) + '">' + p.operation + '</div>' +
+          '<div style="font-size:9px;font-weight:700;letter-spacing:.18em;color:' + (p.operation === "VENTA" ? FOREST : OLIVE) + '">' + ((OPERACION_T[this.state.lang] || OPERACION_T.es)[p.operation] || p.operation) + '</div>' +
           '<div style="margin-top:6px;font-family:Montserrat,sans-serif;font-weight:700;font-size:14px;line-height:1.25;color:' + FOREST + '">' + p.title + '</div>' +
           '<div style="margin-top:4px;font-size:12px;color:#8A8A82">' + (p.zone ? p.zone + ", " : "") + p.city + '</div>' +
-          '<div style="margin-top:8px;font-family:Montserrat,sans-serif;font-weight:800;font-size:14px;color:' + CHARCOAL + '">' + money(p) + '</div>' +
-          '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #E3E2DC;font-size:10px;line-height:1.4;color:#A09F97">Ubicación aproximada — referencia de ciudad</div>' +
-          '<div style="margin-top:8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:' + OLIVE + '">Ver propiedad →</div>' +
+          '<div style="margin-top:8px;font-family:Montserrat,sans-serif;font-weight:800;font-size:14px;color:' + CHARCOAL + '">' + money(p, this.state.lang) + '</div>' +
+          '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #E3E2DC;font-size:10px;line-height:1.4;color:#A09F97">' + tMapa.ubicacionAprox + '</div>' +
+          '<div style="margin-top:8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:' + OLIVE + '">' + tMapa.verPropiedad + '</div>' +
           '</div>'
         );
         m.on("click", () => this.setState({ screen: "detail", detailId: p.id }));
@@ -1212,7 +1761,27 @@ class Component extends DCLogic {
     }
   }
 
-  go(screen, e) { if (e) e.preventDefault(); this.setState({ screen }); window.scrollTo(0, 0); }
+  // Refleja el idioma activo en el documento: atributo lang, título y
+  // descripción, para que buscadores y lectores de pantalla lo reciban.
+  aplicarIdioma() {
+    const t = TXT[this.state.lang] || TXT.es;
+    document.documentElement.setAttribute("lang", this.state.lang);
+    document.title = t.metaTitulo;
+    const md = document.querySelector('meta[name="description"]');
+    if (md) md.setAttribute("content", t.metaDesc);
+  }
+
+  cambiarIdioma(lang, e) {
+    if (e) e.preventDefault();
+    if (IDIOMAS.indexOf(lang) === -1 || lang === this.state.lang) return;
+    try { localStorage.setItem("brimmo_lang", lang); } catch (err) { /* sin persistencia */ }
+    this.setState({ lang }, () => this.aplicarIdioma());
+    setTimeout(() => this.aplicarIdioma(), 0);
+  }
+
+  // Al navegar cerramos el menú móvil, para que un enlace en la lista
+  // desplegada te lleve a la pantalla y libere la pantalla.
+  go(screen, e) { if (e) e.preventDefault(); this.setState({ screen, menu: false }); window.scrollTo(0, 0); }
 
   // Secciones que viven en la portada: si estamos en otra pantalla, primero
   // volvemos al inicio y recién ahí desplazamos hasta el ancla.
@@ -1222,27 +1791,33 @@ class Component extends DCLogic {
       const el = document.getElementById(id);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     };
+    // el enlace vive en el menú móvil, cerrarlo antes del scroll
+    if (this.state.menu) this.setState({ menu: false });
     if (this.state.screen !== "home") { this.setState({ screen: "home" }); setTimeout(ir, 80); }
     else ir();
   }
 
   specs(p) {
+    const lang = this.state.lang, t = TXT[lang] || TXT.es;
     const bits = [];
-    if (p.beds) bits.push(p.beds + (p.beds === 1 ? " dorm" : " dorm"));
-    if (p.baths) bits.push(p.baths + (p.baths === 1 ? " baño" : " baños"));
-    if (p.built) bits.push(p.built.toLocaleString("es-PY") + " m² const.");
-    else if (p.land) bits.push(areaLabel(p.land));
-    return bits.join(" · ") || "Consultar detalles";
+    if (p.beds) bits.push(p.beds + " " + t.dorm);
+    if (p.baths) bits.push(p.baths + " " + (p.baths === 1 ? t.bano : t.banosCorto));
+    if (p.built) bits.push(p.built.toLocaleString(LOCALE[lang]) + " " + t.construidoCorto);
+    else if (p.land) bits.push(areaLabel(p.land, lang));
+    return bits.join(" · ") || t.consultarDetalles;
   }
 
-  card(p) {
+  card(raw) {
+    const lang = this.state.lang;
+    const p = propEn(raw, lang);
     return {
       ...p,
       image: p.image || SIN_FOTO,
       alt: p.image ? p.title + " — " + (p.zone ? p.zone + ", " : "") + p.city : "",
-      price: money(p),
+      price: money(p, lang),
       location: p.zone ? p.zone + ", " + p.city : p.city,
       specs: this.specs(p),
+      operation: (OPERACION_T[lang] || OPERACION_T.es)[p.operation] || p.operation,
       tagBg: p.operation === "VENTA" ? FOREST : OLIVE,
       open: (e) => { e.preventDefault(); this.setState({ screen: "detail", detailId: p.id }); window.scrollTo(0, 0); },
       hover: () => this.setState({ hovered: p.id }),
@@ -1254,10 +1829,13 @@ class Component extends DCLogic {
     const s = this.state;
     const home = s.screen === "home";
     const solid = s.scrolled || !home;
+    const lang = s.lang;
+    const T = TXT[lang] || TXT.es;
     const list = this.filtered();
     const pubs = this.publicadas();
-    const d = pubs.find(x => x.id === s.detailId) || pubs[0];
-    const t = TESTIMONIALS[s.t];
+    const d = propEn(pubs.find(x => x.id === s.detailId) || pubs[0], lang);
+    const testis = lang === "es" ? TESTIMONIALS : (TESTIMONIALS_T[lang] || TESTIMONIALS);
+    const t = testis[s.t % testis.length];
     const counts = {};
     pubs.forEach(p => { counts[p.type] = (counts[p.type] || 0) + 1; });
     // Sin fotografía propia se usa un degradado de marca, nunca la foto de
@@ -1278,6 +1856,17 @@ class Component extends DCLogic {
 
     return {
       year: new Date().getFullYear(),
+      t: T,
+      lang,
+      idiomas: IDIOMAS.map(code => ({
+        code,
+        etiqueta: IDIOMA_NOMBRE[code],
+        activo: code === lang,
+        color: code === lang ? (solid ? FOREST : "#ffffff") : (solid ? "#A0A099" : "rgba(255,255,255,.55)"),
+        peso: code === lang ? "700" : "500",
+        elegir: (e) => this.cambiarIdioma(code, e)
+      })),
+
       isHome: home, isProps: s.screen === "properties", isDetail: s.screen === "detail",
       isNosotros: s.screen === "nosotros", isServicios: s.screen === "servicios",
       goNosotros: (e) => this.go("nosotros", e),
@@ -1287,6 +1876,15 @@ class Component extends DCLogic {
       actNosotros: s.screen === "nosotros" ? LIME : "transparent",
       actServicios: s.screen === "servicios" ? LIME : "transparent",
       barOpacity: solid ? 1 : 0,
+
+      // Menú móvil. sc-if espera booleanos verdaderos, así que exponemos
+      // tanto abierto como cerrado para el intercambio de iconos.
+      menuAbierto: s.menu === true,
+      menuCerrado: s.menu !== true,
+      menuClase: s.menu ? "abierto" : "",
+      menuAria: s.menu ? (T.cerrarMenu || "Cerrar menú") : (T.abrirMenu || "Abrir menú"),
+      toggleMenu: (e) => { if (e) e.preventDefault(); this.setState({ menu: !this.state.menu }); },
+
       navColor: solid ? CHARCOAL : "#ffffff",
       logoColor: solid ? FOREST : "#ffffff",
       logoSubColor: solid ? OLIVE : "rgba(255,255,255,.72)",
@@ -1299,29 +1897,23 @@ class Component extends DCLogic {
       // solo categorías con propiedades publicadas: una categoría vacía
       // llevaría a un catálogo sin resultados
       categories: [
-        cat("Terrenos", "Terreno", "Para construir o invertir",
+        cat(T.catTerrenos, "Terreno", T.catTerrenosHint,
             "uploads/img/categorias/terrenos.jpg",
             "Valle verde con cerro al fondo en La Cordillera"),
-        cat("Quintas", "Quinta", "Campo con casa y arboleda",
+        cat(T.catQuintas, "Quinta", T.catQuintasHint,
             "uploads/img/categorias/quintas.jpg",
             "Casa de campo con pileta, quincho y parque arbolado"),
-        cat("Villas", "Villa", "Residencias en Caacupé",
+        cat(T.catVillas, "Villa", T.catVillasHint,
             "uploads/img/categorias/villas.jpg",
             "Casa de una planta con galería y jardín arbolado"),
-        cat("Casas", "Casa", "Para vivir en la zona",
+        cat(T.catCasas, "Casa", T.catCasasHint,
             "uploads/img/categorias/villas.jpg",
             "Casa de una planta con galería y jardín arbolado"),
-        cat("Ranchos", "Rancho", "Superficies para producción", null, null),
-        cat("Departamentos", "Departamento", "Urbano y práctico",
-            "uploads/img/categorias/departamentos.jpg",
-            "Edificio de departamentos moderno con balcones"),
-        cat("Comerciales", "Comercial", "Locales y depósitos",
-            "uploads/img/categorias/comerciales.jpg",
-            "Local comercial con fachada vidriada y piedra")
+        cat(T.catRanchos, "Rancho", T.catRanchosHint, null, null)
       ].filter(c => c.count !== "00"),
       ciudades,
-      services: SERVICES,
-      steps: STEPS,
+      services: lang === "es" ? SERVICES : (SERVICES_T[lang] || SERVICES),
+      steps: lang === "es" ? STEPS : (STEPS_T[lang] || STEPS),
       amenities: d.features || [],
 
       trackRef: (el) => { this.track = el; },
@@ -1338,8 +1930,8 @@ class Component extends DCLogic {
       resumeT: () => this.setState({ tPaused: false }),
 
       onSubmit: (e) => { e.preventDefault(); this.setState({ sent: true }); },
-      submitLabel: s.sent ? "Consulta enviada" : "Enviar consulta",
-      formMsg: s.sent ? "Recibimos tu mensaje. Te respondemos a la brevedad." : "",
+      submitLabel: s.sent ? T.consultaEnviada : T.enviarConsulta,
+      formMsg: s.sent ? T.formOk : "",
 
       onSearch: (e) => this.setState({ q: e.target.value }),
       onType: (e) => this.setState({ type: e.target.value }),
@@ -1347,7 +1939,7 @@ class Component extends DCLogic {
       onPrice: (e) => this.setState({ price: e.target.value }),
       visible: list.map(p => this.card(p)),
       empty: list.length === 0,
-      resultCount: list.length === 1 ? "1 propiedad disponible" : list.length + " propiedades disponibles",
+      resultCount: list.length === 1 ? T.unaDisponible : list.length + T.variasDisponibles,
       mapRef: (el) => { this.mapEl = el; },
       detailMapRef: (el) => { this.dMapEl = el; },
 
@@ -1361,14 +1953,14 @@ class Component extends DCLogic {
       detailImage: d.image || SIN_FOTO,
       detailAlt: d.image ? d.title + " — " + (d.zone ? d.zone + ", " : "") + d.city : "",
       detailLocation: d.zone ? d.zone + ", " + d.city : d.city,
-      detailOperation: d.operation,
+      detailOperation: (OPERACION_T[lang] || OPERACION_T.es)[d.operation] || d.operation,
       detailTagBg: d.operation === "VENTA" ? FOREST : OLIVE,
-      detailPrice: money(d),
-      detailArea: areaLabel(d.land) || "A confirmar",
-      detailBuilt: d.built ? d.built.toLocaleString("es-PY") + " m²" : "—",
+      detailPrice: money(d, lang),
+      detailArea: areaLabel(d.land, lang) || T.aConfirmar,
+      detailBuilt: d.built ? d.built.toLocaleString(LOCALE[lang]) + " m²" : "—",
       detailBeds: d.beds ? String(d.beds) : "—",
       detailBaths: d.baths ? String(d.baths) : "—",
-      detailType: d.type,
+      detailType: lang === "es" ? d.type : ((TIPO_T[lang] || {})[d.type] || d.type),
       detailDesc: d.desc,
       detailCity: d.city,
       hasVideo: !!d.video,
