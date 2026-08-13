@@ -40,6 +40,10 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
+  /* box-sizing: sin esto, los contenedores con max-width + padding
+     rendereaban más anchos que su max-width y descuadraban las tarjetas
+     destacadas contra los controles del carrusel. */
+  *, *::before, *::after { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body { margin:0; background:#FFFFFF; color:#3A3A38; font-family:Inter,Arial,sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
   a { color:#1F5A36; text-decoration:none; }
@@ -1948,7 +1952,13 @@ class Component extends DCLogic {
       steps: lang === "es" ? STEPS : (STEPS_T[lang] || STEPS),
       amenities: d.features || [],
 
-      trackRef: (el) => { this.track = el; },
+      // Al montar el carrusel, aseguramos scroll = 0.
+      // scroll-snap-type con reveal animado dejaba el track desplazado unos
+      // pixeles al cargar, desalineando el primer card con el título.
+      trackRef: (el) => {
+        this.track = el;
+        if (el && el.scrollLeft !== 0) el.scrollLeft = 0;
+      },
       prevSlide: () => this.track && this.track.scrollBy({ left: -this.track.clientWidth * 0.7, behavior: "smooth" }),
       nextSlide: () => this.track && this.track.scrollBy({ left: this.track.clientWidth * 0.7, behavior: "smooth" }),
 
