@@ -577,6 +577,19 @@
           <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">{{ t.telWhats }}</div><a href="{{ telHref }}" style="margin-top:6px;display:block;font-size:16px;font-weight:600;color:#3A3A38">{{ tel }}</a></div>
           <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">{{ t.correo }}</div><a href="{{ mailHref }}" style="margin-top:6px;display:block;font-size:16px;font-weight:600;color:#3A3A38">{{ mail }}</a></div>
           <div><div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">{{ t.ubicacion }}</div><div style="margin-top:6px;font-size:16px;color:#3A3A38">{{ direccion }}</div></div>
+          <div>
+            <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8A82">{{ t.redes }}</div>
+            <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:10px">
+              <a href="{{ facebookHref }}" target="_blank" rel="noopener" aria-label="Facebook" style="display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 16px;border:1px solid #DCDBD4;border-radius:2px;background:#fff;font-size:13px;font-weight:600;color:#3A3A38;transition:border-color .3s,color .3s,background .3s" style-hover="border-color:#1F5A36;background:#1F5A36;color:#fff">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.52 1.5-3.91 3.77-3.91 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg>
+                Facebook
+              </a>
+              <a href="{{ youtubeHref }}" target="_blank" rel="noopener" aria-label="YouTube" style="display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 16px;border:1px solid #DCDBD4;border-radius:2px;background:#fff;font-size:13px;font-weight:600;color:#3A3A38;transition:border-color .3s,color .3s,background .3s" style-hover="border-color:#1F5A36;background:#1F5A36;color:#fff">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.5 6.9a3.02 3.02 0 0 0-2.12-2.14C19.5 4.25 12 4.25 12 4.25s-7.5 0-9.38.51A3.02 3.02 0 0 0 .5 6.9C0 8.79 0 12 0 12s0 3.21.5 5.1a3.02 3.02 0 0 0 2.12 2.14c1.88.51 9.38.51 9.38.51s7.5 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14C24 15.21 24 12 24 12s0-3.21-.5-5.1ZM9.6 15.57V8.43L15.82 12 9.6 15.57Z"/></svg>
+                YouTube
+              </a>
+            </div>
+          </div>
         </div>
         <a href="{{ waHref }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;margin-top:34px;height:50px;padding:0 24px;background:#1F5A36;color:#fff;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px" style-hover="background:#A7C900;color:#1F5A36">{{ t.escribirWhats }}</a>
       </div>
@@ -927,6 +940,8 @@
         <a href="{{ mailHref }}" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ mail }}</a>
         <span>{{ direccion }}</span>
         <a href="{{ waHref }}" target="_blank" rel="noopener" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">{{ t.escribirWhats }}</a>
+        <a href="{{ facebookHref }}" target="_blank" rel="noopener" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">Facebook</a>
+        <a href="{{ youtubeHref }}" target="_blank" rel="noopener" style="color:rgba(255,255,255,.78)" style-hover="color:#A7C900">YouTube</a>
       </div>
     </div>
   </div>
@@ -947,6 +962,8 @@ const FOREST = "#1F5A36", LIME = "#A7C900", OLIVE = "#7E9848", CHARCOAL = "#3A3A
 const TEL = "+595 992 984 777", TEL_RAW = "595992984777";
 const MAIL = "loginvest7@gmail.com";
 const DIRECCION = "Cabañas, Caacupé, Paraguay";
+const FACEBOOK = "https://www.facebook.com/groups/754200153951006";
+const YOUTUBE = "https://www.youtube.com/@BRUBIO777";
 
 // Coordenadas de centro de ciudad. La web anterior no publica coordenadas de
 // ninguna propiedad, así que todas las ubicaciones son APROXIMADAS a nivel de
@@ -1129,6 +1146,7 @@ const IDIOMA_NOMBRE = { es: "ES", fr: "FR", en: "EN" };
 
 const TXT = {
   es: {
+    redes: "Redes",
     heroAlt: "Paisaje de La Cordillera, Paraguay",
     precio1: "Hasta Gs. 300.000.000",
     precio2: "Gs. 300 — 600 millones",
@@ -1219,6 +1237,7 @@ const TXT = {
   },
 
   fr: {
+    redes: "Réseaux",
     heroAlt: "Paysage de La Cordillera, Paraguay",
     precio1: "Jusqu'à 300 000 000 Gs",
     precio2: "300 à 600 millions Gs",
@@ -1309,6 +1328,7 @@ const TXT = {
   },
 
   en: {
+    redes: "Social",
     heroAlt: "Landscape of La Cordillera, Paraguay",
     precio1: "Up to Gs. 300,000,000",
     precio2: "Gs. 300–600 million",
@@ -1957,6 +1977,8 @@ class Component extends DCLogic {
 
       tel: TEL, mail: MAIL, direccion: DIRECCION,
       waHref: "https://wa.me/" + TEL_RAW,
+      facebookHref: FACEBOOK,
+      youtubeHref: YOUTUBE,
       telHref: "tel:+" + TEL_RAW,
       mailHref: "mailto:" + MAIL,
 
