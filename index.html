@@ -146,6 +146,15 @@
   .bri-cat:focus-visible { outline: 3px solid #A7C900; outline-offset: 3px; }
   @media (max-width: 900px) { .bri-cat { aspect-ratio: 3/2; } }
 
+  /* ===== Tarjetas destacadas del carrusel =====
+     El ancho del carrusel se ajusta al viewport: en escritorio se ven
+     tres, en tablet dos con la tercera asomando, y en móvil una entera
+     por tarjeta —sin cortes— con snap. */
+  .bri-featured { width: min(400px, 88vw); }
+  @media (max-width: 720px) {
+    .bri-featured { width: calc(100vw - 40px); }
+  }
+
   /* ===== Menú móvil =====
      A 390px el header necesitaba 942px: cinco enlaces quedaban fuera de
      pantalla y el sitio era innavegable en móvil. */
@@ -438,7 +447,7 @@
 
     <div ref="{{ trackRef }}" data-stagger class="nsb" style="margin-top:46px;padding:0 20px 8px;display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;max-width:1320px;margin-left:auto;margin-right:auto;cursor:grab;scroll-behavior:smooth">
       <sc-for list="{{ featured }}" as="p" hint-placeholder-count="3">
-        <article data-reveal style="scroll-snap-align:start;flex:0 0 auto;width:min(400px,84vw);background:#fff;border:1px solid #E3E2DC">
+        <article data-reveal class="bri-featured" style="scroll-snap-align:start;flex:0 0 auto;background:#fff;border:1px solid #E3E2DC">
           <a href="#" onClick="{{ p.open }}" style="display:block">
             <div style="position:relative;aspect-ratio:4/3;overflow:hidden;background:#1F5A36">
               <img src="{{ p.image }}" alt="{{ p.alt }}" class="bri-img-zoom" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
@@ -1764,10 +1773,13 @@ class Component extends DCLogic {
   // Refleja el idioma activo en el documento: atributo lang, título y
   // descripción, para que buscadores y lectores de pantalla lo reciban.
   aplicarIdioma() {
+    // el runtime DCLogic puede llamar esto antes de que exista document,
+    // o desde un entorno sin document (por ejemplo, pruebas)
+    if (typeof document === "undefined" || !document.documentElement) return;
     const t = TXT[this.state.lang] || TXT.es;
     document.documentElement.setAttribute("lang", this.state.lang);
-    document.title = t.metaTitulo;
-    const md = document.querySelector('meta[name="description"]');
+    if (t.metaTitulo) document.title = t.metaTitulo;
+    const md = document.querySelector && document.querySelector('meta[name="description"]');
     if (md) md.setAttribute("content", t.metaDesc);
   }
 

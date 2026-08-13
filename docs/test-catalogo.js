@@ -5,12 +5,19 @@ const src = fs.readFileSync("C:/Users/Neura/Neura/BRIMMO sitio completo revisió
 
 global.window = { L: null, matchMedia: () => ({ matches: false }), addEventListener() {}, scrollTo() {} };
 global.document = { activeElement: null };
-class DCLogic { setState() {} }
+// setState real, para probar cambios de estado como en el runtime
+class DCLogic {
+  setState(patch, cb) {
+    if (typeof patch === "function") patch = patch(this.state);
+    Object.assign(this.state, patch);
+    if (cb) cb();
+  }
+}
 global.DCLogic = DCLogic;
 
 const Component = new Function("DCLogic", src + "\n; return Component;")(DCLogic);
 const c = new Component();
-c.state = { screen: "properties", scrolled: false, t: 0, tPaused: false, q: "", type: "", city: "", price: "", detailId: 1, sent: false, hovered: null };
+c.state = { screen: "properties", scrolled: false, t: 0, tPaused: false, q: "", type: "", city: "", price: "", detailId: 1, sent: false, hovered: null, lang: "es", menu: false };
 c.tryMaps = () => {};
 
 const fail = [];
@@ -109,3 +116,31 @@ check("servicios expone services y steps", r2.services.length === 6 && r2.steps.
 check("handlers de seccion existen", typeof r2.goContacto === "function" && typeof r2.goZona === "function", "ok");
 c.state.screen = "properties";
 console.log(fail.length ? "FALLOS:\n"+fail.join("\n") : "\nTodo OK (pantallas)");
+
+// --- menú móvil e idiomas ---
+c.state.screen = "home"; c.state.menu = false;
+let m = c.renderVals();
+check("menu cerrado inicialmente", m.menuCerrado === true && m.menuAbierto === false, [m.menuCerrado, m.menuAbierto]);
+check("toggle es función", typeof m.toggleMenu === "function", typeof m.toggleMenu);
+check("ariaMenu en cerrado", /Abrir|Ouvrir|Open/.test(m.menuAria), m.menuAria);
+c.state.menu = true;
+m = c.renderVals();
+check("menu abierto refleja estado", m.menuAbierto === true && m.menuClase === "abierto", [m.menuAbierto, m.menuClase]);
+check("ariaMenu en abierto", /Cerrar|Fermer|Close/.test(m.menuAria), m.menuAria);
+c.state.menu = false;
+// idiomas
+check("expone t y lang", typeof m.t === "object" && ["es","fr","en"].indexOf(m.lang) !== -1, {t:!!m.t, lang:m.lang});
+check("tres idiomas disponibles", m.idiomas.length === 3, m.idiomas.map(i=>i.code));
+const activos = m.idiomas.filter(i => i.activo);
+check("exactamente un idioma activo", activos.length === 1, activos.map(i=>i.code));
+check("cambiarIdioma no rompe", (function(){ try { c.cambiarIdioma("fr"); const mv=c.renderVals(); const ok = mv.lang === "fr" && mv.t.navInicio === "Accueil"; c.cambiarIdioma("es"); return ok; } catch(e) { return false; } })(), "?");
+// operación no debe romper el color del chip
+c.state.screen = "properties";
+const chips = c.renderVals().visible;
+check("cada tarjeta tiene tagBg valido", chips.every(x => x.tagBg === "#1F5A36" || x.tagBg === "#7E9848"), chips.map(x=>x.tagBg));
+c.cambiarIdioma("fr");
+const chipsFr = c.renderVals().visible;
+check("tagBg sigue calculandose bien en francés", chipsFr.every(x => x.tagBg === "#1F5A36" || x.tagBg === "#7E9848"), chipsFr.map(x=>x.tagBg));
+check("operación traducida en francés", chipsFr[0].operation === "À VENDRE", chipsFr[0].operation);
+c.cambiarIdioma("es");
+console.log(fail.length ? "\nFALLOS:\n"+fail.join("\n") : "\nTodo OK (menú móvil e idiomas)");
