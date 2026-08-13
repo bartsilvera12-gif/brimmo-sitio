@@ -39,6 +39,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
   /* box-sizing: sin esto, los contenedores con max-width + padding
      rendereaban más anchos que su max-width y descuadraban las tarjetas
@@ -969,11 +970,60 @@ const FOREST = "#1F5A36", LIME = "#A7C900", OLIVE = "#7E9848", CHARCOAL = "#3A3A
 
 // Datos de contacto recuperados de la web anterior (immobilier-paraguay.com).
 // Pendientes de confirmación del cliente.
-const TEL = "+595 992 984 777", TEL_RAW = "595992984777";
-const MAIL = "loginvest7@gmail.com";
-const DIRECCION = "Cabañas, Caacupé, Paraguay";
-const FACEBOOK = "https://www.facebook.com/groups/754200153951006";
-const YOUTUBE = "https://www.youtube.com/@BRUBIO777";
+// =========================================================================
+// Conexión con Supabase.
+// El sitio funciona igual sin credenciales (usa el DATA hardcoded de más
+// abajo como respaldo). Al pegar URL + anon key, arranca a leer de la base.
+// =========================================================================
+const SUPABASE_URL = "";           // ej: "https://xxxxxxxxxxxx.supabase.co"
+const SUPABASE_ANON_KEY = "";      // clave pública (anon), no la service_role
+const SUPABASE_BUCKET = "brimmo-imagenes";
+const CACHE_KEY = "brimmo_cache_v1";
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;   // 24h — el sitio siempre muestra algo aunque la red falle
+
+const sbCliente = () => {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !window.supabase) return null;
+  if (!window.__sb) window.__sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  return window.__sb;
+};
+
+const urlImagen = (storagePath) =>
+  storagePath ? SUPABASE_URL + "/storage/v1/object/public/" + SUPABASE_BUCKET + "/" + storagePath : null;
+
+const idVideo = (v) => {
+  if (!v) return null;
+  const m = String(v).match(/([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+};
+
+// Convierte una fila de Supabase (con sus imágenes anidadas) al formato
+// in-memory que ya usa el componente. Devuelve { propiedad, traducciones }.
+function mapearDeSupabase(row) {
+  const imgs = (row.propiedad_imagenes || []).slice().sort((a, b) => a.orden - b.orden);
+  const principal = imgs.find(i => i.es_principal) || imgs[0];
+  const propiedad = {
+    id: row.id, published: row.published, pendiente: row.pendiente,
+    title: row.title_es, type: row.type, operation: row.operation,
+    price: row.price, currency: row.currency,
+    city: row.city, zone: row.zone_es,
+    land: row.land, built: row.built, beds: row.beds, baths: row.baths,
+    features: row.features_es || [], desc: row.desc_es || "",
+    video: row.video_id,
+    image: principal ? urlImagen(principal.storage_path) : null,
+    gallery: imgs.filter(i => i !== principal).map(i => urlImagen(i.storage_path))
+  };
+  const traducciones = {
+    fr: { title: row.title_fr, zone: row.zone_fr, desc: row.desc_fr, features: row.features_fr },
+    en: { title: row.title_en, zone: row.zone_en, desc: row.desc_en, features: row.features_en }
+  };
+  return { propiedad, traducciones };
+}
+
+let TEL = "+595 992 984 777", TEL_RAW = "595992984777";
+let MAIL = "loginvest7@gmail.com";
+let DIRECCION = "Cabañas, Caacupé, Paraguay";
+let FACEBOOK = "https://www.facebook.com/groups/754200153951006";
+let YOUTUBE = "https://www.youtube.com/@BRUBIO777";
 
 // Coordenadas de centro de ciudad. La web anterior no publica coordenadas de
 // ninguna propiedad, así que todas las ubicaciones son APROXIMADAS a nivel de
@@ -991,7 +1041,7 @@ const CIUDAD = {
 // Propiedades migradas de la web anterior. `published:false` = borrador, no se
 // muestra en el sitio. `pendiente` documenta el conflicto detectado.
 // Sin fotografías asignadas: ver uploads/propiedades-origen/MANIFIESTO.json
-const DATA = [
+let DATA = [
   { id: 1, published: true, pendiente: null,
     image: "uploads/img/04-propiedad-atyra-casa.png",
     title: "Villa en Caacupé, zona urbana", type: "Villa", operation: "VENTA",
@@ -1430,7 +1480,7 @@ const TXT = {
 };
 // Traducciones de contenido. El español vive en DATA/SERVICES/STEPS/TESTIMONIALS.
 // El francés recupera la redacción original de la web anterior donde existía.
-const PROP_T = {
+let PROP_T = {
   1: {
     fr: { title: "Villa à Caacupé, zone urbaine", zone: "Zone urbaine",
       desc: "Villa dans un quartier résidentiel de Caacupé, dans un environnement paisible avec tous les services à quelques minutes. Le terrain de 830 m² est entièrement clôturé et la maison compte deux chambres, un salon lumineux et une grande terrasse pour profiter du climat toute l'année. Réserve d'eau installée, vue dégagée sur la verdure et accès facile en toute saison.",
@@ -1688,6 +1738,12 @@ class Component extends DCLogic {
     };
     window.addEventListener("keydown", this.onKey);
     this.tryMaps();
+
+    // Cargar propiedades y contacto desde Supabase (si está configurado).
+    // Se aplica primero cache local para que la segunda visita sea instantánea,
+    // y después la red por si hay cambios.
+    this.aplicarCacheSiExiste();
+    this.cargarDesdeSupabase();
   }
   componentDidUpdate() { this.tryMaps(); }
   componentWillUnmount() {
@@ -1819,6 +1875,65 @@ class Component extends DCLogic {
     try { localStorage.setItem("brimmo_lang", lang); } catch (err) { /* sin persistencia */ }
     this.setState({ lang }, () => this.aplicarIdioma());
     setTimeout(() => this.aplicarIdioma(), 0);
+  }
+
+  // Aplica un snapshot cargado (de Supabase o de cache) sobre los objetos
+  // que consume el componente. Después dispara un re-render.
+  aplicarSnapshot(snap) {
+    if (!snap || !Array.isArray(snap.propiedades)) return;
+    DATA = snap.propiedades;
+    PROP_T = snap.traducciones || {};
+    if (snap.settings) {
+      const s = snap.settings;
+      if (s.telefono)  TEL = s.telefono;
+      if (s.whatsapp)  TEL_RAW = s.whatsapp;
+      if (s.email)     MAIL = s.email;
+      if (s.direccion) DIRECCION = s.direccion;
+      if (s.facebook_url) FACEBOOK = s.facebook_url;
+      if (s.youtube_url)  YOUTUBE  = s.youtube_url;
+    }
+    // Si el detalle apuntaba a una propiedad que ya no existe, volver a la primera publicada.
+    const pubs = this.publicadas();
+    const detailOk = pubs.some(p => p.id === this.state.detailId);
+    this.setState({ detailId: detailOk ? this.state.detailId : (pubs[0] && pubs[0].id) || 1 });
+  }
+
+  aplicarCacheSiExiste() {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      if (!raw) return;
+      const cache = JSON.parse(raw);
+      if (!cache || Date.now() - cache.ts > CACHE_TTL_MS) return;
+      this.aplicarSnapshot(cache.snap);
+    } catch (e) { /* cache corrupto: se ignora, se rehace al fetch */ }
+  }
+
+  async cargarDesdeSupabase() {
+    const sb = sbCliente();
+    if (!sb) return;   // sin credenciales, el sitio sigue con el DATA hardcoded
+    try {
+      const [{ data: props, error: e1 }, { data: sets, error: e2 }] = await Promise.all([
+        sb.from("propiedades")
+          .select("*, propiedad_imagenes(storage_path,orden,es_principal,alt_es,alt_fr,alt_en)")
+          .order("orden", { ascending: true }),
+        sb.from("settings").select("*").eq("id", 1).maybeSingle()
+      ]);
+      if (e1) throw e1;
+
+      const propiedades = [], traducciones = {};
+      for (const row of (props || [])) {
+        const { propiedad, traducciones: tr } = mapearDeSupabase(row);
+        propiedades.push(propiedad);
+        traducciones[propiedad.id] = tr;
+      }
+      const snap = { propiedades, traducciones, settings: (e2 ? null : sets) };
+      this.aplicarSnapshot(snap);
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), snap })); } catch (e) {}
+    } catch (err) {
+      // Falló Supabase (red, RLS, credencial inválida): el DATA hardcoded
+      // sigue siendo la fuente, el sitio no se rompe.
+      console.warn("BRIMMO: no se pudo cargar desde Supabase, uso datos locales.", err && err.message);
+    }
   }
 
   // Al navegar cerramos el menú móvil, para que un enlace en la lista
