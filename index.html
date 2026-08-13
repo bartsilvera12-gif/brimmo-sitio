@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./sb-config.js"></script>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -975,9 +976,9 @@ const FOREST = "#1F5A36", LIME = "#A7C900", OLIVE = "#7E9848", CHARCOAL = "#3A3A
 // El sitio funciona igual sin credenciales (usa el DATA hardcoded de más
 // abajo como respaldo). Al pegar URL + anon key, arranca a leer de la base.
 // =========================================================================
-const SUPABASE_URL = "";           // ej: "https://xxxxxxxxxxxx.supabase.co"
-const SUPABASE_ANON_KEY = "";      // clave pública (anon), no la service_role
-const SUPABASE_BUCKET = "brimmo-imagenes";
+const SUPABASE_URL      = (typeof window !== "undefined" && window.SUPABASE_URL)      || "";
+const SUPABASE_ANON_KEY = (typeof window !== "undefined" && window.SUPABASE_ANON_KEY) || "";
+const SUPABASE_BUCKET   = (typeof window !== "undefined" && window.SUPABASE_BUCKET)   || "brimmo-imagenes";
 const CACHE_KEY = "brimmo_cache_v1";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;   // 24h — el sitio siempre muestra algo aunque la red falle
 
