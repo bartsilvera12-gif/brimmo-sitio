@@ -94,6 +94,15 @@ ok("settings actualiza whatsapp limpio", v.waHref === "https://wa.me/59500011122
 ok("settings actualiza email", v.mailHref === "mailto:nuevo@brimmo.com", v.mailHref);
 ok("settings actualiza facebook", v.facebookHref === "https://facebook.com/brimmo-nuevo", v.facebookHref);
 
+// 6b. Snapshot vacío NO reemplaza el DATA hardcodeado (migración pendiente)
+const c_b = new Component.Component();
+c_b.state = { screen: "properties", scrolled: false, t: 0, tPaused: false, q: "", type: "", city: "", price: "", detailId: 1, sent: false, hovered: null, lang: "es", menu: false };
+c_b.tryMaps = () => {};
+const antesBackup = c_b.publicadas().length;
+c_b.aplicarSnapshot({ propiedades: [], traducciones: {}, settings: { telefono: "+000" } });
+ok("snapshot vacio conserva DATA local", c_b.publicadas().length === antesBackup, { antes: antesBackup, ahora: c_b.publicadas().length });
+ok("settings sí se aplica aunque props vengan vacías", c_b.renderVals().tel === "+000", c_b.renderVals().tel);
+
 // 7. Cache: aplicarCacheSiExiste lee de localStorage si es fresco
 Object.keys(store).forEach(k => delete store[k]);
 const snapCache = {

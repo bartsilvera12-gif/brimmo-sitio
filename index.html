@@ -1882,8 +1882,13 @@ class Component extends DCLogic {
   // que consume el componente. Después dispara un re-render.
   aplicarSnapshot(snap) {
     if (!snap || !Array.isArray(snap.propiedades)) return;
-    DATA = snap.propiedades;
-    PROP_T = snap.traducciones || {};
+    // Si Supabase responde sin propiedades (tabla vacía, migración pendiente,
+    // o fallo temporal), NO sobrescribimos el DATA hardcodeado. Así el sitio
+    // sigue mostrando las 16 propiedades mientras se termina el setup.
+    if (snap.propiedades.length > 0) {
+      DATA = snap.propiedades;
+      PROP_T = snap.traducciones || {};
+    }
     if (snap.settings) {
       const s = snap.settings;
       if (s.telefono)  TEL = s.telefono;
