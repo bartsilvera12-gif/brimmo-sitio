@@ -1,13 +1,23 @@
--- BRIMMO — Schema de base de datos
--- Se ejecuta una sola vez en un proyecto Supabase nuevo (o con las tablas ausentes).
+-- BRIMMO — Schema aislado
+-- Todo el proyecto vive dentro del schema "brimmo", no en "public".
+-- Esto lo separa de otros proyectos que comparten la instancia self-hosted.
 -- Idempotente: puede correrse varias veces sin romper nada.
 
 -- ============================================================================
--- Tabla: propiedades
+-- 1. Crear el schema propio del proyecto
+-- ============================================================================
+create schema if not exists brimmo;
+
+-- Dar acceso al schema a los roles que la API usa.
+-- Sin este grant PostgREST responde 404 aunque el schema exista.
+grant usage on schema brimmo to anon, authenticated;
+
+-- ============================================================================
+-- 2. Tabla: brimmo.propiedades
 -- Los campos "no traducibles" (precio, superficie, tipo) van sueltos.
 -- Los "traducibles" van con sufijo _es/_fr/_en. El español es obligatorio.
 -- ============================================================================
-create table if not exists public.propiedades (
+create table if not exists brimmo.propiedades (
   id            bigint primary key generated always as identity,
 
   -- Clasificación
@@ -54,20 +64,20 @@ create table if not exists public.propiedades (
   updated_at    timestamptz not null default now()
 );
 
-create index if not exists propiedades_publicadas_orden on public.propiedades (orden, id) where published = true;
-create index if not exists propiedades_destacadas       on public.propiedades (orden) where featured  = true and published = true;
-create index if not exists propiedades_por_tipo         on public.propiedades (type)  where published = true;
-create index if not exists propiedades_por_ciudad       on public.propiedades (city)  where published = true;
+create index if not exists propiedades_publicadas_orden on brimmo.propiedades (orden, id) where published = true;
+create index if not exists propiedades_destacadas       on brimmo.propiedades (orden) where featured  = true and published = true;
+create index if not exists propiedades_por_tipo         on brimmo.propiedades (type)  where published = true;
+create index if not exists propiedades_por_ciudad       on brimmo.propiedades (city)  where published = true;
 
 -- ============================================================================
--- Tabla: propiedad_imagenes
+-- 3. Tabla: brimmo.propiedad_imagenes
 -- Cada fila apunta a un archivo del bucket "brimmo-imagenes".
 -- La imagen "principal" es la que se muestra en tarjetas, popup del mapa y
 -- galería del detalle. Una sola por propiedad (garantizado por índice único).
 -- ============================================================================
-create table if not exists public.propiedad_imagenes (
+create table if not exists brimmo.propiedad_imagenes (
   id            bigint primary key generated always as identity,
-  propiedad_id  bigint not null references public.propiedades(id) on delete cascade,
+  propiedad_id  bigint not null references brimmo.propiedades(id) on delete cascade,
   storage_path  text not null,        -- path relativo dentro del bucket (ej: prop-12/foto-3.jpg)
   alt_es        text,                 -- texto alternativo, opcional
   alt_fr        text,
@@ -77,15 +87,15 @@ create table if not exists public.propiedad_imagenes (
   created_at    timestamptz not null default now()
 );
 
-create index if not exists imagenes_por_propiedad on public.propiedad_imagenes (propiedad_id, orden);
+create index if not exists imagenes_por_propiedad on brimmo.propiedad_imagenes (propiedad_id, orden);
 create unique index if not exists imagenes_una_principal_por_propiedad
-  on public.propiedad_imagenes (propiedad_id) where es_principal;
+  on brimmo.propiedad_imagenes (propiedad_id) where es_principal;
 
 -- ============================================================================
--- Tabla: settings
+-- 4. Tabla: brimmo.settings
 -- Fila única (id=1) con los datos de contacto que el admin puede editar.
 -- ============================================================================
-create table if not exists public.settings (
+create table if not exists brimmo.settings (
   id            integer primary key default 1,
   telefono      text,                 -- ej: "+595 992 984 777"
   whatsapp      text,                 -- solo dígitos, ej: "595992984777"
@@ -97,22 +107,37 @@ create table if not exists public.settings (
   constraint settings_singleton check (id = 1)
 );
 
-insert into public.settings (id, telefono, whatsapp, email, direccion, facebook_url, youtube_url)
+insert into brimmo.settings (id, telefono, whatsapp, email, direccion, facebook_url, youtube_url)
 values (1, '+595 992 984 777', '595992984777', 'loginvest7@gmail.com', 'Cabañas, Caacupé, Paraguay',
         'https://www.facebook.com/groups/754200153951006', 'https://www.youtube.com/@BRUBIO777')
 on conflict (id) do nothing;
 
 -- ============================================================================
--- Trigger para mantener updated_at automáticamente
+-- 5. Trigger para mantener updated_at automáticamente
 -- ============================================================================
-create or replace function public.set_updated_at()
+create or replace function brimmo.set_updated_at()
 returns trigger language plpgsql as $$
 begin new.updated_at = now(); return new; end $$;
 
-drop trigger if exists propiedades_touch on public.propiedades;
-create trigger propiedades_touch before update on public.propiedades
-  for each row execute function public.set_updated_at();
+drop trigger if exists propiedades_touch on brimmo.propiedades;
+create trigger propiedades_touch before update on brimmo.propiedades
+  for each row execute function brimmo.set_updated_at();
 
-drop trigger if exists settings_touch on public.settings;
-create trigger settings_touch before update on public.settings
-  for each row execute function public.set_updated_at();
+drop trigger if exists settings_touch on brimmo.settings;
+create trigger settings_touch before update on brimmo.settings
+  for each row execute function brimmo.set_updated_at();
+
+-- ============================================================================
+-- 6. Permisos base para los roles de la API
+-- RLS se define en 02-rls.sql, pero los roles necesitan el grant primero.
+-- ============================================================================
+grant select on brimmo.propiedades       to anon, authenticated;
+grant select on brimmo.propiedad_imagenes to anon, authenticated;
+grant select on brimmo.settings          to anon, authenticated;
+
+grant insert, update, delete on brimmo.propiedades       to authenticated;
+grant insert, update, delete on brimmo.propiedad_imagenes to authenticated;
+grant insert, update, delete on brimmo.settings          to authenticated;
+
+-- Las secuencias también necesitan permiso para poder insertar
+grant usage, select on all sequences in schema brimmo to authenticated;

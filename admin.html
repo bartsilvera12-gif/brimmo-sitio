@@ -219,7 +219,9 @@ const state = {
 };
 
 let sb = null;
-if (CFG.URL && CFG.KEY && window.supabase) sb = window.supabase.createClient(CFG.URL, CFG.KEY);
+if (CFG.URL && CFG.KEY && window.supabase) sb = window.supabase.createClient(CFG.URL, CFG.KEY, {
+  db: { schema: "brimmo" }
+});
 
 // =========================================================================
 // Utilidades
