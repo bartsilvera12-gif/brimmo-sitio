@@ -407,7 +407,21 @@ async function uploadImagen(propId, file) {
 }
 
 async function deleteImagen(img) {
-  await sb.storage.from(CFG.BUCKET).remove([img.storage_path]);
+  // Igual que en el upload: el SDK de Supabase envía headers que el proxy
+  // de esta instancia self-hosted no permite, así que hacemos DELETE manual
+  // al storage. Si eso falla, igual seguimos con el delete de la tabla —
+  // que un archivo huérfano quede en el bucket es menos grave que dejar
+  // la fila en la tabla apuntando a nada.
+  const { data: sess } = await sb.auth.getSession();
+  const token = sess && sess.session && sess.session.access_token;
+  if (token && img.storage_path) {
+    try {
+      await fetch(CFG.URL + "/storage/v1/object/" + CFG.BUCKET + "/" + img.storage_path, {
+        method: "DELETE",
+        headers: { "apikey": CFG.KEY, "Authorization": "Bearer " + token }
+      });
+    } catch (e) { /* seguimos aunque el borrado del archivo falle */ }
+  }
   return await sb.from("propiedad_imagenes").delete().eq("id", img.id);
 }
 
@@ -933,12 +947,12 @@ function renderImgsHTML() {
     </div>
     <div class="imgs" id="imgs">
       ${state.imgs.map((img, i) => `
-        <div class="img-item" draggable="true" data-id="${img.id}" data-i="${i}">
-          <img src="${attr(urlImagen(img.storage_path))}" alt="">
+        <div class="img-item" data-id="${img.id}" data-i="${i}">
+          <img src="${attr(urlImagen(img.storage_path))}" alt="" draggable="true" class="img-drag">
           ${img.es_principal ? `<span class="principal-badge">Principal</span>` : ""}
           <div class="img-actions">
-            ${img.es_principal ? "" : `<button data-act="principal" data-id="${img.id}">Marcar principal</button>`}
-            <button data-act="borrar" data-id="${img.id}">Borrar</button>
+            ${img.es_principal ? "" : `<button type="button" data-act="principal" data-id="${img.id}">Marcar principal</button>`}
+            <button type="button" data-act="borrar" data-id="${img.id}">Borrar</button>
           </div>
         </div>
       `).join("")}
@@ -977,18 +991,24 @@ function bindImagenes(mount, propId) {
     }
   }));
 
-  // Drag & drop para reordenar
+  // Drag & drop para reordenar.
+  // Solo la imagen es arrastrable, no toda la tarjeta: así los botones
+  // "Marcar principal" y "Borrar" son 100% clicables sin competir con el
+  // drag y no hace falta doble clic para que responda.
   let arrastrando = null;
-  $$(".img-item", mount).forEach(el => {
-    el.addEventListener("dragstart", (e) => {
-      // Si el arrastre se inicia sobre un botón de acción, cancelar: el clic
-      // debe funcionar. Sin esto, el navegador interpreta el pointerdown como
-      // dragstart y nunca dispara el click del botón.
-      if (e.target.closest("button")) { e.preventDefault(); return; }
+  $$(".img-item .img-drag", mount).forEach(img => {
+    const el = img.closest(".img-item");
+    img.addEventListener("dragstart", () => {
       arrastrando = el;
       el.classList.add("arrastrando");
     });
-    el.addEventListener("dragend", () => { el.classList.remove("arrastrando"); $$(".img-item.marca-drop", mount).forEach(x => x.classList.remove("marca-drop")); arrastrando = null; });
+    img.addEventListener("dragend", () => {
+      el.classList.remove("arrastrando");
+      $$(".img-item.marca-drop", mount).forEach(x => x.classList.remove("marca-drop"));
+      arrastrando = null;
+    });
+  });
+  $$(".img-item", mount).forEach(el => {
     el.addEventListener("dragover", (e) => { e.preventDefault(); if (arrastrando && el !== arrastrando) el.classList.add("marca-drop"); });
     el.addEventListener("dragleave", () => el.classList.remove("marca-drop"));
     el.addEventListener("drop", async (e) => {
