@@ -1181,13 +1181,13 @@ let DATA = [
 ];
 
 // Testimonios reales de la web anterior, traducidos conservando el sentido.
-const TESTIMONIALS = [
+let TESTIMONIALS = [
   { text: "Bruno supo responder a todas nuestras necesidades y nos encontró el terreno de nuestros sueños. Un servicio profesional y atento.", author: "Aline y Martin Rieux", role: "Compradores" },
   { text: "Nuestra experiencia en Caacupé fue muy positiva, excepcional. Más allá de lo inmobiliario, pudimos compartir nuestros proyectos: los consejos no tienen precio.", author: "Sophie Duchamps", role: "Compradora — Caacupé" },
   { text: "Recomiendo a Bruno por su trato personalizado y su conocimiento del mercado local en La Cordillera. Una persona de confianza.", author: "Paul Rossi", role: "Comprador — La Cordillera" }
 ];
 
-const SERVICES = [
+let SERVICES = [
   { name: "Terrenos rurales", desc: "Campos, chacras y fracciones con título e impuestos en regla." },
   { name: "Villas y casas", desc: "Propiedades residenciales en Caacupé y alrededores." },
   { name: "Quintas", desc: "Casas de campo con arboleda, quincho y espacio para proyectos." },
@@ -1196,12 +1196,25 @@ const SERVICES = [
   { name: "Acompañamiento", desc: "Documentación, mensura y gestión hasta la transferencia." }
 ];
 
-const STEPS = [
+let STEPS = [
   { n: "01", title: "Escuchamos tus objetivos", desc: "Entendemos qué buscás, tu plazo y tu presupuesto real." },
   { n: "02", title: "Analizamos el mercado", desc: "Comparamos valores y condiciones en La Cordillera." },
   { n: "03", title: "Seleccionamos oportunidades", desc: "Te presentamos solo lo que encaja con tu objetivo." },
   { n: "04", title: "Cerramos con seguridad", desc: "Documentación, negociación y acompañamiento hasta el final." }
 ];
+
+// Valores de la marca (bloque en Nosotros).
+// null = usar los del diccionario TXT (retrocompatibilidad).
+// Cuando Supabase entrega la tabla, esto se pobla con [{title, desc, t: {fr:{title,desc}, en:{...}}}]
+let VALORES = null;
+
+// Textos institucionales por página, override desde Supabase.
+// Estructura: { "servicios.banda_title": {es, fr, en}, ... }
+let TEXTOS_DB = {};
+function txtDB(page, key, lang, fallback) {
+  const bag = TEXTOS_DB[page + "." + key];
+  return (bag && bag[lang]) || fallback || "";
+}
 
 // ===== Idiomas =====
 const IDIOMAS = ["es", "fr", "en"];
@@ -1616,7 +1629,7 @@ const TIPO_T = {
 };
 const OPERACION_T = { es: { VENTA: "VENTA" }, fr: { VENTA: "À VENDRE" }, en: { VENTA: "FOR SALE" } };
 
-const SERVICES_T = {
+let SERVICES_T = {
   fr: [
     { name: "Terrains ruraux", desc: "Champs et parcelles avec titre et taxes en règle." },
     { name: "Villas et maisons", desc: "Biens résidentiels à Caacupé et alentours." },
@@ -1635,7 +1648,7 @@ const SERVICES_T = {
   ]
 };
 
-const STEPS_T = {
+let STEPS_T = {
   fr: [
     { n: "01", title: "Nous écoutons vos objectifs", desc: "Nous comprenons ce que vous cherchez, votre délai et votre budget réel." },
     { n: "02", title: "Nous analysons le marché", desc: "Nous comparons les valeurs et les conditions dans La Cordillera." },
@@ -1650,7 +1663,7 @@ const STEPS_T = {
   ]
 };
 
-const TESTIMONIALS_T = {
+let TESTIMONIALS_T = {
   fr: [
     { text: "Bruno a su répondre à tous nos besoins et nous a trouvé le terrain de nos rêves. Un service professionnel et attentionné.", author: "Aline et Martin Rieux", role: "Acheteurs" },
     { text: "Notre expérience à Caacupé a été très positive, exceptionnelle. Au-delà de l'immobilier, nous avons pu partager nos projets : les conseils n'ont pas de prix.", author: "Sophie Duchamps", role: "Acheteuse — Caacupé" },
@@ -1900,6 +1913,46 @@ class Component extends DCLogic {
       if (s.facebook_url) FACEBOOK = s.facebook_url;
       if (s.youtube_url)  YOUTUBE  = s.youtube_url;
     }
+
+    // Servicios editables
+    if (Array.isArray(snap.servicios) && snap.servicios.length > 0) {
+      SERVICES   = snap.servicios.map(x => ({ name: x.name_es, desc: x.desc_es || "" }));
+      SERVICES_T = {
+        fr: snap.servicios.map(x => ({ name: x.name_fr || x.name_es, desc: x.desc_fr || x.desc_es || "" })),
+        en: snap.servicios.map(x => ({ name: x.name_en || x.name_es, desc: x.desc_en || x.desc_es || "" }))
+      };
+    }
+    // Pasos del proceso editables
+    if (Array.isArray(snap.pasos) && snap.pasos.length > 0) {
+      STEPS   = snap.pasos.map(x => ({ n: x.numero || "", title: x.title_es, desc: x.desc_es || "" }));
+      STEPS_T = {
+        fr: snap.pasos.map(x => ({ n: x.numero || "", title: x.title_fr || x.title_es, desc: x.desc_fr || x.desc_es || "" })),
+        en: snap.pasos.map(x => ({ n: x.numero || "", title: x.title_en || x.title_es, desc: x.desc_en || x.desc_es || "" }))
+      };
+    }
+    // Valores de la marca (bloque en Nosotros)
+    if (Array.isArray(snap.valores) && snap.valores.length > 0) {
+      VALORES = snap.valores.map(x => ({
+        title: { es: x.title_es, fr: x.title_fr || x.title_es, en: x.title_en || x.title_es },
+        desc:  { es: x.desc_es || "", fr: x.desc_fr || x.desc_es || "", en: x.desc_en || x.desc_es || "" }
+      }));
+    }
+    // Testimonios editables
+    if (Array.isArray(snap.testimonios) && snap.testimonios.length > 0) {
+      TESTIMONIALS = snap.testimonios.map(x => ({ text: x.text_es, author: x.author, role: x.role_es || "" }));
+      TESTIMONIALS_T = {
+        fr: snap.testimonios.map(x => ({ text: x.text_fr || x.text_es, author: x.author, role: x.role_fr || x.role_es || "" })),
+        en: snap.testimonios.map(x => ({ text: x.text_en || x.text_es, author: x.author, role: x.role_en || x.role_es || "" }))
+      };
+    }
+    // Textos institucionales
+    if (Array.isArray(snap.textos)) {
+      const map = {};
+      snap.textos.forEach(t => {
+        map[t.page + "." + t.key] = { es: t.valor_es, fr: t.valor_fr || t.valor_es, en: t.valor_en || t.valor_es };
+      });
+      TEXTOS_DB = map;
+    }
     // Si el detalle apuntaba a una propiedad que ya no existe, volver a la primera publicada.
     const pubs = this.publicadas();
     const detailOk = pubs.some(p => p.id === this.state.detailId);
@@ -1920,11 +1973,24 @@ class Component extends DCLogic {
     const sb = sbCliente();
     if (!sb) return;   // sin credenciales, el sitio sigue con el DATA hardcoded
     try {
-      const [{ data: props, error: e1 }, { data: sets, error: e2 }] = await Promise.all([
+      const [
+        { data: props, error: e1 },
+        { data: sets,  error: e2 },
+        { data: svc,   error: e3 },
+        { data: stp,   error: e4 },
+        { data: val,   error: e5 },
+        { data: tst,   error: e6 },
+        { data: txts,  error: e7 }
+      ] = await Promise.all([
         sb.from("propiedades")
           .select("*, propiedad_imagenes(storage_path,orden,es_principal,alt_es,alt_fr,alt_en)")
           .order("orden", { ascending: true }),
-        sb.from("settings").select("*").eq("id", 1).maybeSingle()
+        sb.from("settings").select("*").eq("id", 1).maybeSingle(),
+        sb.from("servicios").select("*").order("orden", { ascending: true }),
+        sb.from("pasos").select("*").order("orden", { ascending: true }),
+        sb.from("valores").select("*").order("orden", { ascending: true }),
+        sb.from("testimonios").select("*").order("orden", { ascending: true }),
+        sb.from("textos").select("*")
       ]);
       if (e1) throw e1;
 
@@ -1934,7 +2000,15 @@ class Component extends DCLogic {
         propiedades.push(propiedad);
         traducciones[propiedad.id] = tr;
       }
-      const snap = { propiedades, traducciones, settings: (e2 ? null : sets) };
+      const snap = {
+        propiedades, traducciones,
+        settings:    (e2 ? null : sets),
+        servicios:   (e3 ? null : svc),
+        pasos:       (e4 ? null : stp),
+        valores:     (e5 ? null : val),
+        testimonios: (e6 ? null : tst),
+        textos:      (e7 ? null : txts)
+      };
       this.aplicarSnapshot(snap);
       try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), snap })); } catch (e) {}
     } catch (err) {
@@ -1995,7 +2069,40 @@ class Component extends DCLogic {
     const home = s.screen === "home";
     const solid = s.scrolled || !home;
     const lang = s.lang;
-    const T = TXT[lang] || TXT.es;
+    const baseT = TXT[lang] || TXT.es;
+
+    // Overrides desde la DB: si el admin editó un texto en `brimmo.textos`,
+    // pisa el del diccionario. Mapea claves DB → claves de plantilla `t.X`.
+    const O_SRV = {
+      banda_eyebrow: "servicios", banda_title: "serviciosTitulo", banda_texto: "serviciosTexto",
+      proceso_eyebrow: "proceso", proceso_title: "comoTrabajamos"
+    };
+    const O_NOS = {
+      banda_eyebrow: "marcaBajada",   // reutilizamos si hace falta, es la etiqueta corta
+      banda_title:    "nosotrosTitulo",  banda_texto:    "nosotrosTexto",
+      trabajamos_title: "trabajamosDonde", trabajamos_p1: "trabajamosP1", trabajamos_p2: "trabajamosP2"
+    };
+    const T = Object.assign({}, baseT);
+    // Aplicar overrides
+    for (const [k, tk] of Object.entries(O_SRV)) {
+      const v = txtDB("servicios", k, lang, null);
+      if (v) T[tk] = v;
+    }
+    for (const [k, tk] of Object.entries(O_NOS)) {
+      const v = txtDB("nosotros", k, lang, null);
+      if (v) T[tk] = v;
+    }
+    // Valores editables de la DB → sobrescribir valConfianza/Texto etc.
+    if (VALORES && VALORES.length >= 4) {
+      const claves = ["valConfianza", "valCrecimiento", "valCercania", "valEstructura"];
+      for (let i = 0; i < 4; i++) {
+        const v = VALORES[i];
+        if (v) {
+          T[claves[i]] = (v.title && v.title[lang]) || T[claves[i]];
+          T[claves[i] + "Texto"] = (v.desc && v.desc[lang]) || T[claves[i] + "Texto"];
+        }
+      }
+    }
     const list = this.filtered();
     const pubs = this.publicadas();
     const d = propEn(pubs.find(x => x.id === s.detailId) || pubs[0], lang);
