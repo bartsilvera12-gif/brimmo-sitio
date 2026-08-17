@@ -312,8 +312,35 @@ async function saveSettings(s) {
 async function uploadImagen(propId, file) {
   const ext = (file.name.match(/\.[^.]+$/) || [""])[0].toLowerCase() || ".jpg";
   const path = "prop-" + propId + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ext;
-  const up = await sb.storage.from(CFG.BUCKET).upload(path, file, { contentType: file.type, upsert: false });
-  if (up.error) return { error: up.error };
+
+  // Saltamos el SDK de Supabase para el upload y hacemos fetch manual:
+  // el SDK envía siempre `x-upsert`, y el proxy de la instancia self-hosted
+  // no lo tiene en la whitelist CORS, lo que rompe todos los uploads.
+  // POST directo sin ese header cae al default del servidor (upsert=false).
+  const { data: sess } = await sb.auth.getSession();
+  const token = sess && sess.session && sess.session.access_token;
+  if (!token) return { error: { message: "Sesión perdida. Volvé a iniciar." } };
+
+  try {
+    const r = await fetch(CFG.URL + "/storage/v1/object/" + CFG.BUCKET + "/" + path, {
+      method: "POST",
+      headers: {
+        "apikey": CFG.KEY,
+        "Authorization": "Bearer " + token,
+        "Content-Type": file.type || "application/octet-stream"
+      },
+      body: file
+    });
+    if (!r.ok) {
+      const txt = await r.text();
+      let msg = txt;
+      try { msg = JSON.parse(txt).message || txt; } catch (e) {}
+      return { error: { message: "Storage " + r.status + ": " + msg } };
+    }
+  } catch (e) {
+    return { error: { message: e.message || "Fallo de red" } };
+  }
+
   const maxOrden = Math.max(0, ...(state.imgs.map(i => i.orden)));
   const esPrimera = state.imgs.length === 0;
   const ins = await sb.from("propiedad_imagenes").insert({
