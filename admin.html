@@ -1330,23 +1330,48 @@ function bindLista(mount, list) {
   if (btnG) btnG.addEventListener("click", async () => {
     btnG.disabled = true; btnG.textContent = "Guardando…";
     try {
-      // Recolectar todas las tarjetas de esta lista
+      // Cada item se renderiza 3 veces (una por panel de idioma) y cada
+      // copia solo trae los campos del idioma que la contiene. Agrupamos
+      // por id (o por posición si es nueva) y consolidamos los tres idiomas
+      // antes de enviar. Sin esto terminábamos con UPDATEs parciales que
+      // se pisaban y con INSERTs por triplicado.
       const tarjetas = $$(`[data-tabla="${list.tabla}"]`, mount);
-      for (let i = 0; i < tarjetas.length; i++) {
-        const t = tarjetas[i];
-        const id = t.dataset.id ? Number(t.dataset.id) : null;
-        const campos = { orden: (i + 1) * 10 };
+      const grupos = new Map();
+      tarjetas.forEach(t => {
+        const key = t.dataset.id ? "id:" + t.dataset.id : "nuevo:" + t.dataset.i;
+        if (!grupos.has(key)) {
+          grupos.set(key, { id: t.dataset.id ? Number(t.dataset.id) : null, campos: {}, i: Number(t.dataset.i) });
+        }
+        const g = grupos.get(key);
         $$("[data-campo]", t).forEach(el => {
           const c = el.dataset.campo;
-          campos[c] = el.type === "checkbox" ? el.checked : el.value;
+          g.campos[c] = el.type === "checkbox" ? el.checked : el.value;
         });
-        // ES obligatorio: si campo_es vacío, saltear alta; para updates igual guardamos
-        const primerCampo = list.campos[0].c + "_es";
-        if (!id && !(campos[primerCampo] && campos[primerCampo].trim())) continue;
-        const { error } = await guardarItem(list.tabla, id, campos);
+      });
+
+      const items = Array.from(grupos.values()).sort((a, b) => a.i - b.i);
+      const primerCampo = list.campos[0].c + "_es";
+      let insertados = 0, actualizados = 0, saltados = 0;
+
+      for (let i = 0; i < items.length; i++) {
+        const g = items[i];
+        g.campos.orden = (i + 1) * 10;
+        // Alta: exige ES no vacío en el primer campo obligatorio
+        if (!g.id) {
+          const v = g.campos[primerCampo];
+          if (!v || !v.trim()) { saltados++; continue; }
+        }
+        const { error } = await guardarItem(list.tabla, g.id, g.campos);
         if (error) throw error;
+        if (g.id) actualizados++; else insertados++;
       }
-      toast(list.plural.charAt(0).toUpperCase() + list.plural.slice(1) + " guardados.");
+
+      const partes = [];
+      if (insertados)  partes.push(insertados + " nuevo" + (insertados > 1 ? "s" : ""));
+      if (actualizados) partes.push(actualizados + " actualizado" + (actualizados > 1 ? "s" : ""));
+      if (saltados)    partes.push(saltados + " sin " + list.campos[0].label + " en español (no se guardaron)");
+      toast(partes.length ? partes.join(" · ") : "Sin cambios.", saltados ? "warn" : "info");
+
       state.contenido = await fetchContenido();
       render();
     } catch (err) {
