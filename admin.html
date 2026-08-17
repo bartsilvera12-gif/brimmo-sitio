@@ -343,9 +343,20 @@ async function uploadImagen(propId, file) {
 
   const maxOrden = Math.max(0, ...(state.imgs.map(i => i.orden)));
   const esPrimera = state.imgs.length === 0;
-  const ins = await sb.from("propiedad_imagenes").insert({
+  let ins = await sb.from("propiedad_imagenes").insert({
     propiedad_id: propId, storage_path: path, orden: maxOrden + 10, es_principal: esPrimera
   }).select().single();
+
+  // Al arrastrar varias fotos a la vez, todas ven state.imgs vacío antes de
+  // que la primera termine y se marcan como principales. La constraint UNIQUE
+  // parcial rechaza las duplicadas. Reintentamos como no-principal cuando eso
+  // pasa; queda como principal la que llegó primero.
+  if (ins.error && esPrimera && /duplicate key|imagenes_una_principal_por_propiedad/i.test(ins.error.message || "")) {
+    ins = await sb.from("propiedad_imagenes").insert({
+      propiedad_id: propId, storage_path: path, orden: maxOrden + 10, es_principal: false
+    }).select().single();
+  }
+
   if (ins.error) {
     await sb.storage.from(CFG.BUCKET).remove([path]);   // rollback
     return { error: ins.error };
