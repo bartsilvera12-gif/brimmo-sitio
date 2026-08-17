@@ -915,13 +915,23 @@ async function subirVarias(mount, propId, files) {
   const validos = files.filter(f => /^image\/(jpe?g|png|webp)$/.test(f.type) && f.size <= 10 * 1024 * 1024);
   const rechazados = files.length - validos.length;
   if (rechazados) toast(rechazados + " archivo(s) ignorado(s): solo JPEG/PNG/WebP hasta 10 MB.", "warn");
+  let exitos = 0;
   for (const f of validos) {
     const { data, error } = await uploadImagen(propId, f);
-    if (error) { toast("Error al subir " + f.name + ": " + error.message, "error"); continue; }
+    if (error) {
+      // "Failed to fetch" del navegador suele significar que el proxy delante
+      // de storage-api cortó la conexión (límite de body demasiado bajo).
+      const msg = /failed to fetch|network/i.test(error.message)
+        ? "Falló el envío (posible límite del servidor). Probá una foto más chica."
+        : error.message;
+      toast("Error al subir " + f.name + ": " + msg, "error");
+      continue;
+    }
     state.imgs.push(data);
+    exitos++;
   }
   renderEditor(mount, propId);
-  if (validos.length) toast(validos.length + " foto(s) subida(s).");
+  if (exitos) toast(exitos + (exitos === 1 ? " foto subida." : " fotos subidas."));
 }
 
 // =========================================================================
