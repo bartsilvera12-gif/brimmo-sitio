@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Crear bucket BRIMMO</title>
+<style>
+  :root {
+    --forest:#1F5A36; --lime:#A7C900; --ink:#2A2E24; --ink-2:#54594C; --ink-3:#83887A;
+    --line:#DDE0D3; --paper:#F7F8F2; --surface:#FFFFFF;
+    --danger:#B0392B; --danger-bg:#FBEDEA; --ok-bg:#EAF3E9;
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100vh; display:grid; place-items:center; padding:24px;
+         font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+         background: linear-gradient(160deg, #F7F8F2 0%, #E8ECDE 100%); color: var(--ink); font-size:14.5px; line-height:1.55; }
+  .card { background: var(--surface); border:1px solid var(--line); padding:38px 34px 32px; max-width:520px; width:100%; border-radius:3px; }
+  h1 { font-family:"Montserrat", ui-sans-serif, sans-serif; font-weight:800; font-size:22px; color: var(--forest); margin:0 0 6px; }
+  .subt { color: var(--ink-2); font-size:13.5px; margin: 0 0 24px; }
+  ol { color: var(--ink-2); padding-left:18px; margin:0 0 24px; font-size:13.5px; }
+  ol li { margin: 6px 0; }
+  ol code { background:#EEF0E6; padding:1px 5px; border:1px solid var(--line); font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.88em; }
+  .field { display:flex; flex-direction:column; gap:6px; margin-bottom:20px; }
+  .field label { font-size:11.5px; font-weight:600; letter-spacing:.05em; color: var(--ink-2); text-transform:uppercase; }
+  .field input[type="password"], .field input[type="text"] {
+    width:100%; padding:11px 13px; background:var(--surface); border:1px solid var(--line);
+    border-radius:3px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12.5px;
+    color:var(--ink); outline:none; transition:border-color .2s, box-shadow .2s;
+  }
+  .field input:focus { border-color: var(--forest); box-shadow: 0 0 0 3px rgba(31,90,54,.14); }
+  .row { display:flex; gap:10px; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px;
+         padding:12px 22px; height:44px; border:0; border-radius:3px;
+         font-family: inherit; font-size:13.5px; font-weight:600; letter-spacing:.02em;
+         cursor:pointer; transition:background .2s; }
+  .btn-primary { background: var(--forest); color:#fff; width:100%; }
+  .btn-primary:hover:not(:disabled) { background: #2E7248; }
+  .btn:disabled { opacity:.55; cursor:not-allowed; }
+  .btn-toggle { background: transparent; color: var(--ink-3); padding:0 12px; height:38px; align-self:end; margin-bottom:0; border:1px solid var(--line); }
+  .out { margin-top:20px; padding:14px 16px; border-radius:3px; font-size:13.5px; line-height:1.5;
+         white-space:pre-wrap; word-break:break-word; display:none; border-left:3px solid transparent; }
+  .out.ok    { display:block; background: var(--ok-bg);     border-left-color: var(--forest); color: var(--forest); }
+  .out.err   { display:block; background: var(--danger-bg); border-left-color: var(--danger); color: var(--danger); }
+  .out.info  { display:block; background: #F0F1E9;          border-left-color: var(--ink-3);  color: var(--ink-2); }
+  .out code { background: rgba(0,0,0,.06); padding:1px 5px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.9em; }
+  .warn { background:#FCF3E2; border-left:3px solid #8A5A0B; padding:10px 14px; border-radius:3px; color:#5A3E08; font-size:12.5px; margin-top:16px; }
+  .warn strong { color:#5A3E08; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Crear bucket BRIMMO</h1>
+  <p class="subt">Un paso único para dejar el storage listo. Después de esto, ya podés subir fotos desde el admin.</p>
+
+  <ol>
+    <li>Abrí el panel de Supabase de la instancia: <code>api.neura.com.py</code></li>
+    <li>Andá a <strong>Project Settings → API</strong></li>
+    <li>Copiá la clave <strong>service_role</strong> (la de más abajo, la que dice “Reveal” para verla)</li>
+    <li>Pegala acá abajo y apretá el botón</li>
+  </ol>
+
+  <div class="field">
+    <label>service_role key</label>
+    <div class="row">
+      <input id="key" type="password" placeholder="eyJhbGciOi..." autocomplete="off">
+      <button type="button" class="btn btn-toggle" id="ver">Ver</button>
+    </div>
+  </div>
+
+  <button type="button" class="btn btn-primary" id="ir">Crear bucket brimmo-imagenes</button>
+
+  <div id="out" class="out"></div>
+
+  <div class="warn">
+    <strong>Cuidado:</strong> la service_role da acceso total. Solo se usa acá, no se guarda, no se envía a ningún lado que no sea la propia API de Supabase. Cuando termine el paso, cerrá esta pestaña.
+  </div>
+</div>
+
+<script src="./sb-config.js"></script>
+<script>
+const URL_API = window.SUPABASE_URL || "https://api.neura.com.py";
+const BUCKET  = window.SUPABASE_BUCKET || "brimmo-imagenes";
+
+const $ = (id) => document.getElementById(id);
+const out = (msg, tipo) => {
+  const el = $("out");
+  el.className = "out " + (tipo || "info");
+  el.innerHTML = msg;
+};
+
+$("ver").addEventListener("click", () => {
+  const i = $("key");
+  const oculto = i.type === "password";
+  i.type = oculto ? "text" : "password";
+  $("ver").textContent = oculto ? "Ocultar" : "Ver";
+});
+
+$("ir").addEventListener("click", async () => {
+  const key = $("key").value.trim();
+  if (!key) return out("Pegá la service_role primero.", "err");
+  if (!key.startsWith("eyJ") || key.split(".").length !== 3) {
+    return out("Eso no parece una JWT. La service_role empieza con <code>eyJ</code> y tiene tres partes separadas por puntos.", "err");
+  }
+
+  $("ir").disabled = true;
+  $("ir").textContent = "Creando...";
+  out("Enviando pedido a " + URL_API + " …", "info");
+
+  try {
+    const r = await fetch(URL_API + "/storage/v1/bucket", {
+      method: "POST",
+      headers: {
+        "apikey": key,
+        "Authorization": "Bearer " + key,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id: BUCKET,
+        name: BUCKET,
+        public: true,
+        file_size_limit: 10485760,
+        allowed_mime_types: ["image/jpeg","image/png","image/webp","image/avif"]
+      })
+    });
+    const body = await r.text();
+    let data;
+    try { data = JSON.parse(body); } catch { data = { raw: body }; }
+
+    if (r.ok) {
+      out("✅ Bucket <code>" + BUCKET + "</code> creado.<br>Ya podés cerrar esta pestaña y entrar al admin a subir fotos.", "ok");
+    } else if (r.status === 409 || /already exists|Duplicate/i.test(body)) {
+      out("✅ El bucket ya existe. Todo listo.<br>Podés cerrar esta pestaña y entrar al admin.", "ok");
+    } else if (r.status === 401 || r.status === 403) {
+      out("Error " + r.status + ": la clave no es válida o no es la <strong>service_role</strong>. Revisá que hayas copiado la de <em>service_role</em>, no la <em>anon</em>.", "err");
+    } else {
+      out("Error " + r.status + ":<br><code>" + (body || "sin respuesta") + "</code>", "err");
+    }
+  } catch (e) {
+    out("No se pudo conectar con la API:<br><code>" + e.message + "</code>", "err");
+  } finally {
+    $("ir").disabled = false;
+    $("ir").textContent = "Crear bucket brimmo-imagenes";
+  }
+});
+</script>
+</body>
+</html>
