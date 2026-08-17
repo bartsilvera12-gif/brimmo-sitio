@@ -228,6 +228,16 @@
     .g5 { grid-template-columns: repeat(2,1fr); }
   }
 
+  /* ===== Texto rico (Markdown mínimo) =====
+     Se usa en la sección "Residencia y trámites" y cualquier otro
+     texto largo que el cliente edite desde el admin con ## / - / etc. */
+  .bri-rich-h  { font-family: Montserrat, sans-serif; font-weight: 800; font-size: clamp(18px, 1.7vw, 22px); color: #1F5A36; margin: 34px 0 14px; letter-spacing: -.005em; }
+  .bri-rich-h:first-child { margin-top: 0; }
+  .bri-rich-ul { margin: 8px 0 18px; padding-left: 24px; }
+  .bri-rich-ul li { margin: 6px 0; font-size: 15.5px; line-height: 1.65; color: #5A5A55; }
+  .bri-rich p  { margin: 14px 0; font-size: 15.5px; line-height: 1.7; color: #5A5A55; }
+  .bri-rich strong { color: #1F5A36; font-weight: 700; }
+
   /* ===== Banda de encabezado de las páginas internas =====
      Fotografía institucional atenuada, con un velo que se hace opaco
      del lado del texto para no comprometer la legibilidad. */
@@ -893,6 +903,21 @@
     </div>
   </section>
 
+  <sc-if value="{{ hayResidencia }}" hint-placeholder-val="{{ true }}">
+    <section style="background:#fff;padding:96px 20px">
+      <div style="max-width:900px;margin:0 auto">
+        <div data-reveal>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+            <span style="width:28px;height:2px;background:#A7C900;display:block"></span>
+            <span style="font-size:11px;letter-spacing:0.28em;text-transform:uppercase;color:#7E9848;font-weight:600">{{ residenciaEyebrow }}</span>
+          </div>
+          <h2 style="font-family:Montserrat,sans-serif;font-weight:800;font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-0.02em;color:#1F5A36;margin:0 0 40px">{{ residenciaTitulo }}</h2>
+        </div>
+        <div data-reveal ref="{{ residenciaRef }}" class="bri-rich"></div>
+      </div>
+    </section>
+  </sc-if>
+
 </main>
 </sc-if>
 
@@ -1214,6 +1239,35 @@ let TEXTOS_DB = {};
 function txtDB(page, key, lang, fallback) {
   const bag = TEXTOS_DB[page + "." + key];
   return (bag && bag[lang]) || fallback || "";
+}
+
+// Mini-parser de formato para textos largos editables desde el admin.
+// Reglas simples que un no-programador puede aprender:
+//   ## Título        → subtítulo verde
+//   - Item de lista  → viñeta
+//   Línea normal     → párrafo
+//   Línea vacía      → separación entre bloques
+//   **negrita**      → resaltado
+function escapeHTMLBasico(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function renderTextoRico(txt) {
+  if (!txt) return "";
+  const lineas = String(txt).split(/\r?\n/);
+  let out = "", enLista = false, buf = [];
+  const cerrarP = () => { if (buf.length) { out += "<p>" + buf.join(" ") + "</p>"; buf = []; } };
+  const cerrarL = () => { if (enLista) { out += "</ul>"; enLista = false; } };
+  const rich = t => escapeHTMLBasico(t).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  for (const l of lineas) {
+    const t = l.trim();
+    if (!t) { cerrarP(); cerrarL(); continue; }
+    if (t.startsWith("## ")) { cerrarP(); cerrarL(); out += '<h3 class="bri-rich-h">' + rich(t.slice(3)) + "</h3>"; continue; }
+    if (t.startsWith("- "))  { cerrarP(); if (!enLista) { out += '<ul class="bri-rich-ul">'; enLista = true; } out += "<li>" + rich(t.slice(2)) + "</li>"; continue; }
+    cerrarL();
+    buf.push(rich(t));
+  }
+  cerrarP(); cerrarL();
+  return out;
 }
 
 // ===== Idiomas =====
@@ -1761,7 +1815,15 @@ class Component extends DCLogic {
     this.aplicarCacheSiExiste();
     this.cargarDesdeSupabase();
   }
-  componentDidUpdate() { this.tryMaps(); }
+  componentDidUpdate() {
+    this.tryMaps();
+    // El texto rico se inyecta como innerHTML porque el template escapa contenido.
+    if (this.residenciaEl) {
+      const lang = this.state.lang;
+      const contenido = txtDB("servicios", "residencia_contenido", lang, "");
+      this.residenciaEl.innerHTML = renderTextoRico(contenido);
+    }
+  }
   componentWillUnmount() {
     window.removeEventListener("scroll", this.onScroll);
     window.removeEventListener("keydown", this.onKey);
@@ -2220,6 +2282,12 @@ class Component extends DCLogic {
       resultCount: list.length === 1 ? T.unaDisponible : list.length + T.variasDisponibles,
       mapRef: (el) => { this.mapEl = el; },
       detailMapRef: (el) => { this.dMapEl = el; },
+      residenciaRef: (el) => { this.residenciaEl = el; },
+
+      // Sección de trámites / residencia en la página Servicios
+      hayResidencia: !!txtDB("servicios", "residencia_contenido", lang, ""),
+      residenciaEyebrow: txtDB("servicios", "residencia_eyebrow", lang, "Trámites"),
+      residenciaTitulo:  txtDB("servicios", "residencia_titulo",  lang, "Residencia y cédula"),
 
       tel: TEL, mail: MAIL, direccion: DIRECCION,
       waHref: "https://wa.me/" + TEL_RAW,

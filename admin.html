@@ -1103,7 +1103,10 @@ const PAGINAS = {
       { key: "banda_title",     label: "Título de la banda",          multiline: false },
       { key: "banda_texto",     label: "Texto debajo del título",     multiline: true },
       { key: "proceso_eyebrow", label: "Etiqueta de la sección Proceso", multiline: false },
-      { key: "proceso_title",   label: "Título de la sección Proceso",   multiline: false }
+      { key: "proceso_title",   label: "Título de la sección Proceso",   multiline: false },
+      { key: "residencia_eyebrow", label: "Etiqueta de la sección Residencia", multiline: false },
+      { key: "residencia_titulo",  label: "Título de la sección Residencia",   multiline: false },
+      { key: "residencia_contenido", label: "Contenido completo (residencia y trámites)", multiline: true, hint: "Usá ## para subtítulos, - para viñetas, **texto** para negrita, línea en blanco para separar." }
     ],
     listas: [
       {
@@ -1188,10 +1191,13 @@ function textoFieldHTML(pagina, def, lang, textos) {
   const key = "valor_" + lang;
   const valor = fila ? (fila[key] || "") : "";
   const id = "t-" + pagina + "-" + def.key + "-" + lang;
+  // Contenidos largos con hint reciben un textarea más grande.
+  const rows = def.hint ? 22 : 3;
   const input = def.multiline
-    ? `<textarea id="${id}" data-page="${pagina}" data-key="${def.key}" data-lang="${lang}" rows="3">${esc(valor)}</textarea>`
+    ? `<textarea id="${id}" data-page="${pagina}" data-key="${def.key}" data-lang="${lang}" rows="${rows}"${def.hint ? ' style="font-family:var(--mono);font-size:13px"' : ""}>${esc(valor)}</textarea>`
     : `<input id="${id}" data-page="${pagina}" data-key="${def.key}" data-lang="${lang}" type="text" value="${attr(valor)}">`;
-  return `<div class="field"><label>${esc(def.label)}</label>${input}</div>`;
+  const hint = def.hint ? `<div class="hint">${esc(def.hint)}</div>` : "";
+  return `<div class="field"><label>${esc(def.label)}</label>${input}${hint}</div>`;
 }
 
 function bindTabsSimples(mount) {
