@@ -147,10 +147,9 @@
   .img-item.marca-drop { border-color: var(--lime); border-width: 2px; }
   .img-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .img-item .principal-badge { position: absolute; top: 8px; left: 8px; background: var(--lime); color: var(--forest); font-size: 10px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 3px 7px; border-radius: 2px; }
-  .img-item .img-actions { position: absolute; bottom: 8px; left: 8px; right: 8px; display: flex; gap: 4px; opacity: 0; transition: opacity .2s; }
-  .img-item:hover .img-actions { opacity: 1; }
-  .img-item .img-actions button { flex: 1; background: rgba(0,0,0,.7); color: #fff; border: 0; padding: 5px 6px; font-size: 10.5px; letter-spacing: .04em; text-transform: uppercase; font-weight: 600; border-radius: 2px; cursor: pointer; }
-  .img-item .img-actions button:hover { background: rgba(0,0,0,.9); }
+  .img-item .img-actions { position: absolute; bottom: 8px; left: 8px; right: 8px; display: flex; gap: 4px; }
+  .img-item .img-actions button { flex: 1; background: rgba(0,0,0,.72); color: #fff; border: 0; padding: 6px 8px; font-size: 10.5px; letter-spacing: .04em; text-transform: uppercase; font-weight: 600; border-radius: 2px; cursor: pointer; backdrop-filter: blur(2px); }
+  .img-item .img-actions button:hover { background: var(--forest); }
   .img-item.subiendo { opacity: .7; }
   .img-item .barra { position: absolute; bottom: 0; left: 0; height: 3px; background: var(--lime); }
 
@@ -930,7 +929,14 @@ function bindImagenes(mount, propId) {
   // Drag & drop para reordenar
   let arrastrando = null;
   $$(".img-item", mount).forEach(el => {
-    el.addEventListener("dragstart", () => { arrastrando = el; el.classList.add("arrastrando"); });
+    el.addEventListener("dragstart", (e) => {
+      // Si el arrastre se inicia sobre un botón de acción, cancelar: el clic
+      // debe funcionar. Sin esto, el navegador interpreta el pointerdown como
+      // dragstart y nunca dispara el click del botón.
+      if (e.target.closest("button")) { e.preventDefault(); return; }
+      arrastrando = el;
+      el.classList.add("arrastrando");
+    });
     el.addEventListener("dragend", () => { el.classList.remove("arrastrando"); $$(".img-item.marca-drop", mount).forEach(x => x.classList.remove("marca-drop")); arrastrando = null; });
     el.addEventListener("dragover", (e) => { e.preventDefault(); if (arrastrando && el !== arrastrando) el.classList.add("marca-drop"); });
     el.addEventListener("dragleave", () => el.classList.remove("marca-drop"));
