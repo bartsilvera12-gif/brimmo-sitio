@@ -212,6 +212,9 @@ const state = {
   cur: null,           // propiedad en edición (o null)
   imgs: [],            // imágenes de la propiedad en edición
   settings: null,
+  contenido: {         // servicios/pasos/valores/testimonios/textos editables
+    textos: [], servicios: [], pasos: [], valores: [], testimonios: []
+  },
   route: parseRoute(),
   tabIdioma: "es",
   filtros: { q: "", tipo: "", ciudad: "", estado: "" }
@@ -245,7 +248,10 @@ function parseRoute() {
   if (h === "/nueva") return { name: "editor", id: null };
   const m = h.match(/^\/editar\/(\d+)$/);
   if (m) return { name: "editor", id: +m[1] };
-  if (h === "/contacto") return { name: "contacto" };
+  if (h === "/contacto")    return { name: "contacto" };
+  if (h === "/servicios")   return { name: "pagina", pagina: "servicios" };
+  if (h === "/nosotros")    return { name: "pagina", pagina: "nosotros" };
+  if (h === "/testimonios") return { name: "testimonios" };
   return { name: "lista" };
 }
 
@@ -306,6 +312,43 @@ async function fetchSettings() {
 
 async function saveSettings(s) {
   return await sb.from("settings").update(s).eq("id", 1).select().single();
+}
+
+// ---- Contenido editable (servicios, pasos, valores, testimonios, textos) ----
+async function fetchContenido() {
+  if (!sb) return {};
+  const [tx, sv, ps, vl, ts] = await Promise.all([
+    sb.from("textos").select("*"),
+    sb.from("servicios").select("*").order("orden", { ascending: true }),
+    sb.from("pasos").select("*").order("orden", { ascending: true }),
+    sb.from("valores").select("*").order("orden", { ascending: true }),
+    sb.from("testimonios").select("*").order("orden", { ascending: true })
+  ]);
+  return {
+    textos:      tx.data || [],
+    servicios:   sv.data || [],
+    pasos:       ps.data || [],
+    valores:     vl.data || [],
+    testimonios: ts.data || []
+  };
+}
+
+async function guardarTexto(page, key, valor_es, valor_fr, valor_en) {
+  return await sb.from("textos").upsert(
+    { page, key, valor_es, valor_fr, valor_en },
+    { onConflict: "page,key" }
+  ).select().single();
+}
+
+async function guardarItem(tabla, id, campos) {
+  if (id) {
+    return await sb.from(tabla).update(campos).eq("id", id).select().single();
+  }
+  return await sb.from(tabla).insert(campos).select().single();
+}
+
+async function borrarItem(tabla, id) {
+  return await sb.from(tabla).delete().eq("id", id);
 }
 
 async function uploadImagen(propId, file) {
@@ -413,9 +456,10 @@ async function logout() {
 }
 
 async function cargarTodo() {
-  const [p, s] = await Promise.all([fetchProps(), fetchSettings()]);
+  const [p, s, c] = await Promise.all([fetchProps(), fetchSettings(), fetchContenido()]);
   if (!p.error) state.props = p.data || [];
   if (!s.error && s.data) state.settings = s.data;
+  state.contenido = c;
 }
 
 // =========================================================================
@@ -483,6 +527,8 @@ function renderApp() {
   if (r.name === "lista") renderLista(m);
   else if (r.name === "editor") renderEditor(m, r.id);
   else if (r.name === "contacto") renderContacto(m);
+  else if (r.name === "pagina") renderPagina(m, r.pagina);
+  else if (r.name === "testimonios") renderTestimonios(m);
 }
 
 // =========================================================================
@@ -504,12 +550,17 @@ function marcaHTML(claro = true) {
 
 function sidebarHTML(r) {
   const act = (n) => r.name === n ? " activo" : "";
+  const actPag = (p) => r.name === "pagina" && r.pagina === p ? " activo" : "";
   return `<aside class="side">
     ${marcaHTML(true)}
     <nav>
-      <div class="grupo">Contenido</div>
-      <a href="#/" class="${act("lista")}">Propiedades</a>
+      <div class="grupo">Propiedades</div>
+      <a href="#/" class="${act("lista")}">Listado</a>
       <a href="#/nueva">+ Nueva propiedad</a>
+      <div class="grupo">Páginas</div>
+      <a href="#/servicios" class="${actPag("servicios")}">Servicios</a>
+      <a href="#/nosotros"  class="${actPag("nosotros")}">Nosotros</a>
+      <a href="#/testimonios" class="${act("testimonios")}">Testimonios</a>
       <div class="grupo">Ajustes</div>
       <a href="#/contacto" class="${act("contacto")}">Datos de contacto</a>
     </nav>
@@ -1034,6 +1085,297 @@ function renderContacto(mount) {
     } finally {
       b.disabled = false; b.textContent = "Guardar cambios";
     }
+  });
+}
+
+// =========================================================================
+// Vistas: páginas Servicios y Nosotros (textos + listas editables)
+// =========================================================================
+
+// Definición de qué renderizar para cada página
+const PAGINAS = {
+  servicios: {
+    titulo: "Página Servicios",
+    subt: "Textos institucionales, la lista de servicios y los pasos del proceso.",
+    textosPagina: "servicios",
+    textosClaves: [
+      { key: "banda_eyebrow",   label: "Etiqueta de la banda",        multiline: false },
+      { key: "banda_title",     label: "Título de la banda",          multiline: false },
+      { key: "banda_texto",     label: "Texto debajo del título",     multiline: true },
+      { key: "proceso_eyebrow", label: "Etiqueta de la sección Proceso", multiline: false },
+      { key: "proceso_title",   label: "Título de la sección Proceso",   multiline: false }
+    ],
+    listas: [
+      {
+        tabla: "servicios", singular: "servicio", plural: "servicios",
+        campos: [
+          { c: "name", label: "Nombre",       multiline: false },
+          { c: "desc", label: "Descripción",  multiline: true }
+        ],
+        extra: [{ c: "activo", label: "Activo", tipo: "switch", default: true }]
+      },
+      {
+        tabla: "pasos", singular: "paso", plural: "pasos del proceso",
+        campos: [
+          { c: "title", label: "Título",      multiline: false },
+          { c: "desc",  label: "Descripción", multiline: true }
+        ],
+        extra: [{ c: "numero", label: "Número (ej. 01)", tipo: "text", default: "" }]
+      }
+    ]
+  },
+  nosotros: {
+    titulo: "Página Nosotros",
+    subt: "Textos institucionales de la página y los cuatro valores de la marca.",
+    textosPagina: "nosotros",
+    textosClaves: [
+      { key: "banda_eyebrow",     label: "Etiqueta de la banda",           multiline: false },
+      { key: "banda_title",       label: "Título de la banda",             multiline: false },
+      { key: "banda_texto",       label: "Texto debajo del título",        multiline: true },
+      { key: "trabajamos_title",  label: "Título \"Trabajamos donde vivimos\"", multiline: false },
+      { key: "trabajamos_p1",     label: "Primer párrafo",                 multiline: true },
+      { key: "trabajamos_p2",     label: "Segundo párrafo",                multiline: true }
+    ],
+    listas: [
+      {
+        tabla: "valores", singular: "valor", plural: "valores",
+        campos: [
+          { c: "title", label: "Título",      multiline: false },
+          { c: "desc",  label: "Descripción", multiline: true }
+        ]
+      }
+    ]
+  }
+};
+
+function renderPagina(mount, pagina) {
+  const def = PAGINAS[pagina];
+  if (!def) { mount.innerHTML = `<div class="lista-vacia">Página desconocida.</div>`; return; }
+  const c = state.contenido;
+
+  mount.innerHTML = `
+    <div class="page-h">
+      <div><h1>${esc(def.titulo)}</h1><div class="subt">${esc(def.subt)}</div></div>
+      <div class="actions">
+        <a class="btn btn-ghost" href="index.html#${pagina}" target="_blank">Ver el sitio →</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Textos de la página</h2>
+      <div class="tabs" role="tablist" data-tabs="textos-${pagina}">
+        <button data-idioma="es" class="${state.tabIdioma === "es" ? "activo" : ""}">Español</button>
+        <button data-idioma="fr" class="${state.tabIdioma === "fr" ? "activo" : ""}">Français</button>
+        <button data-idioma="en" class="${state.tabIdioma === "en" ? "activo" : ""}">English</button>
+      </div>
+      ${["es","fr","en"].map(lang => `
+        <div class="tab-panel${state.tabIdioma === lang ? " activo" : ""}" data-idioma="${lang}">
+          ${def.textosClaves.map(t => textoFieldHTML(pagina, t, lang, c.textos)).join("")}
+        </div>
+      `).join("")}
+      <button class="btn btn-primary btn-sm" id="guardar-textos-${pagina}">Guardar textos</button>
+    </div>
+
+    ${def.listas.map(list => listaBloqueHTML(list, c[list.tabla] || [])).join("")}`;
+
+  bindTabsSimples(mount);
+  bindGuardarTextos(mount, def);
+  def.listas.forEach(list => bindLista(mount, list));
+}
+
+function textoFieldHTML(pagina, def, lang, textos) {
+  const fila = textos.find(t => t.page === pagina && t.key === def.key);
+  const key = "valor_" + lang;
+  const valor = fila ? (fila[key] || "") : "";
+  const id = "t-" + pagina + "-" + def.key + "-" + lang;
+  const input = def.multiline
+    ? `<textarea id="${id}" data-page="${pagina}" data-key="${def.key}" data-lang="${lang}" rows="3">${esc(valor)}</textarea>`
+    : `<input id="${id}" data-page="${pagina}" data-key="${def.key}" data-lang="${lang}" type="text" value="${attr(valor)}">`;
+  return `<div class="field"><label>${esc(def.label)}</label>${input}</div>`;
+}
+
+function bindTabsSimples(mount) {
+  $$(".tabs", mount).forEach(tabs => {
+    $$("button", tabs).forEach(b => b.addEventListener("click", () => {
+      state.tabIdioma = b.dataset.idioma;
+      // Sincronizar todos los tabs de la vista
+      $$(".tabs button", mount).forEach(x => x.classList.toggle("activo", x.dataset.idioma === state.tabIdioma));
+      $$(".tab-panel", mount).forEach(x => x.classList.toggle("activo", x.dataset.idioma === state.tabIdioma));
+    }));
+  });
+}
+
+async function bindGuardarTextos(mount, def) {
+  const btn = $("#guardar-textos-" + def.textosPagina);
+  if (!btn) return;
+  btn.addEventListener("click", async () => {
+    btn.disabled = true; btn.textContent = "Guardando…";
+    try {
+      // Junto los tres idiomas de cada key
+      for (const t of def.textosClaves) {
+        const es = ($("#t-" + def.textosPagina + "-" + t.key + "-es") || {}).value || "";
+        const fr = ($("#t-" + def.textosPagina + "-" + t.key + "-fr") || {}).value || "";
+        const en = ($("#t-" + def.textosPagina + "-" + t.key + "-en") || {}).value || "";
+        // Solo guardar si al menos ES tiene contenido (ES es not null)
+        if (!es.trim()) continue;
+        const { error } = await guardarTexto(def.textosPagina, t.key, es.trim(), fr.trim() || null, en.trim() || null);
+        if (error) throw error;
+      }
+      toast("Textos guardados.");
+      // Refresh
+      state.contenido = await fetchContenido();
+    } catch (err) {
+      toast("Error al guardar textos: " + (err.message || err), "error");
+    } finally {
+      btn.disabled = false; btn.textContent = "Guardar textos";
+    }
+  });
+}
+
+function listaBloqueHTML(list, items) {
+  return `
+    <div class="card">
+      <h2>${esc(list.plural.charAt(0).toUpperCase() + list.plural.slice(1))} (${items.length})</h2>
+      <div class="tabs" role="tablist">
+        <button data-idioma="es" class="${state.tabIdioma === "es" ? "activo" : ""}">Español</button>
+        <button data-idioma="fr" class="${state.tabIdioma === "fr" ? "activo" : ""}">Français</button>
+        <button data-idioma="en" class="${state.tabIdioma === "en" ? "activo" : ""}">English</button>
+      </div>
+      ${["es","fr","en"].map(lang => `
+        <div class="tab-panel${state.tabIdioma === lang ? " activo" : ""}" data-idioma="${lang}">
+          ${items.map((it, i) => itemListaHTML(list, it, i, lang)).join("")}
+        </div>
+      `).join("")}
+      <button class="btn btn-secondary btn-sm" data-agregar="${list.tabla}">+ Agregar ${esc(list.singular)}</button>
+      <button class="btn btn-primary btn-sm" data-guardar-lista="${list.tabla}" style="margin-left:8px">Guardar cambios</button>
+    </div>`;
+}
+
+function itemListaHTML(list, item, i, lang) {
+  const idAttr = item.id ? `data-id="${item.id}"` : `data-nuevo="1"`;
+  const extras = (list.extra || []).map(e => {
+    const val = item[e.c] != null ? item[e.c] : (e.default != null ? e.default : "");
+    if (e.tipo === "switch") {
+      return `<label class="switch" style="margin-right:16px"><input type="checkbox" data-campo="${e.c}"${val ? " checked" : ""}><span>${esc(e.label)}</span></label>`;
+    }
+    return `<div class="field" style="max-width:160px"><label>${esc(e.label)}</label><input type="text" data-campo="${e.c}" value="${attr(val || "")}"></div>`;
+  }).join("");
+  const camposHTML = list.campos.map(c => {
+    const v = item[c.c + "_" + lang] || "";
+    const inp = c.multiline
+      ? `<textarea data-campo="${c.c}_${lang}" rows="3">${esc(v)}</textarea>`
+      : `<input type="text" data-campo="${c.c}_${lang}" value="${attr(v)}">`;
+    return `<div class="field"><label>${esc(c.label)} · ${lang.toUpperCase()}</label>${inp}</div>`;
+  }).join("");
+
+  return `
+    <div style="border:1px solid var(--line);padding:14px 16px;margin-bottom:12px;border-radius:var(--radio)" data-tabla="${list.tabla}" ${idAttr} data-i="${i}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px">
+        <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">${extras || `<div class="hint">#${i + 1}</div>`}</div>
+        <button class="btn btn-danger btn-sm" data-borrar="${list.tabla}" data-id="${item.id || ""}" data-i="${i}">Borrar</button>
+      </div>
+      ${camposHTML}
+    </div>`;
+}
+
+function bindLista(mount, list) {
+  // Recolecta y persiste los cambios de la sección al hacer clic en Guardar
+  const btnG = mount.querySelector(`[data-guardar-lista="${list.tabla}"]`);
+  const btnA = mount.querySelector(`[data-agregar="${list.tabla}"]`);
+
+  if (btnA) btnA.addEventListener("click", async () => {
+    // Item nuevo con orden = max + 10
+    const max = Math.max(0, ...(state.contenido[list.tabla].map(x => x.orden || 0)));
+    const nuevo = { orden: max + 10 };
+    // Campos ES obligatorios: creamos con placeholder
+    for (const c of list.campos) nuevo[c.c + "_es"] = "";
+    // extras con default
+    for (const e of (list.extra || [])) if (e.default != null) nuevo[e.c] = e.default;
+    // author para testimonios es obligatorio → dejar vacío para que el usuario complete
+    if (list.tabla === "testimonios") nuevo.author = "";
+    // El insert lo hacemos al Guardar, para no romper con datos vacíos
+    state.contenido[list.tabla] = [...state.contenido[list.tabla], nuevo];
+    // Re-render solo esta sección
+    renderPagina(mount.parentElement ? mount : mount, state.route.pagina || null);
+    // Si estamos en testimonios, usar su render
+    if (state.route.name === "testimonios") renderTestimonios(mount);
+  });
+
+  if (btnG) btnG.addEventListener("click", async () => {
+    btnG.disabled = true; btnG.textContent = "Guardando…";
+    try {
+      // Recolectar todas las tarjetas de esta lista
+      const tarjetas = $$(`[data-tabla="${list.tabla}"]`, mount);
+      for (let i = 0; i < tarjetas.length; i++) {
+        const t = tarjetas[i];
+        const id = t.dataset.id ? Number(t.dataset.id) : null;
+        const campos = { orden: (i + 1) * 10 };
+        $$("[data-campo]", t).forEach(el => {
+          const c = el.dataset.campo;
+          campos[c] = el.type === "checkbox" ? el.checked : el.value;
+        });
+        // ES obligatorio: si campo_es vacío, saltear alta; para updates igual guardamos
+        const primerCampo = list.campos[0].c + "_es";
+        if (!id && !(campos[primerCampo] && campos[primerCampo].trim())) continue;
+        const { error } = await guardarItem(list.tabla, id, campos);
+        if (error) throw error;
+      }
+      toast(list.plural.charAt(0).toUpperCase() + list.plural.slice(1) + " guardados.");
+      state.contenido = await fetchContenido();
+      render();
+    } catch (err) {
+      toast("Error al guardar: " + (err.message || err), "error");
+    } finally {
+      btnG.disabled = false; btnG.textContent = "Guardar cambios";
+    }
+  });
+
+  // Botones borrar
+  $$(`[data-borrar="${list.tabla}"]`, mount).forEach(b => b.addEventListener("click", async () => {
+    if (!confirm("¿Borrar este " + list.singular + "?")) return;
+    const id = b.dataset.id ? Number(b.dataset.id) : null;
+    if (id) {
+      const { error } = await borrarItem(list.tabla, id);
+      if (error) return toast("Error al borrar: " + error.message, "error");
+    }
+    state.contenido[list.tabla] = state.contenido[list.tabla].filter((_, k) => k !== Number(b.dataset.i));
+    toast(list.singular.charAt(0).toUpperCase() + list.singular.slice(1) + " borrado.");
+    render();
+  }));
+}
+
+// Testimonios vive en su propia página (tienen un campo extra: author)
+function renderTestimonios(mount) {
+  const items = state.contenido.testimonios || [];
+  mount.innerHTML = `
+    <div class="page-h">
+      <div><h1>Testimonios</h1><div class="subt">Aparecen en el carrusel de la portada. ${items.length} en total.</div></div>
+      <div class="actions">
+        <a class="btn btn-ghost" href="index.html" target="_blank">Ver el sitio →</a>
+      </div>
+    </div>
+    ${listaBloqueHTML({
+      tabla: "testimonios", singular: "testimonio", plural: "testimonios",
+      campos: [
+        { c: "text", label: "Texto",  multiline: true },
+        { c: "role", label: "Rol / lugar", multiline: false }
+      ],
+      extra: [
+        { c: "author", label: "Nombre (no se traduce)", tipo: "text", default: "" },
+        { c: "activo", label: "Activo",                 tipo: "switch", default: true }
+      ]
+    }, items)}`;
+  bindTabsSimples(mount);
+  bindLista(mount, {
+    tabla: "testimonios", singular: "testimonio", plural: "testimonios",
+    campos: [
+      { c: "text", label: "Texto",  multiline: true },
+      { c: "role", label: "Rol / lugar", multiline: false }
+    ],
+    extra: [
+      { c: "author", label: "Nombre (no se traduce)", tipo: "text", default: "" },
+      { c: "activo", label: "Activo",                 tipo: "switch", default: true }
+    ]
   });
 }
 
