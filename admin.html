@@ -351,6 +351,47 @@ async function borrarItem(tabla, id) {
   return await sb.from(tabla).delete().eq("id", id);
 }
 
+// ---- Traducción automática (MyMemory, gratis y sin API key) ----
+// Se usa para completar los idiomas vacíos antes de guardar. Si el usuario
+// escribió solo en francés, ES/EN se llenan automáticamente. Si escribió
+// solo en español, se traduce a FR/EN. Si escribió los tres, no llama a
+// la API. Los textos traducidos son editables después.
+async function traducir(texto, from, to) {
+  if (!texto || !texto.trim() || from === to) return null;
+  try {
+    const url = "https://api.mymemory.translated.net/get?q=" +
+                encodeURIComponent(texto.slice(0, 500)) +
+                "&langpair=" + from + "|" + to;
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    const d = await r.json();
+    const t = d && d.responseData && d.responseData.translatedText;
+    // MyMemory a veces devuelve advertencias o el texto crudo si falla
+    if (!t || /^MYMEMORY/i.test(t) || t.trim() === texto.trim()) return null;
+    return t.trim();
+  } catch (e) { return null; }
+}
+
+// Completa los idiomas vacíos de un objeto con campos {campo}_es / _fr / _en.
+// Devuelve la cantidad de traducciones exitosas.
+async function completarIdiomas(obj, campos) {
+  const IDIOMAS = ["es", "fr", "en"];
+  let n = 0;
+  for (const c of campos) {
+    const conTexto = IDIOMAS.filter(l => obj[c + "_" + l] && String(obj[c + "_" + l]).trim());
+    if (conTexto.length === 0 || conTexto.length === 3) continue;   // nada que hacer
+    const origen = conTexto[0];
+    const texto  = obj[c + "_" + origen];
+    for (const destino of IDIOMAS) {
+      if (destino === origen) continue;
+      if (obj[c + "_" + destino] && String(obj[c + "_" + destino]).trim()) continue;
+      const t = await traducir(texto, origen, destino);
+      if (t) { obj[c + "_" + destino] = t; n++; }
+    }
+  }
+  return n;
+}
+
 async function uploadImagen(propId, file) {
   const ext = (file.name.match(/\.[^.]+$/) || [""])[0].toLowerCase() || ".jpg";
   const path = "prop-" + propId + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ext;
@@ -1237,19 +1278,35 @@ async function bindGuardarTextos(mount, def) {
   btn.addEventListener("click", async () => {
     btn.disabled = true; btn.textContent = "Guardando…";
     try {
-      // Junto los tres idiomas de cada key
+      let traducidos = 0, guardados = 0, saltados = 0;
       for (const t of def.textosClaves) {
         const es = ($("#t-" + def.textosPagina + "-" + t.key + "-es") || {}).value || "";
         const fr = ($("#t-" + def.textosPagina + "-" + t.key + "-fr") || {}).value || "";
         const en = ($("#t-" + def.textosPagina + "-" + t.key + "-en") || {}).value || "";
-        // Solo guardar si al menos ES tiene contenido (ES es not null)
-        if (!es.trim()) continue;
-        const { error } = await guardarTexto(def.textosPagina, t.key, es.trim(), fr.trim() || null, en.trim() || null);
+        // Autotraducir: si escribió en un idioma pero dejó otros vacíos,
+        // se rellenan antes de guardar.
+        const obj = { valor_es: es, valor_fr: fr, valor_en: en };
+        traducidos += await completarIdiomas(obj, ["valor"]);
+        // ES sigue siendo obligatorio (constraint NOT NULL). Si no hay ES
+        // aunque hayamos intentado traducir, se saltea.
+        if (!obj.valor_es || !obj.valor_es.trim()) { saltados++; continue; }
+        const { error } = await guardarTexto(
+          def.textosPagina, t.key,
+          obj.valor_es.trim(),
+          (obj.valor_fr || "").trim() || null,
+          (obj.valor_en || "").trim() || null
+        );
         if (error) throw error;
+        guardados++;
       }
-      toast("Textos guardados.");
-      // Refresh
+      const partes = [];
+      if (guardados)  partes.push(guardados + " texto" + (guardados > 1 ? "s" : "") + " guardado" + (guardados > 1 ? "s" : ""));
+      if (traducidos) partes.push(traducidos + " traducido" + (traducidos > 1 ? "s" : "") + " automáticamente");
+      if (saltados)   partes.push(saltados + " sin español (no se guardaron)");
+      toast(partes.length ? partes.join(" · ") : "Sin cambios.", saltados ? "warn" : "info");
       state.contenido = await fetchContenido();
+      // Rerender para que se vean los idiomas autocompletados en los inputs
+      render();
     } catch (err) {
       toast("Error al guardar textos: " + (err.message || err), "error");
     } finally {
@@ -1351,12 +1408,17 @@ function bindLista(mount, list) {
 
       const items = Array.from(grupos.values()).sort((a, b) => a.i - b.i);
       const primerCampo = list.campos[0].c + "_es";
-      let insertados = 0, actualizados = 0, saltados = 0;
+      const campoNombres = list.campos.map(c => c.c);
+      let insertados = 0, actualizados = 0, saltados = 0, traducidos = 0;
 
       for (let i = 0; i < items.length; i++) {
         const g = items[i];
         g.campos.orden = (i + 1) * 10;
-        // Alta: exige ES no vacío en el primer campo obligatorio
+        // Traducir automáticamente los idiomas vacíos antes de guardar.
+        // Se detecta cuál idioma tiene contenido y se rellenan los otros dos.
+        traducidos += await completarIdiomas(g.campos, campoNombres);
+        // Alta: exige ES no vacío en el primer campo obligatorio (ya sea
+        // porque lo escribió el usuario o porque se autotradujo).
         if (!g.id) {
           const v = g.campos[primerCampo];
           if (!v || !v.trim()) { saltados++; continue; }
@@ -1369,6 +1431,7 @@ function bindLista(mount, list) {
       const partes = [];
       if (insertados)  partes.push(insertados + " nuevo" + (insertados > 1 ? "s" : ""));
       if (actualizados) partes.push(actualizados + " actualizado" + (actualizados > 1 ? "s" : ""));
+      if (traducidos)  partes.push(traducidos + " traducido" + (traducidos > 1 ? "s" : "") + " automáticamente");
       if (saltados)    partes.push(saltados + " sin " + list.campos[0].label + " en español (no se guardaron)");
       toast(partes.length ? partes.join(" · ") : "Sin cambios.", saltados ? "warn" : "info");
 
