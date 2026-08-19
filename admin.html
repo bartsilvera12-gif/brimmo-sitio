@@ -74,12 +74,13 @@
   .btn-sm { height: 32px; padding: 6px 12px; font-size: 12px; }
 
   /* ========== Campos de formulario ==========
-     Cada .field es una grid vertical de 3 filas fijas: label (min-height
-     para que 1 o 2 líneas ocupen igual), control, hint. Así los inputs de
-     una misma fila quedan siempre alineados aunque los labels o los hints
-     tengan largos distintos. */
-  .field { display: grid; grid-template-rows: auto 1fr auto; gap: 6px; margin-bottom: 16px; }
-  .field label { font-size: 11.5px; font-weight: 600; letter-spacing: .05em; color: var(--ink-2); text-transform: uppercase; line-height: 1.35; min-height: 2.7em; display: flex; align-items: flex-end; }
+     .field es un flex-column simple: label, control, hint apilados. La
+     alineación entre columnas (cuando un label es de 2 líneas y otro de 1)
+     se resuelve a nivel del grid contenedor con grid-auto-rows, no
+     forzando altura al label — así se evita que el label capture eventos
+     de puntero en su zona vacía. */
+  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .field label { font-size: 11.5px; font-weight: 600; letter-spacing: .05em; color: var(--ink-2); text-transform: uppercase; line-height: 1.35; cursor: default; }
   .field .hint { font-size: 12px; color: var(--ink-3); line-height: 1.4; margin-top: 2px; }
   .field .hint em { font-style: normal; color: var(--ink-2); font-weight: 500; }
   .field input[type="text"], .field input[type="email"], .field input[type="password"], .field input[type="number"], .field input[type="url"], .field textarea {
@@ -743,19 +744,29 @@ function rowPropiedad(p) {
 // =========================================================================
 function renderEditor(mount, id) {
   if (id) {
-    // Cargar desde la lista si ya la tenemos, y refrescar desde red
+    // Solo hidratar desde la lista si aún no estamos editando esta prop.
+    // Si ya la tenemos cargada (state.cur.id === id), respetamos lo que
+    // el editor tiene en memoria: subidas de foto, features nuevas,
+    // cambios de campo antes de guardar.
     const existente = state.props.find(p => p.id === id);
-    if (existente) {
+    const yaCargada = state.cur && state.cur.id === id;
+    if (existente && !yaCargada) {
       state.cur = { ...existente };
       state.imgs = (existente.propiedad_imagenes || []).slice().sort((a, b) => a.orden - b.orden);
     }
-    fetchProp(id).then(({ data, error }) => {
-      if (error) return toast("No se pudo cargar la propiedad: " + error.message, "error");
-      state.cur = { ...data };
-      state.imgs = (data.propiedad_imagenes || []).slice().sort((a, b) => a.orden - b.orden);
-      renderEditor(mount, id);
-    });
-    if (!existente) { mount.innerHTML = `<div class="cargando">Cargando propiedad…</div>`; return; }
+    // Solo pedir el servidor la PRIMERA vez que se abre esta prop. Los
+    // re-renders internos (subir foto, borrar, cambiar idioma, …) no
+    // deben refetchear — antes eso generaba un bucle infinito porque el
+    // callback del fetch llamaba a renderEditor y ese llamaba a otro fetch.
+    if (!yaCargada) {
+      fetchProp(id).then(({ data, error }) => {
+        if (error) return toast("No se pudo cargar la propiedad: " + error.message, "error");
+        state.cur = { ...data };
+        state.imgs = (data.propiedad_imagenes || []).slice().sort((a, b) => a.orden - b.orden);
+        renderEditor(mount, id);
+      });
+      if (!existente) { mount.innerHTML = `<div class="cargando">Cargando propiedad…</div>`; return; }
+    }
   } else {
     state.cur = state.cur && !state.cur.id ? state.cur : {
       type: "Villa", operation: "VENTA", currency: "USD", city: "",
@@ -1069,11 +1080,11 @@ async function onEliminar(id) {
 // =========================================================================
 function renderImgsHTML() {
   return `
-    <div class="dropzone" id="dz">
+    <label class="dropzone" id="dz" for="dz-input">
       <strong>Arrastrá fotos acá</strong>
       <div class="hint">o hacé clic para elegir · JPEG, PNG, WebP · hasta 10 MB c/u</div>
-      <input type="file" id="dz-input" accept="image/jpeg,image/png,image/webp" multiple style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-    </div>
+    </label>
+    <input type="file" id="dz-input" accept="image/jpeg,image/png,image/webp" multiple style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
     <div class="imgs" id="imgs">
       ${state.imgs.map((img, i) => `
         <div class="img-item" data-id="${img.id}" data-i="${i}">
@@ -1091,15 +1102,22 @@ function renderImgsHTML() {
 
 function bindImagenes(mount, propId) {
   const dz = $("#dz"), input = $("#dz-input");
-  if (!dz) return;
-  dz.addEventListener("click", () => input.click());
+  if (!dz || !input) return;
+  // No hay handler de click en dz: el <label for="dz-input"> abre el picker
+  // nativo. Antes se usaba dz.click → input.click(); el click sintético
+  // burbujeaba de vuelta a dz y llamaba a input.click() otra vez, generando
+  // cascadas de subida.
   dz.addEventListener("dragover", (e) => { e.preventDefault(); dz.classList.add("dragover"); });
   dz.addEventListener("dragleave", () => dz.classList.remove("dragover"));
   dz.addEventListener("drop", (e) => {
     e.preventDefault(); dz.classList.remove("dragover");
     subirVarias(mount, propId, [...e.dataTransfer.files]);
   });
-  input.addEventListener("change", () => subirVarias(mount, propId, [...input.files]));
+  input.addEventListener("change", () => {
+    const files = [...input.files];
+    input.value = "";  // limpiar para que un re-select del mismo archivo dispare change
+    subirVarias(mount, propId, files);
+  });
 
   // Acciones sobre las miniaturas
   $$("[data-act]", mount).forEach(b => b.addEventListener("click", async (e) => {

@@ -751,6 +751,18 @@
     </div>
   </div>
 
+  <sc-if value="{{ hasGallery }}" hint-placeholder-val="{{ false }}">
+  <div data-reveal style="max-width:1320px;margin:0 auto;padding:24px 20px 0">
+    <div class="g4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+      <sc-for list="{{ detailGallery }}" as="g" hint-placeholder-count="4">
+        <a href="{{ g.src }}" target="_blank" rel="noopener" style="display:block;aspect-ratio:4/3;overflow:hidden;background:#F2F1ED;transition:transform .35s ease" style-hover="transform:translateY(-3px)">
+          <img src="{{ g.src }}" alt="{{ g.alt }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease" style-hover="transform:scale(1.04)">
+        </a>
+      </sc-for>
+    </div>
+  </div>
+  </sc-if>
+
   <div class="g-split" style="max-width:1320px;margin:0 auto;padding:52px 20px 96px;display:grid;gap:64px;align-items:start">
     <div data-reveal>
       <span style="display:inline-block;padding:6px 12px;font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#fff;background:{{ detailTagBg }}">{{ detailOperation }}</span>
@@ -2313,7 +2325,9 @@ class Component extends DCLogic {
       detailCity: d.city,
       hasVideo: !!d.video,
       videoSrc: d.video ? "https://www.youtube-nocookie.com/embed/" + d.video : "",
-      detailWaHref: "https://wa.me/" + TEL_RAW + "?text=" + encodeURIComponent("Hola, me interesa la propiedad: " + d.title)
+      detailWaHref: "https://wa.me/" + TEL_RAW + "?text=" + encodeURIComponent("Hola, me interesa la propiedad: " + d.title),
+      hasGallery: !!(d.gallery && d.gallery.length),
+      detailGallery: (d.gallery || []).map((src, i) => ({ src, alt: d.title + " — " + (i + 2) }))
     };
   }
 }
