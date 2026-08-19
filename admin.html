@@ -187,6 +187,16 @@
   .md-toolbar button:hover { background: #fff; border-color: var(--forest); color: var(--forest); }
   .md-toolbar button:active { transform: translateY(1px); }
   .md-editor { font-family: var(--mono, ui-monospace, "SF Mono", Menlo, monospace) !important; font-size: 13px !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important; }
+  .md-wysi { min-height: 360px; max-height: 640px; overflow-y: auto; padding: 18px 22px; background: var(--surface); border: 1px solid var(--line-2); border-top: 0; border-radius: 0 0 var(--radio) var(--radio); font-size: 14.5px; line-height: 1.65; color: var(--ink); outline: none; transition: border-color .15s, box-shadow .15s; }
+  .md-wysi:focus { border-color: var(--forest); box-shadow: 0 0 0 3px rgba(31,90,54,.14); }
+  .md-wysi h1, .md-wysi h2, .md-wysi h3 { font-family: "Montserrat", var(--font); font-weight: 700; color: var(--forest); margin: 22px 0 10px; font-size: 17px; letter-spacing: -.005em; }
+  .md-wysi h3:first-child, .md-wysi h1:first-child, .md-wysi h2:first-child { margin-top: 0; }
+  .md-wysi p { margin: 10px 0; }
+  .md-wysi ul { margin: 10px 0 14px; padding-left: 24px; }
+  .md-wysi li { margin: 4px 0; }
+  .md-wysi strong { color: var(--forest); font-weight: 700; }
+  .md-wysi em { font-style: italic; color: var(--ink-2); }
+  .md-wysi hr { border: 0; border-top: 1px solid var(--line); margin: 20px 0; }
 
   /* ========== Modales de confirmación ========== */
   .modal-fondo { position: fixed; inset: 0; background: rgba(23,45,30,.42); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; animation: fadeIn .18s ease forwards; }
@@ -1456,91 +1466,158 @@ function textoFieldHTML(pagina, def, lang, textos) {
   const key = "valor_" + lang;
   const valor = fila ? (fila[key] || "") : "";
   const id = "t-" + pagina + "-" + def.key + "-" + lang;
-  // Contenidos largos con hint reciben un textarea más grande + toolbar.
   const rows = def.hint ? 22 : 3;
   let input;
   if (def.multiline) {
-    const barra = def.hint ? `
-      <div class="md-toolbar" data-target="${id}">
-        <button type="button" data-md="h" title="Subtítulo (## )"><span style="font-family:Montserrat,var(--font);font-weight:700">H</span></button>
-        <button type="button" data-md="b" title="Negrita (**texto**)"><b>B</b></button>
-        <button type="button" data-md="i" title="Cursiva (_texto_)"><i>K</i></button>
-        <button type="button" data-md="li" title="Viñeta (- )">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="2.5" cy="4" r="1.2" fill="currentColor"/><circle cx="2.5" cy="10" r="1.2" fill="currentColor"/><path d="M6 4h6M6 10h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        </button>
-        <button type="button" data-md="hr" title="Separador (---)">
-          <svg width="16" height="14" viewBox="0 0 16 14" fill="none" aria-hidden="true"><path d="M1 7h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        </button>
-        <button type="button" data-md="p" title="Nuevo párrafo (línea vacía)">¶</button>
-      </div>` : "";
-    input = barra + `<textarea id="${id}" data-page="${pagina}" data-key="${def.key}" data-lang="${lang}" rows="${rows}"${def.hint ? ' class="md-editor"' : ""}>${esc(valor)}</textarea>`;
+    if (def.hint) {
+      // Editor WYSIWYG: barra + contenteditable con el HTML renderizado.
+      // Un textarea oculto guarda el Markdown (que es lo que la DB persiste
+      // y bindGuardarTextos lee via .value). Cada cambio en el editor
+      // sincroniza el textarea oculto.
+      const htmlInicial = mdAHTML(valor);
+      input = `
+        <div class="md-toolbar" data-target="wysi-${id}">
+          <button type="button" data-md="h" title="Subtítulo — resalta como encabezado"><span style="font-family:Montserrat,var(--font);font-weight:700">H</span></button>
+          <button type="button" data-md="b" title="Negrita — el texto se muestra en negrita"><b>B</b></button>
+          <button type="button" data-md="i" title="Cursiva — el texto se muestra inclinado"><i>K</i></button>
+          <button type="button" data-md="li" title="Viñeta — convierte la línea en un item de lista">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="2.5" cy="4" r="1.2" fill="currentColor"/><circle cx="2.5" cy="10" r="1.2" fill="currentColor"/><path d="M6 4h6M6 10h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" data-md="hr" title="Línea separadora horizontal">
+            <svg width="16" height="14" viewBox="0 0 16 14" fill="none" aria-hidden="true"><path d="M1 7h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+          <button type="button" data-md="p" title="Nuevo párrafo (línea en blanco)">¶</button>
+        </div>
+        <div id="wysi-${id}" class="md-wysi" contenteditable="true" data-textarea="${id}">${htmlInicial}</div>
+        <textarea id="${id}" data-page="${pagina}" data-key="${def.key}" data-lang="${lang}" style="display:none">${esc(valor)}</textarea>`;
+    } else {
+      input = `<textarea id="${id}" data-page="${pagina}" data-key="${def.key}" data-lang="${lang}" rows="${rows}">${esc(valor)}</textarea>`;
+    }
   } else {
     input = `<input id="${id}" data-page="${pagina}" data-key="${def.key}" data-lang="${lang}" type="text" value="${attr(valor)}">`;
   }
-  const hint = def.hint ? `<div class="hint">Usá los botones o escribí en Markdown: <em>##</em> subtítulos · <em>-</em> viñetas · <em>**neg**</em> · <em>_curs_</em> · <em>---</em> separador · línea vacía = párrafo.</div>` : "";
+  const hint = def.hint ? `<div class="hint"><b>H</b> subtítulo · <b>B</b> negrita · <b>K</b> cursiva · viñetas · línea separadora · nuevo párrafo</div>` : "";
   return `<div class="field"><label>${esc(def.label)}</label>${input}${hint}</div>`;
 }
 
-// Inserta o envuelve texto en el textarea según el tipo de marca (B, I, H, LI, HR, P).
-function aplicarMarkdown(textarea, tipo) {
-  if (!textarea) return;
-  const val = textarea.value;
-  const ini = textarea.selectionStart;
-  const fin = textarea.selectionEnd;
-  const sel = val.slice(ini, fin);
-  // Helper: envolver con marcadores (bold, italic).
-  const envolver = (marca) => {
-    const dentro = sel || (tipo === "b" ? "texto" : "cursiva");
-    const nuevo = marca + dentro + marca;
-    return { texto: val.slice(0, ini) + nuevo + val.slice(fin), inicio: ini + marca.length, fin: ini + marca.length + dentro.length };
-  };
-  // Helper: prefijar cada línea seleccionada (h, li).
-  const prefijarLineas = (pref, placeholder) => {
-    const desdeIni = val.lastIndexOf("\n", ini - 1) + 1;
-    const hastaFin = fin < val.length ? val.indexOf("\n", fin) : -1;
-    const finLinea = hastaFin === -1 ? val.length : hastaFin;
-    const bloque = val.slice(desdeIni, finLinea);
-    const lineas = bloque ? bloque.split("\n") : [placeholder];
-    const trans = lineas.map(l => l.startsWith(pref) ? l : pref + l).join("\n");
-    return { texto: val.slice(0, desdeIni) + trans + val.slice(finLinea), inicio: desdeIni, fin: desdeIni + trans.length };
-  };
-  // Inserta bloque suelto (hr, p) en una línea propia.
-  const insertarBloque = (bloque) => {
-    // Asegurar salto antes y después
-    let antes = val.slice(0, ini);
-    let despues = val.slice(fin);
-    const preSalto = antes.endsWith("\n\n") || antes === "" ? "" : (antes.endsWith("\n") ? "\n" : "\n\n");
-    const postSalto = despues.startsWith("\n\n") || despues === "" ? "" : (despues.startsWith("\n") ? "\n" : "\n\n");
-    const nuevo = antes + preSalto + bloque + postSalto + despues;
-    const pos = (antes + preSalto + bloque + postSalto).length;
-    return { texto: nuevo, inicio: pos, fin: pos };
-  };
+// ------- Editor WYSIWYG: markdown ↔ HTML -------
+function mdAHTML(md) {
+  if (!md) return "<p><br></p>";
+  const lineas = String(md).split(/\r?\n/);
+  let out = "", enLista = false, buf = [];
+  const cerrarP = () => { if (buf.length) { out += "<p>" + buf.join("<br>") + "</p>"; buf = []; } };
+  const cerrarL = () => { if (enLista) { out += "</ul>"; enLista = false; } };
+  const rich = t => escaparHTML(t)
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[^_])_([^_\n]+)_(?!_)/g, "$1<em>$2</em>");
+  for (const l of lineas) {
+    const t = l.trim();
+    if (!t) { cerrarP(); cerrarL(); continue; }
+    if (t === "---" || t === "***") { cerrarP(); cerrarL(); out += "<hr>"; continue; }
+    if (t.startsWith("## ")) { cerrarP(); cerrarL(); out += "<h3>" + rich(t.slice(3)) + "</h3>"; continue; }
+    if (t.startsWith("- ")) { cerrarP(); if (!enLista) { out += "<ul>"; enLista = true; } out += "<li>" + rich(t.slice(2)) + "</li>"; continue; }
+    cerrarL();
+    buf.push(rich(t));
+  }
+  cerrarP(); cerrarL();
+  return out || "<p><br></p>";
+}
 
-  let r;
-  if (tipo === "b") r = envolver("**");
-  else if (tipo === "i") r = envolver("_");
-  else if (tipo === "h") r = prefijarLineas("## ", "Subtítulo");
-  else if (tipo === "li") r = prefijarLineas("- ", "Elemento");
-  else if (tipo === "hr") r = insertarBloque("---");
-  else if (tipo === "p") r = insertarBloque("");
+function escaparHTML(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// Convierte el HTML editado por el usuario de vuelta a Markdown para la DB.
+function htmlAMd(root) {
+  const out = [];
+  const inline = (nodo) => {
+    let s = "";
+    nodo.childNodes.forEach(n => {
+      if (n.nodeType === 3) s += n.textContent;
+      else if (n.nodeType === 1) {
+        const tag = n.tagName.toLowerCase();
+        if (tag === "strong" || tag === "b") s += "**" + inline(n) + "**";
+        else if (tag === "em" || tag === "i") s += "_" + inline(n) + "_";
+        else if (tag === "br") s += "\n";
+        else s += inline(n);
+      }
+    });
+    return s.trim();
+  };
+  root.childNodes.forEach(n => {
+    if (n.nodeType === 3) {
+      const t = n.textContent.trim();
+      if (t) out.push(t);
+      return;
+    }
+    if (n.nodeType !== 1) return;
+    const tag = n.tagName.toLowerCase();
+    if (/^h[1-6]$/.test(tag)) { out.push("## " + inline(n)); }
+    else if (tag === "ul" || tag === "ol") {
+      n.querySelectorAll(":scope > li").forEach(li => out.push("- " + inline(li)));
+    }
+    else if (tag === "hr") { out.push("---"); }
+    else if (tag === "p" || tag === "div") {
+      const txt = inline(n);
+      if (txt) out.push(txt);
+    }
+    else if (tag === "br") { /* ignorar sueltas */ }
+    else {
+      const txt = inline(n);
+      if (txt) out.push(txt);
+    }
+  });
+  return out.join("\n\n");
+}
+
+// Aplica un comando al editor WYSIWYG (contenteditable div).
+// Los toggles (B, I, H) prenden/apagan el formato según la selección actual.
+function aplicarComandoWysi(editor, tipo) {
+  if (!editor) return;
+  editor.focus();
+  if (tipo === "b") document.execCommand("bold");
+  else if (tipo === "i") document.execCommand("italic");
+  else if (tipo === "h") {
+    // Toggle: si ya es h3, volver a párrafo; si no, marcar h3.
+    const sel = window.getSelection();
+    const nodo = sel && sel.anchorNode;
+    const bloque = nodo ? nodo.nodeType === 1 ? nodo.closest("h1,h2,h3,h4,h5,h6,p,li") : nodo.parentElement && nodo.parentElement.closest("h1,h2,h3,h4,h5,h6,p,li") : null;
+    const esH = bloque && /^H[1-6]$/i.test(bloque.tagName);
+    document.execCommand("formatBlock", false, esH ? "p" : "h3");
+  }
+  else if (tipo === "li") document.execCommand("insertUnorderedList");
+  else if (tipo === "hr") document.execCommand("insertHorizontalRule");
+  else if (tipo === "p") {
+    // Insertar un párrafo vacío después del actual
+    document.execCommand("insertHTML", false, "<p><br></p>");
+  }
   else return;
+  // Sincronizar el textarea oculto con el markdown resultante
+  sincronizarWysi(editor);
+}
 
-  textarea.value = r.texto;
-  textarea.focus();
-  textarea.setSelectionRange(r.inicio, r.fin);
-  // Notificar cambio para que la UI (autotraducción, guardado) lo detecte
-  textarea.dispatchEvent(new Event("input", { bubbles: true }));
+// Convierte el HTML actual del editor a Markdown y lo escribe en el
+// textarea asociado (bindGuardarTextos lee .value del textarea).
+function sincronizarWysi(editor) {
+  const id = editor.dataset.textarea;
+  const ta = document.getElementById(id);
+  if (!ta) return;
+  ta.value = htmlAMd(editor);
+  ta.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
 function bindToolbarsMarkdown(mount) {
   $$(".md-toolbar", mount).forEach(bar => {
-    const id = bar.dataset.target;
-    const ta = document.getElementById(id);
-    if (!ta) return;
+    const editor = document.getElementById(bar.dataset.target);
+    if (!editor) return;
     $$("button[data-md]", bar).forEach(b => b.addEventListener("click", (e) => {
       e.preventDefault();
-      aplicarMarkdown(ta, b.dataset.md);
+      aplicarComandoWysi(editor, b.dataset.md);
     }));
+  });
+  $$(".md-wysi", mount).forEach(editor => {
+    editor.addEventListener("input", () => sincronizarWysi(editor));
+    // Ctrl+B / Ctrl+I atajos ya funcionan de fábrica con execCommand.
   });
 }
 
