@@ -237,6 +237,8 @@
   .bri-rich-ul li { margin: 6px 0; font-size: 15.5px; line-height: 1.65; color: #5A5A55; }
   .bri-rich p  { margin: 14px 0; font-size: 15.5px; line-height: 1.7; color: #5A5A55; }
   .bri-rich strong { color: #1F5A36; font-weight: 700; }
+  .bri-rich em { color: #5A5A55; font-style: italic; }
+  .bri-rich-hr { border: 0; border-top: 1px solid #E3E2DC; margin: 26px 0; }
 
   /* ===== Banda de encabezado de las páginas internas =====
      Fotografía institucional atenuada, con un velo que se hace opaco
@@ -1280,10 +1282,14 @@ function renderTextoRico(txt) {
   let out = "", enLista = false, buf = [];
   const cerrarP = () => { if (buf.length) { out += "<p>" + buf.join(" ") + "</p>"; buf = []; } };
   const cerrarL = () => { if (enLista) { out += "</ul>"; enLista = false; } };
-  const rich = t => escapeHTMLBasico(t).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  // Orden: bold ** primero, luego italic _ (para no confundir con __bold__).
+  const rich = t => escapeHTMLBasico(t)
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[^_])_([^_\n]+)_(?!_)/g, "$1<em>$2</em>");
   for (const l of lineas) {
     const t = l.trim();
     if (!t) { cerrarP(); cerrarL(); continue; }
+    if (t === "---" || t === "***") { cerrarP(); cerrarL(); out += '<hr class="bri-rich-hr">'; continue; }
     if (t.startsWith("## ")) { cerrarP(); cerrarL(); out += '<h3 class="bri-rich-h">' + rich(t.slice(3)) + "</h3>"; continue; }
     if (t.startsWith("- "))  { cerrarP(); if (!enLista) { out += '<ul class="bri-rich-ul">'; enLista = true; } out += "<li>" + rich(t.slice(2)) + "</li>"; continue; }
     cerrarL();
