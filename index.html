@@ -734,8 +734,17 @@
     <a href="#" onClick="{{ goProps }}" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;font-weight:600;color:#7E9848">{{ t.volverCatalogo }}</a>
   </div>
   <div class="g-split" data-stagger style="max-width:1320px;margin:0 auto;padding:22px 20px 0;display:grid;gap:12px">
-    <div data-reveal style="aspect-ratio:16/10;overflow:hidden;background:#1F5A36">
-      <img src="{{ detailImage }}" alt="{{ detailAlt }}" style="width:100%;height:100%;object-fit:cover;display:block">
+    <div data-reveal style="position:relative;aspect-ratio:16/10;overflow:hidden;background:#1F5A36">
+      <img src="{{ detailImage }}" alt="{{ detailAlt }}" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s ease">
+      <sc-if value="{{ hasGallery }}" hint-placeholder-val="{{ false }}">
+        <button type="button" onClick="{{ prevSlide }}" aria-label="Anterior" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.92);color:#1F5A36;font-size:22px;line-height:1;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s" style-hover="background:#fff;transform:translateY(-50%) scale(1.06)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M9 1.5L3 7l6 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button type="button" onClick="{{ nextSlide }}" aria-label="Siguiente" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.92);color:#1F5A36;font-size:22px;line-height:1;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s" style-hover="background:#fff;transform:translateY(-50%) scale(1.06)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M5 1.5L11 7l-6 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div style="position:absolute;right:16px;bottom:16px;padding:5px 11px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;font-weight:600;letter-spacing:.06em;border-radius:12px">{{ slideCounter }}</div>
+      </sc-if>
     </div>
     <div style="display:grid;grid-auto-rows:1fr;gap:12px">
       <sc-if value="{{ hasVideo }}" hint-placeholder-val="{{ true }}">
@@ -752,12 +761,12 @@
   </div>
 
   <sc-if value="{{ hasGallery }}" hint-placeholder-val="{{ false }}">
-  <div data-reveal style="max-width:1320px;margin:0 auto;padding:24px 20px 0">
-    <div class="g4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
-      <sc-for list="{{ detailGallery }}" as="g" hint-placeholder-count="4">
-        <a href="{{ g.src }}" target="_blank" rel="noopener" style="display:block;aspect-ratio:4/3;overflow:hidden;background:#F2F1ED;transition:transform .35s ease" style-hover="transform:translateY(-3px)">
-          <img src="{{ g.src }}" alt="{{ g.alt }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease" style-hover="transform:scale(1.04)">
-        </a>
+  <div data-reveal style="max-width:1320px;margin:0 auto;padding:14px 20px 0">
+    <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin">
+      <sc-for list="{{ detailThumbs }}" as="th" hint-placeholder-count="6">
+        <button type="button" onClick="{{ th.pick }}" aria-label="{{ th.alt }}" style="flex:0 0 auto;width:110px;height:82px;padding:0;border:2px solid {{ th.border }};background:#F2F1ED;overflow:hidden;cursor:pointer;transition:border-color .2s,transform .2s" style-hover="transform:translateY(-2px)">
+          <img src="{{ th.src }}" alt="{{ th.alt }}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;opacity:{{ th.opacity }};transition:opacity .2s">
+        </button>
       </sc-for>
     </div>
   </div>
@@ -1050,7 +1059,9 @@ function mapearDeSupabase(row) {
     features: row.features_es || [], desc: row.desc_es || "",
     video: row.video_id,
     image: principal ? urlImagen(principal.storage_path) : null,
-    gallery: imgs.filter(i => i !== principal).map(i => urlImagen(i.storage_path))
+    gallery: imgs.filter(i => i !== principal).map(i => urlImagen(i.storage_path)),
+    // Todas las fotos en orden (principal primero) para el carrusel del detalle
+    photos: imgs.length ? [principal, ...imgs.filter(i => i !== principal)].map(i => urlImagen(i.storage_path)) : []
   };
   const traducciones = {
     fr: { title: row.title_fr, zone: row.zone_fr, desc: row.desc_fr, features: row.features_fr },
@@ -1791,7 +1802,7 @@ const propEn = (p, lang) => {
 };
 
 class Component extends DCLogic {
-  state = { screen: "home", scrolled: false, t: 0, tPaused: false, q: "", type: "", city: "", price: "", detailId: 1, sent: false, hovered: null, lang: detectarIdioma(), menu: false };
+  state = { screen: "home", scrolled: false, t: 0, tPaused: false, q: "", type: "", city: "", price: "", detailId: 1, detailSlide: 0, sent: false, hovered: null, lang: detectarIdioma(), menu: false };
 
   componentDidMount() {
     this.aplicarIdioma();
@@ -1919,7 +1930,7 @@ class Component extends DCLogic {
           '<div style="margin-top:8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:' + OLIVE + '">' + tMapa.verPropiedad + '</div>' +
           '</div>'
         );
-        m.on("click", () => this.setState({ screen: "detail", detailId: p.id }));
+        m.on("click", () => this.setState({ screen: "detail", detailId: p.id, detailSlide: 0 }));
         this.markers[p.id] = m;
       });
       if (list.length) this.map.fitBounds(list.map(p => [CIUDAD[p.city].lat, CIUDAD[p.city].lng]), { padding: [50, 50], maxZoom: 11 });
@@ -2132,7 +2143,7 @@ class Component extends DCLogic {
       specs: this.specs(p),
       operation: (OPERACION_T[lang] || OPERACION_T.es)[p.operation] || p.operation,
       tagBg: p.operation === "VENTA" ? FOREST : OLIVE,
-      open: (e) => { e.preventDefault(); this.setState({ screen: "detail", detailId: p.id }); window.scrollTo(0, 0); },
+      open: (e) => { e.preventDefault(); this.setState({ screen: "detail", detailId: p.id, detailSlide: 0 }); window.scrollTo(0, 0); },
       hover: () => this.setState({ hovered: p.id }),
       unhover: () => this.setState({ hovered: null })
     };
@@ -2310,7 +2321,7 @@ class Component extends DCLogic {
 
       tKey: s.t,
       detailTitle: d.title,
-      detailImage: d.image || SIN_FOTO,
+      detailImage: (d.photos && d.photos.length ? d.photos[Math.min(s.detailSlide || 0, d.photos.length - 1)] : (d.image || SIN_FOTO)),
       detailAlt: d.image ? d.title + " — " + (d.zone ? d.zone + ", " : "") + d.city : "",
       detailLocation: d.zone ? d.zone + ", " + d.city : d.city,
       detailOperation: (OPERACION_T[lang] || OPERACION_T.es)[d.operation] || d.operation,
@@ -2326,8 +2337,19 @@ class Component extends DCLogic {
       hasVideo: !!d.video,
       videoSrc: d.video ? "https://www.youtube-nocookie.com/embed/" + d.video : "",
       detailWaHref: "https://wa.me/" + TEL_RAW + "?text=" + encodeURIComponent("Hola, me interesa la propiedad: " + d.title),
-      hasGallery: !!(d.gallery && d.gallery.length),
-      detailGallery: (d.gallery || []).map((src, i) => ({ src, alt: d.title + " — " + (i + 2) }))
+      hasGallery: !!(d.photos && d.photos.length > 1),
+      slideCounter: (d.photos && d.photos.length ? (Math.min(s.detailSlide || 0, d.photos.length - 1) + 1) + " / " + d.photos.length : ""),
+      prevSlide: (e) => { if (e) e.preventDefault(); const n = (d.photos || []).length; if (!n) return; this.setState(st => ({ detailSlide: ((st.detailSlide || 0) - 1 + n) % n })); },
+      nextSlide: (e) => { if (e) e.preventDefault(); const n = (d.photos || []).length; if (!n) return; this.setState(st => ({ detailSlide: ((st.detailSlide || 0) + 1) % n })); },
+      detailThumbs: (d.photos || []).map((src, i) => {
+        const activo = i === Math.min(s.detailSlide || 0, (d.photos || []).length - 1);
+        return {
+          src, alt: d.title + " — " + (i + 1),
+          border: activo ? "#1F5A36" : "transparent",
+          opacity: activo ? "1" : "0.72",
+          pick: (e) => { if (e) e.preventDefault(); this.setState({ detailSlide: i }); }
+        };
+      })
     };
   }
 }
