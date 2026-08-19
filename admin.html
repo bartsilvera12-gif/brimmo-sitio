@@ -140,6 +140,7 @@
   .dropzone { border: 2px dashed var(--line-2); border-radius: var(--radio); padding: 28px 20px; text-align: center; color: var(--ink-3); cursor: pointer; transition: background .2s, border-color .2s; }
   .dropzone:hover, .dropzone.dragover { background: var(--sunk); border-color: var(--forest); color: var(--ink-2); }
   .dropzone strong { color: var(--forest); display: block; margin-bottom: 4px; font-size: 14px; }
+  .dropzone > * { pointer-events: none; }
   .imgs { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 16px; }
   .img-item { position: relative; aspect-ratio: 4/3; overflow: hidden; border: 1px solid var(--line-2); border-radius: var(--radio); background: var(--sunk); cursor: grab; }
   .img-item[draggable="true"]:active { cursor: grabbing; }
