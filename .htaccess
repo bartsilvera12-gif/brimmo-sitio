@@ -1,0 +1,104 @@
+# =========================================================================
+# BRIMMO — Configuración Apache para Hostinger
+# Sitio estático (HTML/JS/CSS), con SPA de rutas por hash (#/…) — no requiere
+# rewrites de URL para el ruteo interno.
+# =========================================================================
+
+Options -Indexes
+AddDefaultCharset UTF-8
+
+# --- Página de inicio ---
+DirectoryIndex index.html
+
+# --- HTTPS obligatorio ---
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Forzar HTTPS
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+  # Forzar www (opcional, comentado). Si preferís sin www, dejalo así.
+  # RewriteCond %{HTTP_HOST} !^www\. [NC]
+  # RewriteRule ^(.*)$ https://www.%{HTTP_HOST}/$1 [R=301,L]
+
+  # --- Redirects de las URLs viejas de Wix (SEO / links externos) ---
+  # Estas rutas quedaron indexadas de la web anterior. Se redirigen a lo
+  # más cercano en el sitio nuevo.
+  RewriteRule ^blank/?$          /#/propiedades [R=301,L,NE]
+  RewriteRule ^paraguay/?$       /#cordillera  [R=301,L,NE]
+  RewriteRule ^services-7/?$     /#servicios   [R=301,L,NE]
+  RewriteRule ^book-online/?$    /#contacto    [R=301,L,NE]
+  RewriteRule ^mentions-legales/?$          /#contacto [R=301,L,NE]
+  RewriteRule ^politique-de-confidentialite/?$  /#contacto [R=301,L,NE]
+  RewriteRule ^conditions-d-utilisation/?$      /#contacto [R=301,L,NE]
+  RewriteRule ^politique-en-matiere-de-cookies/?$ /#contacto [R=301,L,NE]
+</IfModule>
+
+# --- Compresión gzip ---
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json image/svg+xml text/xml application/xml
+</IfModule>
+
+# --- Compresión brotli (si está disponible) ---
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+# --- Cache-Control ---
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # HTML: cache corto — los cambios se ven al recargar
+  ExpiresByType text/html                 "access plus 5 minutes"
+
+  # sb-config.js: cache corto — puede cambiar si se rota la anon key
+  <FilesMatch "sb-config\.js$">
+    ExpiresDefault "access plus 5 minutes"
+  </FilesMatch>
+
+  # JS/CSS: 1 día (el sitio no versiona los assets)
+  ExpiresByType application/javascript    "access plus 1 day"
+  ExpiresByType text/css                  "access plus 1 day"
+
+  # Imágenes y favicon: 30 días
+  ExpiresByType image/jpeg                "access plus 30 days"
+  ExpiresByType image/png                 "access plus 30 days"
+  ExpiresByType image/webp                "access plus 30 days"
+  ExpiresByType image/avif                "access plus 30 days"
+  ExpiresByType image/svg+xml             "access plus 30 days"
+  ExpiresByType image/x-icon              "access plus 30 days"
+
+  # Fuentes (si en algún momento se agregan self-hosted)
+  ExpiresByType font/woff2                "access plus 30 days"
+  ExpiresByType font/woff                 "access plus 30 days"
+</IfModule>
+
+# --- MIME types que algunos Apache viejos no reconocen ---
+<IfModule mod_mime.c>
+  AddType image/avif                 .avif
+  AddType image/webp                 .webp
+  AddType application/manifest+json  .webmanifest
+</IfModule>
+
+# --- Encabezados de seguridad ---
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options       "nosniff"
+  Header set X-Frame-Options              "SAMEORIGIN"
+  Header set Referrer-Policy              "strict-origin-when-cross-origin"
+  Header set Permissions-Policy           "geolocation=(), microphone=(), camera=()"
+  # HSTS activo solo cuando el sitio ya sirve HTTPS estable.
+  # Descomentar cuando esté todo funcionando y el certificado renovando OK.
+  # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# --- Bloquear acceso a archivos internos si por accidente se suben ---
+<FilesMatch "^(\.htaccess|\.htpasswd|\.env|\.git.*|package\.json|README\.md|.*\.sql|.*\.md)$">
+  Require all denied
+</FilesMatch>
+
+# --- Bloquear el bucket de fotos originales del cliente por si se sube por error ---
+RewriteRule ^uploads/propiedades-origen/ - [F,L]
+
+# --- Página de error personalizada (opcional) ---
+# ErrorDocument 404 /index.html

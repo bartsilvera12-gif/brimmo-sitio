@@ -6,3 +6,4 @@ Thumbs.db
 .thumbnail
 uploads/*.png
 uploads/*.pdf
+build/
