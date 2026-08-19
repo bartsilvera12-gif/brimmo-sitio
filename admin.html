@@ -133,6 +133,16 @@
   .editor-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; align-items: start; }
   @media (max-width: 960px) { .editor-grid { grid-template-columns: 1fr; } }
 
+  /* Vista previa del mapa en el editor */
+  .mapa-preview { border: 1px solid var(--line); border-radius: var(--radio); overflow: hidden; background: var(--sunk); margin-top: 4px; }
+  .mapa-preview-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .mapa-preview-titulo { font-size: 11.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+  .mapa-preview-fuente { font-size: 11.5px; color: var(--ink-3); }
+  .mapa-preview-body { position: relative; width: 100%; aspect-ratio: 16/10; background: var(--sunk); }
+  .mapa-preview-body iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+  .mapa-preview-vacio { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; text-align: center; color: var(--ink-3); font-size: 13px; }
+  .mapa-preview-error { color: var(--danger); }
+
   .tabs { display: flex; border-bottom: 1px solid var(--line-2); margin-bottom: 20px; gap: 2px; }
   .tabs button { background: transparent; border: 0; border-bottom: 2px solid transparent; padding: 10px 16px; font-family: inherit; font-size: 12.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); cursor: pointer; }
   .tabs button.activo { color: var(--forest); border-bottom-color: var(--lime); }
@@ -824,18 +834,27 @@ function renderEditor(mount, id) {
         <div class="card">
           <h2>Ubicación en Google Maps</h2>
           <div class="field">
-            <label>URL corta (para compartir)</label>
-            <input type="url" data-campo="maps_short" value="${attr(p.maps_short || "")}" placeholder="https://maps.app.goo.gl/…">
-            <div class="hint">La que se copia con el botón "Compartir" de Google Maps.</div>
+            <label>URL para compartir (opcional)</label>
+            <input type="url" id="input-maps-short" data-campo="maps_short" value="${attr(p.maps_short || "")}" placeholder="https://maps.app.goo.gl/…">
+            <div class="hint">La del botón <em>Compartir → Copiar enlace</em> en Google Maps. Sirve para el enlace "Ver en Google Maps".</div>
           </div>
           <div class="field">
-            <label>URL de embed (iframe)</label>
-            <input type="url" data-campo="maps_long" value="${attr(p.maps_long || "")}" placeholder="https://www.google.com/maps/embed?…">
-            <div class="hint">La del código &lt;iframe src="…"&gt; en <em>Compartir → Insertar un mapa</em>.</div>
+            <label>URL de mapa embebido</label>
+            <input type="url" id="input-maps-long" data-campo="maps_long" value="${attr(p.maps_long || "")}" placeholder="https://www.google.com/maps/embed?…">
+            <div class="hint">En Google Maps: <em>Compartir → Insertar un mapa → Copiar HTML</em>. Pegá solo la URL del <em>src="…"</em>.</div>
           </div>
           <div class="grid-2">
-            <div class="field"><label>Latitud (opcional)</label><input type="number" step="0.000001" data-campo="lat" value="${p.lat == null ? "" : p.lat}" placeholder="-25.386100"></div>
-            <div class="field"><label>Longitud (opcional)</label><input type="number" step="0.000001" data-campo="lng" value="${p.lng == null ? "" : p.lng}" placeholder="-57.140800"></div>
+            <div class="field"><label>Latitud (opcional)</label><input type="number" step="0.000001" id="input-lat" data-campo="lat" value="${p.lat == null ? "" : p.lat}" placeholder="-25.386100"></div>
+            <div class="field"><label>Longitud (opcional)</label><input type="number" step="0.000001" id="input-lng" data-campo="lng" value="${p.lng == null ? "" : p.lng}" placeholder="-57.140800"></div>
+          </div>
+          <div class="mapa-preview" id="mapa-preview">
+            <div class="mapa-preview-head">
+              <span class="mapa-preview-titulo">Vista previa</span>
+              <span class="mapa-preview-fuente" id="mapa-fuente">Sin datos</span>
+            </div>
+            <div class="mapa-preview-body" id="mapa-body">
+              <div class="mapa-preview-vacio">Pegá la URL de embed o completá latitud y longitud para ver el mapa acá.</div>
+            </div>
           </div>
         </div>
       </div>
@@ -856,8 +875,9 @@ function renderEditor(mount, id) {
       </div>
     </div>`;
 
-  // Refresh preview de video
+  // Refresh preview de video y de mapa
   actualizarVideoPreview();
+  actualizarMapaPreview();
 
   // Tabs de idioma
   $$(".tabs button", mount).forEach(b => b.addEventListener("click", () => {
@@ -876,6 +896,7 @@ function renderEditor(mount, id) {
       else v = el.value;
       state.cur[c] = v;
       if (c === "video_id") actualizarVideoPreview();
+      if (c === "maps_long" || c === "lat" || c === "lng") actualizarMapaPreview();
     });
   });
 
@@ -938,6 +959,56 @@ function actualizarVideoPreview() {
   if (!vid) { box.textContent = "Sin video."; box.style.color = ""; return; }
   box.innerHTML = `ID detectado: <code>${vid}</code> · <a href="https://youtu.be/${vid}" target="_blank" rel="noopener">ver en YouTube</a>`;
   state.cur.video_id = vid;
+}
+
+// Devuelve una URL apta para <iframe src="…"> del mapa embebido, o null.
+// Acepta la URL cruda del embed, y como fallback arma una desde lat/lng.
+function urlMapaEmbed(long, lat, lng) {
+  const s = (long || "").trim();
+  if (s) {
+    // Es válida si es la URL de embed de Google Maps (google.com/maps/embed…
+    // o maps.google.com/maps?…&output=embed). Filtra pegadas de HTML entero
+    // extrayendo el src si el usuario pegó el <iframe> completo.
+    const m = s.match(/src=["']([^"']+)["']/i);
+    const url = m ? m[1] : s;
+    if (/^https?:\/\/(www\.)?google\.[a-z.]+\/maps/i.test(url)) return url;
+    return null;
+  }
+  const la = Number(lat), ln = Number(lng);
+  if (Number.isFinite(la) && Number.isFinite(ln)) {
+    return `https://www.google.com/maps?q=${la},${ln}&z=15&output=embed`;
+  }
+  return null;
+}
+
+function actualizarMapaPreview() {
+  const box = $("#mapa-body");
+  const fte = $("#mapa-fuente");
+  if (!box || !fte) return;
+  const longIn = $("#input-maps-long");
+  const latIn = $("#input-lat");
+  const lngIn = $("#input-lng");
+  const long = longIn ? longIn.value : "";
+  const lat = latIn ? latIn.value : "";
+  const lng = lngIn ? lngIn.value : "";
+  const url = urlMapaEmbed(long, lat, lng);
+
+  if (!url) {
+    if (long && long.trim()) {
+      box.innerHTML = `<div class="mapa-preview-vacio mapa-preview-error">La URL de embed no parece de Google Maps. Copiala desde <em>Compartir → Insertar un mapa</em>.</div>`;
+      fte.textContent = "URL inválida";
+    } else {
+      box.innerHTML = `<div class="mapa-preview-vacio">Pegá la URL de embed o completá latitud y longitud para ver el mapa acá.</div>`;
+      fte.textContent = "Sin datos";
+    }
+    return;
+  }
+
+  fte.textContent = long && long.trim() ? "Desde URL de embed" : "Desde coordenadas";
+  // Actualizar iframe solo si cambió el src — evita recargar mientras se tipea.
+  const actual = box.querySelector("iframe");
+  if (actual && actual.getAttribute("src") === url) return;
+  box.innerHTML = `<iframe src="${attr(url)}" title="Vista previa del mapa" loading="lazy" allow="fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 }
 
 async function onGuardar(mount) {
